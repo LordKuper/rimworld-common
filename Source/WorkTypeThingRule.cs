@@ -187,7 +187,7 @@ public class WorkTypeThingRule : IExposable
     /// <param name="def">The <see cref="ThingDef" /> to score.</param>
     /// <returns>The calculated score.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    private float GetThingDefScore([NotNull] ThingDef def)
+    public float GetThingDefScore([NotNull] ThingDef def)
     {
         return def == null
             ? throw new ArgumentNullException(nameof(def))
