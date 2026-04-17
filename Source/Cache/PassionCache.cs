@@ -26,6 +26,11 @@ public class PassionCache(
     float forgetRateFactor)
 {
     /// <summary>
+    ///     Gets the icon representing the passion. The icon is cached after the first retrieval.
+    /// </summary>
+    [UsedImplicitly] private Texture2D _icon;
+
+    /// <summary>
     ///     Gets the definition name of the passion.
     /// </summary>
     [UsedImplicitly]
@@ -46,11 +51,7 @@ public class PassionCache(
     [UsedImplicitly]
     public float ForgetRateFactor { get; } = forgetRateFactor;
 
-    /// <summary>
-    ///     Gets the icon representing the passion. The icon is cached after the first retrieval.
-    /// </summary>
-    [UsedImplicitly]
-    public Texture2D Icon => field = field ? field : PassionHelper.GetPassionIcon(Passion);
+    public Texture2D Icon => _icon ? _icon : _icon = PassionHelper.GetPassionIcon(Passion);
 
     /// <summary>
     ///     Gets the display label for the passion.

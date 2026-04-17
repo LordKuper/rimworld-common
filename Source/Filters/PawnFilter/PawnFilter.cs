@@ -132,20 +132,22 @@ public class PawnFilter : IExposable
         Scribe_Values.Look(ref AllowedPawnHealthStates, nameof(AllowedPawnHealthStates));
         Scribe_Values.Look(ref ForbiddenPawnHealthStates, nameof(ForbiddenPawnHealthStates));
         Scribe_Values.Look(ref FilterWorkPassions, nameof(FilterWorkPassions));
-        Scribe_Collections.Look(ref AllowedWorkPassions, nameof(AllowedWorkPassions), LookMode.Value);
+        Scribe_Collections.Look(ref AllowedWorkPassions, nameof(AllowedWorkPassions),
+            LookMode.Value);
         Scribe_Values.Look(ref FilterPawnTraits, nameof(FilterPawnTraits));
         Scribe_Collections.Look(ref PawnTraitLimits, nameof(PawnTraitLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterPawnCapacities, nameof(FilterPawnCapacities));
         Scribe_Collections.Look(ref PawnCapacityLimits, nameof(PawnCapacityLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterWorkCapacities, nameof(FilterWorkCapacities));
-        Scribe_Collections.Look(ref WorkCapacityLimits, nameof(WorkCapacityLimits), LookMode.Value, LookMode.Value);
+        Scribe_Collections.Look(ref WorkCapacityLimits, nameof(WorkCapacityLimits), LookMode.Value,
+            LookMode.Value);
         Scribe_Values.Look(ref FilterPawnSkills, nameof(FilterPawnSkills));
         Scribe_Collections.Look(ref PawnSkillLimits, nameof(PawnSkillLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterPawnStats, nameof(FilterPawnStats));
         Scribe_Collections.Look(ref PawnStatLimits, nameof(PawnStatLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterPawnPrimaryWeaponTypes, nameof(FilterPawnPrimaryWeaponTypes));
-        Scribe_Collections.Look(ref AllowedPawnPrimaryWeaponTypes, nameof(AllowedPawnPrimaryWeaponTypes),
-            LookMode.Value);
+        Scribe_Collections.Look(ref AllowedPawnPrimaryWeaponTypes,
+            nameof(AllowedPawnPrimaryWeaponTypes), LookMode.Value);
     }
 
     /// <summary>
@@ -235,7 +237,8 @@ public class PawnFilter : IExposable
         else
         {
             combined.FilterWorkCapacities = fallback.FilterWorkCapacities;
-            combined.WorkCapacityLimits = new Dictionary<WorkTags, bool>(fallback.WorkCapacityLimits);
+            combined.WorkCapacityLimits =
+                new Dictionary<WorkTags, bool>(fallback.WorkCapacityLimits);
         }
         if (main.FilterPawnSkills.HasValue)
         {
@@ -295,18 +298,25 @@ public class PawnFilter : IExposable
             FilterPawnTraits = FilterPawnTraits,
             FilterPawnTypes = FilterPawnTypes,
             FilterWorkCapacities = FilterWorkCapacities,
-            FilterWorkPassions = FilterWorkPassions, ForbiddenPawnHealthStates = ForbiddenPawnHealthStates,
+            FilterWorkPassions = FilterWorkPassions,
+            ForbiddenPawnHealthStates = ForbiddenPawnHealthStates,
             ForbiddenPawnTypes = [..ForbiddenPawnTypes],
-            PawnCapacityLimits = [.. PawnCapacityLimits.Select(l => new PawnCapacityLimit(l.Def) { Limit = l.Limit })],
-            PawnSkillLimits = [.. PawnSkillLimits.Select(l => new PawnSkillLimit(l.Def) { Limit = l.Limit })],
+            PawnCapacityLimits =
+            [
+                .. PawnCapacityLimits.Select(l => new PawnCapacityLimit(l.Def) { Limit = l.Limit })
+            ],
+            PawnSkillLimits =
+                [.. PawnSkillLimits.Select(l => new PawnSkillLimit(l.Def) { Limit = l.Limit })],
             PawnStatLimits =
             [
                 .. PawnStatLimits.Select(l => new StatLimit(l.Def)
                 {
-                    Limit = l.Limit, LimitMaxCap = l.LimitMaxCap, LimitMinCap = l.LimitMinCap, ValueStyle = l.ValueStyle
+                    Limit = l.Limit, LimitMaxCap = l.LimitMaxCap, LimitMinCap = l.LimitMinCap,
+                    ValueStyle = l.ValueStyle
                 })
             ],
-            PawnTraitLimits = [.. PawnTraitLimits.Select(l => new PawnTraitLimit(l.Def) { Limit = l.Limit })],
+            PawnTraitLimits =
+                [.. PawnTraitLimits.Select(l => new PawnTraitLimit(l.Def) { Limit = l.Limit })],
             TriStateMode = TriStateMode,
             WorkCapacityLimits = new Dictionary<WorkTags, bool>(WorkCapacityLimits),
             FilterPawnPrimaryWeaponTypes = FilterPawnPrimaryWeaponTypes,
@@ -322,7 +332,8 @@ public class PawnFilter : IExposable
     /// <returns>A set of filtered pawns.</returns>
     [UsedImplicitly]
     [NotNull]
-    public HashSet<Pawn> GetFilteredPawns([NotNull] IEnumerable<Map> maps, [CanBeNull] WorkTypeDef workType)
+    public HashSet<Pawn> GetFilteredPawns([NotNull] IEnumerable<Map> maps,
+        [CanBeNull] WorkTypeDef workType)
     {
         if (maps == null) throw new ArgumentNullException(nameof(maps));
         var pawns = new HashSet<Pawn>();
@@ -363,8 +374,8 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedPawnTypesLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedPawnTypesLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnTypes.Value
                 ? string.Join(", ", AllowedPawnTypes.Select(Resources.Strings.PawnType.GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
@@ -373,8 +384,8 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedPawnHealthStatesLabel}: "
-                    .Colorize(ColoredText.ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedPawnHealthStatesLabel}: ".Colorize(
+                    ColoredText.ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnHealthStates.Value
                 ? string.Join(", ",
                     EnumHelper.GetUniqueFlags(AllowedPawnHealthStates, ForbiddenPawnHealthStates)
@@ -385,30 +396,32 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedPawnPrimaryWeaponTypesLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedPawnPrimaryWeaponTypesLabel}: ".Colorize(
+                    ColoredText.ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnPrimaryWeaponTypes.Value
                 ? string.Join(", ",
-                    AllowedPawnPrimaryWeaponTypes.Select(Resources.Strings.PawnPrimaryWeaponType.GetLabel))
+                    AllowedPawnPrimaryWeaponTypes.Select(Resources.Strings.PawnPrimaryWeaponType
+                        .GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterPawnSkills.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnSkillLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnSkillLimitsLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnSkills.Value
                 ? string.Join(", ",
-                    PawnSkillLimits.Select(l => $"{l.Label} [{l.Limit.TrueMin:N0}..{l.Limit.TrueMax:N0}]"))
+                    PawnSkillLimits.Select(l =>
+                        $"{l.Label} [{l.Limit.TrueMin:N0}..{l.Limit.TrueMax:N0}]"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterWorkPassions.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedWorkPassionsLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedWorkPassionsLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterWorkPassions.Value
                 ? string.Join(", ",
                     AllowedWorkPassions.Select(PassionHelper.GetPassionCache).Where(p => p != null)
@@ -419,28 +432,31 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.WorkCapacityLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.WorkCapacityLimitsLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterWorkCapacities.Value
-                ? string.Join(", ", WorkCapacityLimits.Select(l => $"{(l.Value ? "+" : "-")}{l.Key.LabelTranslated()}"))
+                ? string.Join(", ",
+                    WorkCapacityLimits.Select(l =>
+                        $"{(l.Value ? "+" : "-")}{l.Key.LabelTranslated()}"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterPawnTraits.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnTraitLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnTraitLimitsLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnTraits.Value
-                ? string.Join(", ", PawnTraitLimits.Select(l => $"{(l.Limit ? "+" : "-")}{l.Label}"))
+                ? string.Join(", ",
+                    PawnTraitLimits.Select(l => $"{(l.Limit ? "+" : "-")}{l.Label}"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterPawnStats.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnStatLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnStatLimitsLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnStats.Value
                 ? string.Join(", ",
                     PawnStatLimits.Select(l =>
@@ -451,8 +467,8 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnCapacityLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
-                indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnCapacityLimitsLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnCapacities.Value
                 ? string.Join(", ",
                     PawnCapacityLimits.Select(l =>
@@ -460,7 +476,8 @@ public class PawnFilter : IExposable
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (!anyValue)
-            stringBuilder.AppendIndented(Resources.Strings.PawnFilter.UndefinedFilterTooltip, indentationLevel);
+            stringBuilder.AppendIndented(Resources.Strings.PawnFilter.UndefinedFilterTooltip,
+                indentationLevel);
         return stringBuilder.ToString();
     }
 
@@ -534,7 +551,7 @@ public class PawnFilter : IExposable
             bool enabledSatisfied = true, disabledSatisfied = true, hasEnabled = false;
             foreach (var limit in PawnTraitLimits)
             {
-                if (limit.Def == null) return false;
+                if (limit.Def == null) continue;
                 if (limit.Limit)
                 {
                     if (!hasEnabled)
@@ -564,10 +581,11 @@ public class PawnFilter : IExposable
         }
         if (FilterPawnCapacities == true && PawnCapacityLimits.Count > 0)
         {
+            if (pawn.health?.capacities == null) return false;
             var satisfied = true;
             foreach (var limit in PawnCapacityLimits)
             {
-                if (limit.Def == null) return false;
+                if (limit.Def == null) continue;
                 if (!limit.Limit.Includes(pawn.health.capacities.GetLevel(limit.Def)))
                 {
                     satisfied = false;
@@ -603,10 +621,11 @@ public class PawnFilter : IExposable
         }
         if (FilterPawnSkills == true && PawnSkillLimits.Count > 0)
         {
+            if (pawn.skills == null) return false;
             var satisfied = true;
             foreach (var limit in PawnSkillLimits)
             {
-                if (limit.Def == null) return false;
+                if (limit.Def == null) continue;
                 var value = pawn.skills.GetSkill(limit.Def).Level;
                 if (value < limit.Limit.TrueMin || value > limit.Limit.TrueMax)
                 {
@@ -627,7 +646,7 @@ public class PawnFilter : IExposable
             var satisfied = true;
             foreach (var limit in PawnStatLimits)
             {
-                if (limit.Def == null) return false;
+                if (limit.Def == null) continue;
                 var statValue = pawn.GetStatValue(limit.Def);
                 if (statValue < limit.Limit.TrueMin || statValue > limit.Limit.TrueMax)
                 {

@@ -20,6 +20,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
     private bool _isConfigured;
     private string _maxValueBuffer;
     private string _minValueBuffer;
+    private float _valueStep;
     public FloatRange Limit;
     public float LimitMaxCap;
     public float LimitMinCap;
@@ -158,8 +159,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
     {
         get
         {
-            if (field == 0f) field = Fields.GetFloatSliderStepByValueStyle(ValueStyle);
-            return field;
+            if (_valueStep == 0f) _valueStep = Fields.GetFloatSliderStepByValueStyle(ValueStyle);
+            return _valueStep;
         }
     }
 
