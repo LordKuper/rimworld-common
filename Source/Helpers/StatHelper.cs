@@ -74,6 +74,11 @@ public static class StatHelper
     private static HashSet<string> _pawnCategories;
 
     /// <summary>
+    ///     Stores all stat definitions indexed by defName (lowercase) for O(1) lookup.
+    /// </summary>
+    private static Dictionary<string, StatDef> _statDefsByName;
+
+    /// <summary>
     ///     Stores weapon category names.
     /// </summary>
     private static HashSet<string> _weaponCategories;
@@ -116,12 +121,8 @@ public static class StatHelper
     internal static StatDef GetStatDef([CanBeNull] string defName)
     {
         if (string.IsNullOrEmpty(defName)) return null;
-        foreach (var def in _allStatDefs)
-        {
-            if (string.Equals(def.defName, defName, StringComparison.OrdinalIgnoreCase))
-                return def;
-        }
-        return null;
+        _statDefsByName.TryGetValue(defName.ToLowerInvariant(), out var result);
+        return result;
     }
 
     /// <summary>
@@ -175,7 +176,9 @@ public static class StatHelper
         }
         catch (Exception exception)
         {
-            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {thing.LabelCapNoCount}.", exception);
+            Logger.LogWarning(
+                $"Could not evaluate stat '{statDef.LabelCap}' of {thing.LabelCapNoCount}.",
+                exception);
             return 0f;
         }
     }
@@ -214,7 +217,8 @@ public static class StatHelper
         }
         catch (Exception exception)
         {
-            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {def.LabelCap}", exception);
+            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {def.LabelCap}",
+                exception);
             return 0f;
         }
     }
@@ -266,9 +270,9 @@ public static class StatHelper
     /// </summary>
     private static void InitializeCustomStats()
     {
-        _customStatsDefs =
-            new SortedSet<StatDef>(
-                MeleeWeaponStats.StatDefs.Concat(RangedWeaponStats.StatDefs).Concat(ToolStats.StatDefs), Comparer);
+        _customStatsDefs = new SortedSet<StatDef>(
+            MeleeWeaponStats.StatDefs.Concat(RangedWeaponStats.StatDefs).Concat(ToolStats.StatDefs),
+            Comparer);
     }
 
     /// <summary>
@@ -329,6 +333,7 @@ public static class StatHelper
         if (_customStatsDefs != null)
             allStatDefsSet.UnionWith(_customStatsDefs);
         _allStatDefs = new SortedSet<StatDef>(allStatDefsSet, Comparer);
+        _statDefsByName = allStatDefsSet.ToDictionary(d => d.defName.ToLowerInvariant());
         var meleeSet = new HashSet<StatDef>(MeleeWeaponStats.StatDefs);
         meleeSet.UnionWith(_defaultWeaponStatDefs);
         _allMeleeWeaponStatDefs = new SortedSet<StatDef>(meleeSet, Comparer);

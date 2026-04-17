@@ -18,8 +18,8 @@ public static class Logger
     /// <returns>The combined message.</returns>
     private static string AppendExceptionMessage(string message, [CanBeNull] Exception exception)
     {
-        if (exception != null && !exception.Message.NullOrEmpty())
-            return $"{message}{Environment.NewLine}{exception.Message}";
+        if (exception != null)
+            return $"{message}{Environment.NewLine}{exception}";
         return message;
     }
 
@@ -30,7 +30,8 @@ public static class Logger
     /// <param name="message">The error message.</param>
     /// <param name="exception">The exception to log (optional).</param>
     [UsedImplicitly]
-    public static void LogError(string modId, string message, [CanBeNull] Exception exception = null)
+    public static void LogError(string modId, string message,
+        [CanBeNull] Exception exception = null)
     {
         Log.Error($"{modId}: {AppendExceptionMessage(message, exception)}");
     }
@@ -72,9 +73,10 @@ public static class Logger
     /// <param name="message">The warning message.</param>
     /// <param name="exception">The exception to log (optional).</param>
     [UsedImplicitly]
-    public static void LogWarning(string modId, string message, [CanBeNull] Exception exception = null)
+    public static void LogWarning(string modId, string message,
+        [CanBeNull] Exception exception = null)
     {
-        Log.Warning($"{modId} : {AppendExceptionMessage(message, exception)}");
+        Log.Warning($"{modId}: {AppendExceptionMessage(message, exception)}");
     }
 
     /// <summary>

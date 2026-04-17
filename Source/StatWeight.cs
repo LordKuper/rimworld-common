@@ -31,7 +31,8 @@ public class StatWeight : IExposable
     /// </summary>
     /// <param name="statDef">The stat definition.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight([NotNull] StatDef statDef, bool isProtected) : this(statDef.defName, isProtected)
+    internal StatWeight([NotNull] StatDef statDef, bool isProtected) : this(statDef.defName,
+        isProtected)
     {
         _statDef = statDef;
         _isInitialized = true;
@@ -44,7 +45,8 @@ public class StatWeight : IExposable
     /// <param name="statDef">The stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight([NotNull] StatDef statDef, float weight, bool isProtected) : this(statDef, isProtected)
+    internal StatWeight([NotNull] StatDef statDef, float weight, bool isProtected) : this(statDef,
+        isProtected)
     {
         Weight = weight;
     }
@@ -73,7 +75,8 @@ public class StatWeight : IExposable
     /// <param name="statDefName">The name of the stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    public StatWeight(string statDefName, float weight, bool isProtected) : this(statDefName, isProtected)
+    public StatWeight(string statDefName, float weight, bool isProtected) : this(statDefName,
+        isProtected)
     {
         Weight = weight;
     }

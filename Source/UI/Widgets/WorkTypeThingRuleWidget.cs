@@ -25,14 +25,17 @@ public static class WorkTypeThingRuleWidget
     /// <param name="thingIconBoxScrollPosition">Reference to the scroll position for the thing icon box section.</param>
     /// <param name="things">The list of <see cref="ThingDef" /> objects to display.</param>
     /// <param name="selectedRule">The currently selected <see cref="WorkTypeThingRule" />.</param>
-    private static void DoBottomPart(Rect rect, Action refreshAction, ref Vector2 thingIconBoxScrollPosition,
-        IReadOnlyList<ThingDef> things, [CanBeNull] WorkTypeThingRule selectedRule)
+    private static void DoBottomPart(Rect rect, Action refreshAction,
+        ref Vector2 thingIconBoxScrollPosition, IReadOnlyList<ThingDef> things,
+        [CanBeNull] WorkTypeThingRule selectedRule)
     {
         if (selectedRule == null) return;
         var headerRect = Sections.GetSectionHeaderRect(rect, out var remRect);
-        var buttonRect = Layout.GetRightColumnRect(headerRect, headerRect.width / 4f, out headerRect);
+        var buttonRect =
+            Layout.GetRightColumnRect(headerRect, headerRect.width / 4f, out headerRect);
         Layout.GetRightColumnRect(headerRect, Layout.ElementGap, out headerRect);
-        Sections.DoSectionHeaderLabel(headerRect, Strings.WorkTypeThingRuleWidget.AvailableItemsLabel,
+        Sections.DoSectionHeaderLabel(headerRect,
+            Strings.WorkTypeThingRuleWidget.AvailableItemsLabel,
             Strings.WorkTypeThingRuleWidget.AvailableItemsTooltip);
         Buttons.DoActionButton(buttonRect, Strings.Actions.Refresh, refreshAction);
         Layout.DoVerticalGap(remRect, out remRect);
@@ -48,7 +51,8 @@ public static class WorkTypeThingRuleWidget
     private static float DoNoRuleSelectedLabel(Rect rect)
     {
         var labelRect = Layout.GetTopRowRect(rect, Labels.LabelHeight, out _);
-        Labels.DoLabel(labelRect, Strings.WorkTypeThingRuleWidget.NoRuleSelected, TextAnchor.MiddleCenter);
+        Labels.DoLabel(labelRect, Strings.WorkTypeThingRuleWidget.NoRuleSelected,
+            TextAnchor.MiddleCenter);
         return labelRect.height;
     }
 
@@ -62,12 +66,14 @@ public static class WorkTypeThingRuleWidget
     /// <param name="deleteAction">Action to delete a stat weight by stat definition name.</param>
     /// <returns>The total height of the section drawn.</returns>
     private static float DoRuleStatWeights(Rect rect, IEnumerable<StatDef> stats,
-        [NotNull] IEnumerable<StatWeight> statWeights, Action<StatDef> addAction, Action<string> deleteAction)
+        [NotNull] IEnumerable<StatWeight> statWeights, Action<StatDef> addAction,
+        Action<string> deleteAction)
     {
         var y = 0f;
         var headerRect = Sections.GetSectionHeaderRect(rect, out var remRect);
         y += headerRect.height;
-        var buttonRect = Layout.GetRightColumnRect(headerRect, headerRect.width / 4f, out headerRect);
+        var buttonRect =
+            Layout.GetRightColumnRect(headerRect, headerRect.width / 4f, out headerRect);
         Layout.GetRightColumnRect(headerRect, Layout.ElementGap, out headerRect);
         Sections.DoSectionHeaderLabel(headerRect, Strings.WorkTypeThingRuleWidget.StatWeightsLabel,
             Strings.WorkTypeThingRuleWidget.StatWeightsTooltip);
@@ -75,8 +81,10 @@ public static class WorkTypeThingRuleWidget
             () =>
             {
                 Find.WindowStack.Add(new FloatMenu(stats
-                    .Where(s => statWeights.All(weight => weight.StatDefName != s.defName)).Select(s =>
-                        new FloatMenuOption($"{s.LabelCap} [{s.category?.LabelCap ?? "No category"}]",
+                    .Where(s => statWeights.All(weight => weight.StatDefName != s.defName))
+                    .Select(s =>
+                        new FloatMenuOption(
+                            $"{s.LabelCap} [{s.category?.LabelCap ?? "No category"}]",
                             () => addAction(s))).ToList()));
             });
         var gapRect = Layout.DoVerticalGap(remRect, out remRect);
@@ -84,10 +92,12 @@ public static class WorkTypeThingRuleWidget
         foreach (var statWeight in statWeights)
         {
             y += Fields.DoLabeledFloatSlider(remRect, 0, [
-                    new IconButton(Textures.Actions.Delete, () => deleteAction(statWeight.StatDefName),
+                    new IconButton(Textures.Actions.Delete,
+                        () => deleteAction(statWeight.StatDefName),
                         isEnabled: !statWeight.Protected)
-                ], statWeight.StatDef?.LabelCap ?? statWeight.StatDefName, statWeight.StatDef?.description,
-                ref statWeight.Weight, -1 * StatWeight.WeightCap, StatWeight.WeightCap, 0.1f, null, out remRect);
+                ], statWeight.StatDef?.LabelCap ?? statWeight.StatDefName,
+                statWeight.StatDef?.description, ref statWeight.Weight, -1 * StatWeight.WeightCap,
+                StatWeight.WeightCap, 0.1f, null, out remRect);
         }
         return y;
     }
@@ -129,7 +139,8 @@ public static class WorkTypeThingRuleWidget
     private static void DoTopPart(Rect rect, IEnumerable<WorkTypeThingRule> rules,
         [CanBeNull] WorkTypeThingRule selectedRule, Action<WorkTypeThingRule> selectRuleAction)
     {
-        if (Verse.Widgets.ButtonText(rect, selectedRule == null ? Strings.Actions.Select : selectedRule.Label))
+        if (Verse.Widgets.ButtonText(rect,
+                selectedRule == null ? Strings.Actions.Select : selectedRule.Label))
             Find.WindowStack.Add(new FloatMenu(rules.Where(r => r != selectedRule).Select(r =>
                 new FloatMenuOption(r.Label, () => selectRuleAction(r))).ToList()));
     }
@@ -166,18 +177,24 @@ public static class WorkTypeThingRuleWidget
     ///     The list of <see cref="ThingDef" /> objects to display in the thing icon box section.
     /// </param>
     [UsedImplicitly]
-    public static void DoWidgetTab(Rect rect, ref float scrollableContentHeight, ref Vector2 scrollPosition,
-        int thingIconBoxRowCount, IReadOnlyCollection<WorkTypeThingRule> workTypeRules,
-        WorkTypeThingRule selectedWorkTypeRule, Action<WorkTypeThingRule> selectRuleAction, Action updateThingsAction,
-        ref Vector2 thingIconBoxScrollPosition, IReadOnlyList<ThingDef> things)
+    public static void DoWidgetTab(Rect rect, ref float scrollableContentHeight,
+        ref Vector2 scrollPosition, int thingIconBoxRowCount,
+        IReadOnlyCollection<WorkTypeThingRule> workTypeRules,
+        WorkTypeThingRule selectedWorkTypeRule, Action<WorkTypeThingRule> selectRuleAction,
+        Action updateThingsAction, ref Vector2 thingIconBoxScrollPosition,
+        IReadOnlyList<ThingDef> things)
     {
         var contentHeight = scrollableContentHeight;
         var thingScrollPosition = thingIconBoxScrollPosition;
-        Tabs.DoTab(rect, GetTopPartHeight(), r => DoTopPart(r, workTypeRules, selectedWorkTypeRule, selectRuleAction),
+        Tabs.DoTab(rect, GetTopPartHeight(),
+            r => DoTopPart(r, workTypeRules, selectedWorkTypeRule, selectRuleAction),
             scrollableContentHeight, ref scrollPosition,
-            r => { DoScrollablePart(r, selectedWorkTypeRule, updateThingsAction, ref contentHeight); },
-            GetBottomPartHeight(thingIconBoxRowCount),
-            r => DoBottomPart(r, updateThingsAction, ref thingScrollPosition, things, selectedWorkTypeRule));
+            r =>
+            {
+                DoScrollablePart(r, selectedWorkTypeRule, updateThingsAction, ref contentHeight);
+            }, GetBottomPartHeight(thingIconBoxRowCount),
+            r => DoBottomPart(r, updateThingsAction, ref thingScrollPosition, things,
+                selectedWorkTypeRule));
         scrollableContentHeight = contentHeight;
         thingIconBoxScrollPosition = thingScrollPosition;
     }
@@ -214,7 +231,8 @@ public static class WorkTypeThingRuleWidget
         var stringBuilder = new StringBuilder();
         _ = stringBuilder.AppendLine(def.LabelCap);
         if (Current.Game == null) return stringBuilder.ToString();
-        var stats = rule.StatWeights.Where(sw => sw.StatDef != null).Select(sw => sw.StatDef).ToHashSet();
+        var stats = rule.StatWeights.Where(sw => sw.StatDef != null).Select(sw => sw.StatDef)
+            .ToHashSet();
         if (!stats.Any()) return stringBuilder.ToString();
         _ = stringBuilder.AppendLine();
         var thing = def.MadeFromStuff
@@ -222,7 +240,8 @@ public static class WorkTypeThingRuleWidget
             : ThingMaker.MakeThing(def);
         foreach (var stat in stats)
         {
-            _ = stringBuilder.AppendLine($"- {stat.LabelCap} = {StatHelper.GetStatValue(thing, stat):N2}");
+            _ = stringBuilder.AppendLine(
+                $"- {stat.LabelCap} = {StatHelper.GetStatValue(thing, stat):N2}");
         }
         return stringBuilder.ToString();
     }

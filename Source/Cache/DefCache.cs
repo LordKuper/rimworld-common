@@ -28,6 +28,11 @@ public abstract class DefCache<T> : IExposable where T : Def
     private bool _isInitialized;
 
     /// <summary>
+    ///     Gets the label for the cached <see cref="Def" />, or the def name if not found.
+    /// </summary>
+    [UsedImplicitly] private string _label;
+
+    /// <summary>
     ///     Default constructor for serialization.
     /// </summary>
     [UsedImplicitly]
@@ -60,11 +65,7 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// </summary>
     public string DefName => _defName;
 
-    /// <summary>
-    ///     Gets the label for the cached <see cref="Def" />, or the def name if not found.
-    /// </summary>
-    [UsedImplicitly]
-    public virtual string Label => field ??= Def == null ? _defName : Def.GetLabel();
+    public virtual string Label => _label ??= Def == null ? _defName : Def.GetLabel();
 
     /// <summary>
     ///     Serializes the def name for saving/loading.

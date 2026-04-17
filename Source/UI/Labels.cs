@@ -18,7 +18,8 @@ public static class Labels
     /// <summary>
     ///     The height of a section header.
     /// </summary>
-    [UsedImplicitly] public static readonly float SectionHeaderHeight = Text.LineHeightOf(GameFont.Medium) + 4f;
+    [UsedImplicitly]
+    public static readonly float SectionHeaderHeight = Text.LineHeightOf(GameFont.Medium) + 4f;
 
     /// <summary>
     ///     Draws a label in the specified rectangle with the given text and alignment.

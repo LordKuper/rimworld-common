@@ -64,6 +64,6 @@ public enum PawnFilterSections
     /// <summary>
     ///     All filter sections.
     /// </summary>
-    All = PawnTypes | PawnHealthStates | PawnSkills | WorkPassions | WorkCapacities | PawnTraits | PawnStats |
-          PawnCapacities | PawnPrimaryWeaponTypes
+    All = PawnTypes | PawnHealthStates | PawnSkills | WorkPassions | WorkCapacities | PawnTraits |
+          PawnStats | PawnCapacities | PawnPrimaryWeaponTypes
 }

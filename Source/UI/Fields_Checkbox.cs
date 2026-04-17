@@ -27,18 +27,20 @@ public static partial class Fields
     /// <returns>The height of the rendered checkbox row.</returns>
     [UsedImplicitly]
     public static float DoLabeledCheckbox(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, ref bool value, string label, [CanBeNull] string labelTooltip,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton> actionButtons, ref bool value, string label,
+        [CanBeNull] string labelTooltip, [CanBeNull] Texture icon, out Rect remRect)
     {
         if (indentationLevel < 0)
-            throw new ArgumentOutOfRangeException(nameof(indentationLevel), "Indentation level must be non-negative.");
+            throw new ArgumentOutOfRangeException(nameof(indentationLevel),
+                "Indentation level must be non-negative.");
         var font = Text.Font;
         var anchor = Text.Anchor;
         Text.Font = GameFont.Small;
         Text.Anchor = TextAnchor.MiddleLeft;
         var rowRect = GetFieldRowRect(rect, CheckboxRowHeight, out remRect);
         if (indentationLevel > 0)
-            Layout.GetLeftColumnRect(rowRect, indentationLevel * Layout.IndentationSize, out rowRect);
+            Layout.GetLeftColumnRect(rowRect, indentationLevel * Layout.IndentationSize,
+                out rowRect);
         DoFieldActionButtons(rowRect, actionButtons, out rowRect);
         if (!string.IsNullOrEmpty(labelTooltip)) TooltipHandler.TipRegion(rowRect, labelTooltip);
         var checkBoxRect = Layout.GetLeftColumnRect(rowRect, rowRect.height, out var labelRect);
@@ -71,18 +73,20 @@ public static partial class Fields
     /// <returns>The height of the rendered checkbox row.</returns>
     [UsedImplicitly]
     public static float DoLabeledCheckbox(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, ref bool? value, string label, [CanBeNull] string labelTooltip,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton> actionButtons, ref bool? value, string label,
+        [CanBeNull] string labelTooltip, [CanBeNull] Texture icon, out Rect remRect)
     {
         if (indentationLevel < 0)
-            throw new ArgumentOutOfRangeException(nameof(indentationLevel), "Indentation level must be non-negative.");
+            throw new ArgumentOutOfRangeException(nameof(indentationLevel),
+                "Indentation level must be non-negative.");
         var font = Text.Font;
         var anchor = Text.Anchor;
         Text.Font = GameFont.Small;
         Text.Anchor = TextAnchor.MiddleLeft;
         var rowRect = GetFieldRowRect(rect, CheckboxRowHeight, out remRect);
         if (indentationLevel > 0)
-            Layout.GetLeftColumnRect(rowRect, indentationLevel * Layout.IndentationSize, out rowRect);
+            Layout.GetLeftColumnRect(rowRect, indentationLevel * Layout.IndentationSize,
+                out rowRect);
         DoFieldActionButtons(rowRect, actionButtons, out rowRect);
         if (!string.IsNullOrEmpty(labelTooltip)) TooltipHandler.TipRegion(rowRect, labelTooltip);
         var checkBoxRect = Layout.GetLeftColumnRect(rowRect, rowRect.height, out var labelRect);

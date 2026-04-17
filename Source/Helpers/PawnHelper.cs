@@ -51,8 +51,8 @@ public static class PawnHelper
         if (pawn.IsFreeNonSlaveColonist) return PawnType.Colonist;
         if (pawn.IsSlaveOfColony) return PawnType.Slave;
         if (pawn.IsPrisonerOfColony) return PawnType.Prisoner;
-        if (pawn is { IsColonist: true, GuestStatus: GuestStatus.Guest } || pawn.HasExtraHomeFaction() ||
-            pawn.HasExtraMiniFaction())
+        if (pawn is { IsColonist: true, GuestStatus: GuestStatus.Guest } ||
+            pawn.HasExtraHomeFaction() || pawn.HasExtraMiniFaction())
             return PawnType.Guest;
         if (pawn.IsAnimal && pawn.Faction == Faction.OfPlayer) return PawnType.Animal;
         return PawnType.Undefined;
