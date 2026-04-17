@@ -1,9 +1,12 @@
-﻿namespace LordKuper.Common.CustomStats;
+﻿using JetBrains.Annotations;
+
+namespace LordKuper.Common.CustomStats;
 
 /// <summary>
 ///     Enumerates the custom melee weapon stats available for use.
 /// </summary>
-internal enum MeleeWeaponStat
+[UsedImplicitly]
+public enum MeleeWeaponStat
 {
     /// <summary>
     ///     The armor penetration stat.

@@ -10,7 +10,8 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Provides utilities for working with custom ranged weapon statistics.
 /// </summary>
-internal static class RangedWeaponStats
+[UsedImplicitly]
+public static class RangedWeaponStats
 {
     /// <summary>
     ///     The category name for custom ranged weapon stats.
@@ -22,7 +23,8 @@ internal static class RangedWeaponStats
     /// </summary>
     private static StatCategoryDef CategoryDef { get; } = new()
     {
-        defName = $"{StatHelper.CustomStatPrefix}_{Category}", label = $"{StatHelper.CustomStatPrefix}_{Category}"
+        defName = $"{StatHelper.CustomStatPrefix}_{Category}",
+        label = $"{StatHelper.CustomStatPrefix}_{Category}"
     };
 
     /// <summary>
@@ -35,13 +37,14 @@ internal static class RangedWeaponStats
     /// <summary>
     ///     Gets the collection of all <see cref="StatDef" />s for custom ranged weapon stats.
     /// </summary>
-    public static IEnumerable<StatDef> StatDefs { get; } = StatDefNames.Select(defName => new StatDef
-    {
-        defName = defName,
-        label = Resources.Strings.Stats.GetLabel(defName),
-        description = Resources.Strings.Stats.GetDescription(defName),
-        category = CategoryDef
-    });
+    public static IEnumerable<StatDef> StatDefs { get; } = StatDefNames.Select(defName =>
+        new StatDef
+        {
+            defName = defName,
+            label = Resources.Strings.Stats.GetLabel(defName),
+            description = Resources.Strings.Stats.GetDescription(defName),
+            category = CategoryDef
+        });
 
     /// <summary>
     ///     Gets the stat definition name for a given <see cref="RangedWeaponStat" />.
@@ -49,7 +52,7 @@ internal static class RangedWeaponStats
     /// <param name="stat">The custom ranged weapon stat.</param>
     /// <returns>The stat definition name.</returns>
     [NotNull]
-    private static string GetStatDefName(RangedWeaponStat stat)
+    public static string GetStatDefName(RangedWeaponStat stat)
     {
         return $"{StatHelper.CustomStatPrefix}_{Category}_{stat}";
     }

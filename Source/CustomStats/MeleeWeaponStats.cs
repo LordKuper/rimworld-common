@@ -10,7 +10,8 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Provides helper methods and properties for custom melee weapon stats.
 /// </summary>
-internal static class MeleeWeaponStats
+[UsedImplicitly]
+public static class MeleeWeaponStats
 {
     /// <summary>
     ///     The category name for custom melee weapon stats.
@@ -22,7 +23,8 @@ internal static class MeleeWeaponStats
     /// </summary>
     private static StatCategoryDef CategoryDef { get; } = new()
     {
-        defName = $"{StatHelper.CustomStatPrefix}_{Category}", label = $"{StatHelper.CustomStatPrefix}_{Category}"
+        defName = $"{StatHelper.CustomStatPrefix}_{Category}",
+        label = $"{StatHelper.CustomStatPrefix}_{Category}"
     };
 
     /// <summary>
@@ -35,13 +37,14 @@ internal static class MeleeWeaponStats
     /// <summary>
     ///     Gets the collection of custom stat definitions.
     /// </summary>
-    public static IEnumerable<StatDef> StatDefs { get; } = StatDefNames.Select(defName => new StatDef
-    {
-        defName = defName,
-        label = Resources.Strings.Stats.GetLabel(defName),
-        description = Resources.Strings.Stats.GetDescription(defName),
-        category = CategoryDef
-    });
+    public static IEnumerable<StatDef> StatDefs { get; } = StatDefNames.Select(defName =>
+        new StatDef
+        {
+            defName = defName,
+            label = Resources.Strings.Stats.GetLabel(defName),
+            description = Resources.Strings.Stats.GetDescription(defName),
+            category = CategoryDef
+        });
 
     /// <summary>
     ///     Gets the stat definition name for a given <see cref="MeleeWeaponStat" />.
@@ -49,7 +52,7 @@ internal static class MeleeWeaponStats
     /// <param name="stat">The custom melee weapon stat.</param>
     /// <returns>The stat definition name.</returns>
     [NotNull]
-    private static string GetStatDefName(MeleeWeaponStat stat)
+    public static string GetStatDefName(MeleeWeaponStat stat)
     {
         return $"{StatHelper.CustomStatPrefix}_{Category}_{stat}";
     }

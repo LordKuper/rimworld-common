@@ -1,7 +1,9 @@
-﻿using System;
+using System;
+using System.Globalization;
 using JetBrains.Annotations;
 using LordKuper.Common.Cache;
 using LordKuper.Common.UI;
+using UnityEngine;
 using Verse;
 
 namespace LordKuper.Common.Filters.Limits;
@@ -13,48 +15,116 @@ namespace LordKuper.Common.Filters.Limits;
 [UsedImplicitly]
 public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
 {
-    /// <summary>
-    ///     The maximum allowed value for the limit.
-    /// </summary>
     internal const float LimitMaxCap = 5f;
-
-    /// <summary>
-    ///     The minimum allowed value for the limit.
-    /// </summary>
     internal const float LimitMinCap = 0f;
-
-    /// <summary>
-    ///     The style used for displaying the value (percent, zero decimals).
-    /// </summary>
     internal const ToStringStyle ValueStyle = ToStringStyle.PercentZero;
-
+    private string _maxValueBuffer;
+    private string _minValueBuffer;
     private float _valueStep;
+    public FloatRange Limit = new(LimitMinCap, LimitMaxCap);
 
-    /// <summary>
-    ///     The range of allowed values for the capacity limit.
-    /// </summary>
-    public FloatRange Limit;
-
-    /// <summary>
-    ///     Default constructor for serialization.
-    /// </summary>
     [UsedImplicitly]
     public PawnCapacityLimit() { }
 
-    /// <summary>
-    ///     Initializes a new instance of <see cref="PawnCapacityLimit" /> for the specified capacity definition.
-    /// </summary>
-    /// <param name="def">The pawn capacity definition.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
+    [UsedImplicitly]
+    public PawnCapacityLimit([NotNull] string pawnCapacityDefName) : base(pawnCapacityDefName) { }
+
+    [UsedImplicitly]
+    public PawnCapacityLimit([NotNull] string pawnCapacityDefName, float? minValue, float? maxValue)
+        : this(pawnCapacityDefName)
+    {
+        MinValue = minValue;
+        MaxValue = maxValue;
+    }
+
     public PawnCapacityLimit([NotNull] PawnCapacityDef def) : base(def.defName)
     {
         if (def == null) throw new ArgumentNullException(nameof(def));
-        Limit = new FloatRange(LimitMinCap, LimitMaxCap);
     }
 
-    /// <summary>
-    ///     Gets the step value for the slider, based on the value style.
-    /// </summary>
+    public float? MaxValue
+    {
+        get => string.IsNullOrEmpty(_maxValueBuffer) && Mathf.Approximately(Limit.max, LimitMaxCap)
+            ? null
+            : Limit.max;
+        set
+        {
+            if (!value.HasValue)
+            {
+                Limit.max = LimitMaxCap;
+                _maxValueBuffer = string.Empty;
+                return;
+            }
+            Limit.max = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
+            _maxValueBuffer = Limit.max.ToString("F2", CultureInfo.InvariantCulture);
+        }
+    }
+
+    [NotNull]
+    public string MaxValueBuffer
+    {
+        get => string.IsNullOrEmpty(_maxValueBuffer)
+            ? MaxValue?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
+            : _maxValueBuffer;
+        set
+        {
+            if (ReferenceEquals(value, _maxValueBuffer) || value == _maxValueBuffer) return;
+            if (string.IsNullOrEmpty(value))
+            {
+                MaxValue = null;
+                return;
+            }
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
+                MaxValue = parsed;
+            else
+                _maxValueBuffer = value;
+        }
+    }
+
+    public float? MinValue
+    {
+        get => string.IsNullOrEmpty(_minValueBuffer) && Mathf.Approximately(Limit.min, LimitMinCap)
+            ? null
+            : Limit.min;
+        set
+        {
+            if (!value.HasValue)
+            {
+                Limit.min = LimitMinCap;
+                _minValueBuffer = string.Empty;
+                return;
+            }
+            Limit.min = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
+            _minValueBuffer = Limit.min.ToString("F2", CultureInfo.InvariantCulture);
+        }
+    }
+
+    [NotNull]
+    public string MinValueBuffer
+    {
+        get => string.IsNullOrEmpty(_minValueBuffer)
+            ? MinValue?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
+            : _minValueBuffer;
+        set
+        {
+            if (ReferenceEquals(value, _minValueBuffer) || value == _minValueBuffer) return;
+            if (string.IsNullOrEmpty(value))
+            {
+                MinValue = null;
+                return;
+            }
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
+                MinValue = parsed;
+            else
+                _minValueBuffer = value;
+        }
+    }
+
+    public PawnCapacityDef PawnCapacityDef => Def;
+    public string PawnCapacityDefName => DefName;
+
     internal float ValueStep
     {
         get
@@ -64,12 +134,18 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
         }
     }
 
-    /// <summary>
-    ///     Serializes the limit data for saving/loading.
-    /// </summary>
     public new void ExposeData()
     {
         base.ExposeData();
+        var minValue = MinValue;
+        var maxValue = MaxValue;
+        Scribe_Values.Look(ref minValue, nameof(MinValue));
+        Scribe_Values.Look(ref maxValue, nameof(MaxValue));
         Scribe_Values.Look(ref Limit, nameof(Limit));
+        if (Scribe.mode != LoadSaveMode.Saving)
+        {
+            MinValue = minValue;
+            MaxValue = maxValue;
+        }
     }
 }

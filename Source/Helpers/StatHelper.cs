@@ -156,7 +156,7 @@ public static class StatHelper
     /// <param name="thing">The thing to evaluate.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The stat value for the specified thing.</returns>
-    internal static float GetStatValue([NotNull] Thing thing, [NotNull] StatDef statDef)
+    public static float GetStatValue([NotNull] Thing thing, [NotNull] StatDef statDef)
     {
         if (thing == null) throw new ArgumentNullException(nameof(thing));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
@@ -225,7 +225,7 @@ public static class StatHelper
     /// <param name="def">The thing definition.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The deviation from the default base value.</returns>
-    internal static float GetStatValueDeviation([NotNull] ThingDef def, [NotNull] StatDef statDef)
+    public static float GetStatValueDeviation([NotNull] ThingDef def, [NotNull] StatDef statDef)
     {
         if (def == null) throw new ArgumentNullException(nameof(def));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
@@ -238,7 +238,7 @@ public static class StatHelper
     /// <param name="thing">The thing.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The deviation from the default base value.</returns>
-    internal static float GetStatValueDeviation([NotNull] Thing thing, [NotNull] StatDef statDef)
+    public static float GetStatValueDeviation([NotNull] Thing thing, [NotNull] StatDef statDef)
     {
         if (thing == null) throw new ArgumentNullException(nameof(thing));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));

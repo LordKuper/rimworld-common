@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using JetBrains.Annotations;
 using LordKuper.Common.Cache;
@@ -15,157 +15,213 @@ namespace LordKuper.Common.Filters.Limits;
 [UsedImplicitly]
 public class StatLimit : DefCache<StatDef>, IExposable
 {
-    /// <summary>
-    ///     The maximum allowed value for percent-based stats.
-    /// </summary>
+    private const float DefaultLimitCap = 1000f;
     private const float PercentStatCap = 5f;
-
-    /// <summary>
-    ///     Buffer for the maximum value input in the UI.
-    /// </summary>
+    private bool _isConfigured;
     private string _maxValueBuffer;
-
-    /// <summary>
-    ///     Buffer for the minimum value input in the UI.
-    /// </summary>
     private string _minValueBuffer;
-
-    /// <summary>
-    ///     Represents the incremental step value for a floating-point operation or calculation.
-    /// </summary>
-    private float _valueStep;
-
-    /// <summary>
-    ///     The current range limit for the stat.
-    /// </summary>
     public FloatRange Limit;
-
-    /// <summary>
-    ///     The maximum cap for the stat limit.
-    /// </summary>
     public float LimitMaxCap;
-
-    /// <summary>
-    ///     The minimum cap for the stat limit.
-    /// </summary>
     public float LimitMinCap;
-
-    /// <summary>
-    ///     The style used for converting float values to string.
-    /// </summary>
     public ToStringStyle ValueStyle;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="StatLimit" /> class.
-    /// </summary>
     [UsedImplicitly]
     public StatLimit() { }
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="StatLimit" /> class with the specified stat definition.
-    /// </summary>
-    /// <param name="def">The stat definition to use for limits and formatting.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
+    [UsedImplicitly]
+    public StatLimit([NotNull] string statDefName) : base(statDefName) { }
+
+    [UsedImplicitly]
+    public StatLimit([NotNull] string statDefName, float? minValue, float? maxValue) : this(
+        statDefName)
+    {
+        MinValue = minValue;
+        MaxValue = maxValue;
+    }
+
     public StatLimit([NotNull] StatDef def) : base(def.defName)
     {
         if (def == null) throw new ArgumentNullException(nameof(def));
-        var style = def.toStringStyle;
-        if (style is ToStringStyle.PercentZero or ToStringStyle.PercentOne or ToStringStyle.PercentTwo)
-        {
-            LimitMinCap = Mathf.Max(-1 * PercentStatCap, def.minValue);
-            LimitMaxCap = Mathf.Min(PercentStatCap, def.maxValue);
-            ValueStyle = style;
-        }
-        else
-        {
-            LimitMinCap = def.minValue;
-            LimitMaxCap = def.maxValue;
-            ValueStyle = ToStringStyle.FloatTwo;
-        }
-        Limit = new FloatRange(LimitMinCap, LimitMaxCap);
+        Configure(def);
     }
 
-    /// <summary>
-    ///     Gets or sets the buffer string for the maximum value input.
-    ///     When set, parses and clamps the value; when got, returns the formatted value if available.
-    /// </summary>
-    [NotNull]
-    internal string MaxValueBuffer
+    public float? MaxValue
     {
         get
         {
-            if (string.IsNullOrEmpty(_maxValueBuffer))
-                _maxValueBuffer = Limit.TrueMax.ToString("F2");
-            return _maxValueBuffer;
+            EnsureConfigured();
+            return string.IsNullOrEmpty(_maxValueBuffer) &&
+                   Mathf.Approximately(Limit.max, LimitMaxCap)
+                ? null
+                : Limit.max;
+        }
+        set
+        {
+            EnsureConfigured();
+            if (!value.HasValue)
+            {
+                Limit.max = LimitMaxCap;
+                _maxValueBuffer = string.Empty;
+                return;
+            }
+            var clamped = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
+            Limit.max = clamped;
+            _maxValueBuffer = clamped.ToString("F2", CultureInfo.InvariantCulture);
+        }
+    }
+
+    [UsedImplicitly]
+    [NotNull]
+    public string MaxValueBuffer
+    {
+        get
+        {
+            EnsureConfigured();
+            return string.IsNullOrEmpty(_maxValueBuffer)
+                ? MaxValue?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
+                : _maxValueBuffer;
         }
         set
         {
             if (ReferenceEquals(value, _maxValueBuffer) || value == _maxValueBuffer) return;
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxValue))
+            EnsureConfigured();
+            if (string.IsNullOrEmpty(value))
             {
-                var clamped = Mathf.Clamp(maxValue, LimitMinCap, LimitMaxCap);
-                if (!Mathf.Approximately(Limit.max, clamped))
-                    Limit.max = clamped;
-                _maxValueBuffer = clamped.ToString("F2");
+                MaxValue = null;
+                return;
             }
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var maxValue))
+                MaxValue = maxValue;
             else
-            {
                 _maxValueBuffer = value;
-            }
         }
     }
 
-    /// <summary>
-    ///     Gets or sets the buffer string for the minimum value input.
-    ///     When set, parses and clamps the value; when got, returns the formatted value if available.
-    /// </summary>
-    [NotNull]
-    internal string MinValueBuffer
+    public float? MinValue
     {
         get
         {
-            if (string.IsNullOrEmpty(_minValueBuffer))
-                _minValueBuffer = Limit.TrueMin.ToString("F2");
-            return _minValueBuffer;
+            EnsureConfigured();
+            return string.IsNullOrEmpty(_minValueBuffer) &&
+                   Mathf.Approximately(Limit.min, LimitMinCap)
+                ? null
+                : Limit.min;
+        }
+        set
+        {
+            EnsureConfigured();
+            if (!value.HasValue)
+            {
+                Limit.min = LimitMinCap;
+                _minValueBuffer = string.Empty;
+                return;
+            }
+            var clamped = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
+            Limit.min = clamped;
+            _minValueBuffer = clamped.ToString("F2", CultureInfo.InvariantCulture);
+        }
+    }
+
+    [UsedImplicitly]
+    [NotNull]
+    public string MinValueBuffer
+    {
+        get
+        {
+            EnsureConfigured();
+            return string.IsNullOrEmpty(_minValueBuffer)
+                ? MinValue?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
+                : _minValueBuffer;
         }
         set
         {
             if (ReferenceEquals(value, _minValueBuffer) || value == _minValueBuffer) return;
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var minValue))
+            EnsureConfigured();
+            if (string.IsNullOrEmpty(value))
             {
-                var clamped = Mathf.Clamp(minValue, LimitMinCap, LimitMaxCap);
-                if (!Mathf.Approximately(Limit.min, clamped))
-                    Limit.min = clamped;
-                _minValueBuffer = clamped.ToString("F2");
+                MinValue = null;
+                return;
             }
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var minValue))
+                MinValue = minValue;
             else
-            {
                 _minValueBuffer = value;
-            }
         }
     }
 
-    /// <summary>
-    ///     Gets the incremental step value used for adjusting a float slider based on the specified value style.
-    /// </summary>
+    public StatDef StatDef => Def;
+    public string StatDefName => DefName;
+
     internal float ValueStep
     {
         get
         {
-            if (_valueStep == 0f) _valueStep = Fields.GetFloatSliderStepByValueStyle(ValueStyle);
-            return _valueStep;
+            if (field == 0f) field = Fields.GetFloatSliderStepByValueStyle(ValueStyle);
+            return field;
         }
     }
 
-    /// <summary>
-    ///     Exposes the data for saving and loading.
-    /// </summary>
     public new void ExposeData()
     {
         base.ExposeData();
+        var minValue = MinValue;
+        var maxValue = MaxValue;
+        Scribe_Values.Look(ref minValue, nameof(MinValue));
+        Scribe_Values.Look(ref maxValue, nameof(MaxValue));
         Scribe_Values.Look(ref Limit, nameof(Limit));
         Scribe_Values.Look(ref LimitMinCap, nameof(LimitMinCap));
         Scribe_Values.Look(ref LimitMaxCap, nameof(LimitMaxCap));
         Scribe_Values.Look(ref ValueStyle, nameof(ValueStyle));
+        if (Scribe.mode != LoadSaveMode.Saving)
+        {
+            _isConfigured = LimitMinCap != 0f || LimitMaxCap != 0f || Limit.min != 0f ||
+                            Limit.max != 0f;
+            MinValue = minValue;
+            MaxValue = maxValue;
+        }
+    }
+
+    private void Configure([CanBeNull] StatDef def)
+    {
+        if (def == null)
+        {
+            LimitMinCap = -1f * DefaultLimitCap;
+            LimitMaxCap = DefaultLimitCap;
+            ValueStyle = ToStringStyle.FloatTwo;
+        }
+        else
+        {
+            var style = def.toStringStyle;
+            if (style is ToStringStyle.PercentZero or ToStringStyle.PercentOne
+                or ToStringStyle.PercentTwo)
+            {
+                LimitMinCap = Mathf.Max(-1 * PercentStatCap, def.minValue);
+                LimitMaxCap = Mathf.Min(PercentStatCap, def.maxValue);
+                ValueStyle = style;
+            }
+            else
+            {
+                LimitMinCap = def.minValue;
+                LimitMaxCap = def.maxValue;
+                ValueStyle = ToStringStyle.FloatTwo;
+            }
+        }
+        if (Mathf.Approximately(Limit.min, 0f) && Mathf.Approximately(Limit.max, 0f))
+            Limit = new FloatRange(LimitMinCap, LimitMaxCap);
+        _isConfigured = true;
+    }
+
+    private void EnsureConfigured()
+    {
+        if (_isConfigured) return;
+        Configure(Def);
+    }
+
+    protected override void Initialize()
+    {
+        base.Initialize();
+        EnsureConfigured();
     }
 }

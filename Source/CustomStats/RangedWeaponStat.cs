@@ -1,9 +1,12 @@
-﻿namespace LordKuper.Common.CustomStats;
+﻿using JetBrains.Annotations;
+
+namespace LordKuper.Common.CustomStats;
 
 /// <summary>
 ///     Enumerates all custom ranged weapon statistics.
 /// </summary>
-internal enum RangedWeaponStat
+[UsedImplicitly]
+public enum RangedWeaponStat
 {
     /// <summary>
     ///     Accuracy-accounted damage per second.
