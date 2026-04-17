@@ -26,7 +26,8 @@ internal class StatDefCategoryComparer : IComparer<StatDef>
         if (y is null) return 1;
         var xCategoryLabel = x.category != null ? x.category.GetLabel() : string.Empty;
         var yCategoryLabel = y.category != null ? y.category.GetLabel() : string.Empty;
-        var categoryCompare = string.Compare(xCategoryLabel, yCategoryLabel, StringComparison.OrdinalIgnoreCase);
+        var categoryCompare = string.Compare(xCategoryLabel, yCategoryLabel,
+            StringComparison.OrdinalIgnoreCase);
         if (categoryCompare != 0)
             return categoryCompare;
         var xLabel = x.GetLabel() ?? string.Empty;

@@ -27,7 +27,10 @@ public static class PawnFilterWidget
     ///     List of all possible pawn health states.
     /// </summary>
     private static readonly List<PawnHealthState> AllPawnHealthStates =
-        [.. Enum.GetValues(typeof(PawnHealthState)).Cast<PawnHealthState>().Where(s => s != PawnHealthState.None)];
+    [
+        .. Enum.GetValues(typeof(PawnHealthState)).Cast<PawnHealthState>()
+            .Where(s => s != PawnHealthState.None)
+    ];
 
     /// <summary>
     ///     List of all possible pawn primary weapon types.
@@ -38,13 +41,17 @@ public static class PawnFilterWidget
     /// <summary>
     ///     List of all possible pawn types.
     /// </summary>
-    private static readonly List<PawnType> AllPawnTypes = [.. Enum.GetValues(typeof(PawnType)).Cast<PawnType>()];
+    private static readonly List<PawnType> AllPawnTypes =
+        [.. Enum.GetValues(typeof(PawnType)).Cast<PawnType>()];
 
     /// <summary>
     ///     List of all possible work capacities, excluding None and AllWork.
     /// </summary>
     private static readonly List<WorkTags> AllWorkCapacities =
-        [.. Enum.GetValues(typeof(WorkTags)).Cast<WorkTags>().Where(t => t != WorkTags.None && t != WorkTags.AllWork)];
+    [
+        .. Enum.GetValues(typeof(WorkTags)).Cast<WorkTags>()
+            .Where(t => t != WorkTags.None && t != WorkTags.AllWork)
+    ];
 
     /// <summary>
     ///     Renders the Pawn Capacities section within the specified rectangular area and updates the associated filter
@@ -68,8 +75,8 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnCapacitiesSection(Rect rect, [NotNull] PawnFilter pawnFilter, int inputId,
-        ref bool filterChanged, out Rect remRect)
+    private static float DoPawnCapacitiesSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        int inputId, ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -85,8 +92,9 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnCapacities;
             var enabled = pawnFilter.FilterPawnCapacities == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterPawnCapacitiesTooltip(false),
-                Strings.PawnCapacityLimitsLabel, Strings.PawnCapacityLimitsTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterPawnCapacitiesTooltip(false), Strings.PawnCapacityLimitsLabel,
+                Strings.PawnCapacityLimitsTooltip, out remRect);
             pawnFilter.FilterPawnCapacities = enabled;
             if (oldValue != pawnFilter.FilterPawnCapacities) filterChanged = true;
         }
@@ -109,8 +117,10 @@ public static class PawnFilterWidget
                         limits.RemoveAt(index);
                         deleted = true;
                     }, Resources.Strings.Actions.Delete)
-                ], limit.Label, limit.Def.description, ref limit.Limit, PawnCapacityLimit.LimitMinCap,
-                PawnCapacityLimit.LimitMaxCap, limit.ValueStep, PawnCapacityLimit.ValueStyle, null, out remRect);
+                ], limit.Label, limit.Def.description, ref limit.Limit,
+                PawnCapacityLimit.LimitMinCap,
+                PawnCapacityLimit.LimitMaxCap, limit.ValueStep, PawnCapacityLimit.ValueStyle, null,
+                out remRect);
             if (oldValue != limit.Limit || deleted) filterChanged = true;
             if (i < limits.Count && limits[i] == limit)
                 i++;
@@ -137,7 +147,8 @@ public static class PawnFilterWidget
             foreach (var def in DefDatabase<PawnCapacityDef>.AllDefsListForReading)
             {
                 if (pawnFilter.PawnCapacityLimits.Any(l =>
-                        def.defName.Equals(l.DefName, StringComparison.OrdinalIgnoreCase))) continue;
+                        def.defName.Equals(l.DefName, StringComparison.OrdinalIgnoreCase)))
+                    continue;
                 var label = def.GetLabel();
                 options.Add(new FloatMenuOption(label, () =>
                 {
@@ -145,7 +156,8 @@ public static class PawnFilterWidget
                     added = true;
                 }));
             }
-            options.Sort((a, b) => string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
+            options.Sort((a, b) =>
+                string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
             Find.WindowStack.Add(new FloatMenu(options));
         });
         if (added) filterChanged = true;
@@ -193,9 +205,9 @@ public static class PawnFilterWidget
     /// <returns>The total vertical space used by the filter UI, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
     [UsedImplicitly]
-    public static float DoPawnFilter(Rect rect, [NotNull] PawnFilter pawnFilter, PawnFilterSections sections,
-        int? pawnSkillInputId, int? pawnStatInputId, int? pawnCapacityInputId, [CanBeNull] Action filterChangedAction,
-        out Rect remRect)
+    public static float DoPawnFilter(Rect rect, [NotNull] PawnFilter pawnFilter,
+        PawnFilterSections sections, int? pawnSkillInputId, int? pawnStatInputId,
+        int? pawnCapacityInputId, [CanBeNull] Action filterChangedAction, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         remRect = rect;
@@ -210,7 +222,8 @@ public static class PawnFilterWidget
         var doWorkCapacities = sections.HasFlag(PawnFilterSections.WorkCapacities);
         var doTraits = sections.HasFlag(PawnFilterSections.PawnTraits);
         var doStats = sections.HasFlag(PawnFilterSections.PawnStats) && pawnStatInputId.HasValue;
-        var doCapacities = sections.HasFlag(PawnFilterSections.PawnCapacities) && pawnCapacityInputId.HasValue;
+        var doCapacities = sections.HasFlag(PawnFilterSections.PawnCapacities) &&
+                           pawnCapacityInputId.HasValue;
         if (doTypes)
         {
             y += DoPawnTypesSection(rect, pawnFilter, ref filterChanged, out remRect);
@@ -227,13 +240,15 @@ public static class PawnFilterWidget
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnPrimaryWeaponTypesSection(remRect, pawnFilter, ref filterChanged, out remRect);
+            y += DoPawnPrimaryWeaponTypesSection(remRect, pawnFilter, ref filterChanged,
+                out remRect);
         }
         if (doSkills)
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnSkillsSection(remRect, pawnFilter, pawnSkillInputId.Value, ref filterChanged, out remRect);
+            y += DoPawnSkillsSection(remRect, pawnFilter, pawnSkillInputId.Value, ref filterChanged,
+                out remRect);
             doGapLine = true;
         }
         if (doWorkPassions)
@@ -261,15 +276,16 @@ public static class PawnFilterWidget
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnStatsSection(remRect, pawnFilter, pawnStatInputId.Value, ref filterChanged, out remRect);
+            y += DoPawnStatsSection(remRect, pawnFilter, pawnStatInputId.Value, ref filterChanged,
+                out remRect);
             doGapLine = true;
         }
         if (doCapacities)
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnCapacitiesSection(remRect, pawnFilter, pawnCapacityInputId.Value, ref filterChanged,
-                out remRect);
+            y += DoPawnCapacitiesSection(remRect, pawnFilter, pawnCapacityInputId.Value,
+                ref filterChanged, out remRect);
         }
         if (filterChanged && filterChangedAction != null) filterChangedAction.Invoke();
         return y;
@@ -296,8 +312,8 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The vertical space (in pixels) consumed by the section within the provided <paramref name="rect" />.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnHealthStatesSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoPawnHealthStatesSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -306,8 +322,9 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnHealthStates;
             y += Sections.DoToggleableSectionHeader(rect, ref pawnFilter.FilterPawnHealthStates,
-                Strings.GetFilterPawnHealthStatesTooltip(true), Strings.AllowedPawnHealthStatesLabel,
-                Strings.AllowedPawnHealthStatesTooltip, out remRect);
+                Strings.GetFilterPawnHealthStatesTooltip(true),
+                Strings.AllowedPawnHealthStatesLabel, Strings.AllowedPawnHealthStatesTooltip,
+                out remRect);
             enabled = pawnFilter.FilterPawnHealthStates == true;
             if (oldValue != pawnFilter.FilterPawnHealthStates) filterChanged = true;
         }
@@ -315,8 +332,10 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnHealthStates;
             enabled = pawnFilter.FilterPawnHealthStates == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterPawnHealthStatesTooltip(false),
-                Strings.AllowedPawnHealthStatesLabel, Strings.AllowedPawnHealthStatesTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterPawnHealthStatesTooltip(false),
+                Strings.AllowedPawnHealthStatesLabel, Strings.AllowedPawnHealthStatesTooltip,
+                out remRect);
             pawnFilter.FilterPawnHealthStates = enabled;
             if (oldValue != pawnFilter.FilterPawnHealthStates) filterChanged = true;
         }
@@ -331,8 +350,9 @@ public static class PawnFilterWidget
         }
         if (count != 0)
         {
-            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin, Layout.ElementGapSmall, Layout.RowHeight,
-                Layout.ElementGapSmall, count, out var gridHeight, out remRect);
+            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
+                Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall, count,
+                out var gridHeight, out remRect);
             y += gridHeight;
             var i = 0;
             foreach (var healthState in relevantHealthStates)
@@ -342,7 +362,8 @@ public static class PawnFilterWidget
                 var tooltip = Resources.Strings.PawnHealthState.GetTooltip(healthState);
                 var value = pawnFilter.AllowedPawnHealthStates.HasFlag(healthState);
                 var oldValue = value;
-                Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, label, tooltip, null, out _);
+                Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, label, tooltip, null,
+                    out _);
                 if (oldValue == value) continue;
                 filterChanged = true;
                 if (value)
@@ -386,8 +407,10 @@ public static class PawnFilterWidget
         if (pawnFilter.TriStateMode)
         {
             var oldValue = pawnFilter.FilterPawnPrimaryWeaponTypes;
-            y += Sections.DoToggleableSectionHeader(rect, ref pawnFilter.FilterPawnPrimaryWeaponTypes,
-                Strings.GetFilterPawnPrimaryWeaponTypesTooltip(true), Strings.AllowedPawnPrimaryWeaponTypesLabel,
+            y += Sections.DoToggleableSectionHeader(rect,
+                ref pawnFilter.FilterPawnPrimaryWeaponTypes,
+                Strings.GetFilterPawnPrimaryWeaponTypesTooltip(true),
+                Strings.AllowedPawnPrimaryWeaponTypesLabel,
                 Strings.AllowedPawnPrimaryWeaponTypesTooltip, out remRect);
             enabled = pawnFilter.FilterPawnPrimaryWeaponTypes == true;
             if (oldValue != pawnFilter.FilterPawnPrimaryWeaponTypes) filterChanged = true;
@@ -397,7 +420,8 @@ public static class PawnFilterWidget
             var oldValue = pawnFilter.FilterPawnPrimaryWeaponTypes;
             enabled = pawnFilter.FilterPawnPrimaryWeaponTypes == true;
             y += Sections.DoToggleableSectionHeader(rect, ref enabled,
-                Strings.GetFilterPawnPrimaryWeaponTypesTooltip(false), Strings.AllowedPawnPrimaryWeaponTypesLabel,
+                Strings.GetFilterPawnPrimaryWeaponTypesTooltip(false),
+                Strings.AllowedPawnPrimaryWeaponTypesLabel,
                 Strings.AllowedPawnPrimaryWeaponTypesTooltip, out remRect);
             pawnFilter.FilterPawnPrimaryWeaponTypes = enabled;
             if (oldValue != pawnFilter.FilterPawnPrimaryWeaponTypes) filterChanged = true;
@@ -406,8 +430,9 @@ public static class PawnFilterWidget
         var count = AllPawnPrimaryWeaponTypes.Count;
         if (count != 0)
         {
-            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin, Layout.ElementGapSmall, Layout.RowHeight,
-                Layout.ElementGapSmall, count, out var gridHeight, out remRect);
+            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
+                Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall, count,
+                out var gridHeight, out remRect);
             y += gridHeight;
             var i = 0;
             foreach (var weaponType in AllPawnPrimaryWeaponTypes)
@@ -417,7 +442,8 @@ public static class PawnFilterWidget
                 var tooltip = Resources.Strings.PawnPrimaryWeaponType.GetTooltip(weaponType);
                 var value = pawnFilter.AllowedPawnPrimaryWeaponTypes.Contains(weaponType);
                 var oldValue = value;
-                Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, label, tooltip, null, out _);
+                Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, label, tooltip, null,
+                    out _);
                 if (value)
                     pawnFilter.AllowedPawnPrimaryWeaponTypes.Add(weaponType);
                 else
@@ -450,8 +476,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">The remaining portion of the <paramref name="rect" /> after the section is rendered.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnSkillsSection(Rect rect, [NotNull] PawnFilter pawnFilter, int inputId,
-        ref bool filterChanged, out Rect remRect)
+    private static float DoPawnSkillsSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        int inputId, ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -459,16 +485,17 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnSkills;
             y += Sections.DoToggleableSectionHeader(rect, ref pawnFilter.FilterPawnSkills,
-                Strings.GetFilterPawnSkillsTooltip(true), Strings.PawnSkillLimitsLabel, Strings.PawnSkillLimitsTooltip,
-                out remRect);
+                Strings.GetFilterPawnSkillsTooltip(true), Strings.PawnSkillLimitsLabel,
+                Strings.PawnSkillLimitsTooltip, out remRect);
             if (oldValue != pawnFilter.FilterPawnSkills) filterChanged = true;
         }
         else
         {
             var oldValue = pawnFilter.FilterPawnSkills;
             var enabled = pawnFilter.FilterPawnSkills == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterPawnSkillsTooltip(false),
-                Strings.PawnSkillLimitsLabel, Strings.PawnSkillLimitsTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterPawnSkillsTooltip(false), Strings.PawnSkillLimitsLabel,
+                Strings.PawnSkillLimitsTooltip, out remRect);
             pawnFilter.FilterPawnSkills = enabled;
             if (oldValue != pawnFilter.FilterPawnSkills) filterChanged = true;
         }
@@ -492,14 +519,16 @@ public static class PawnFilterWidget
                             limits.RemoveAt(index);
                             deleted = true;
                         }, Resources.Strings.Actions.Delete)
-                    ], limit.Label, limit.Def.description, ref limit.Limit, PawnSkillLimit.LimitMinCap,
+                    ], limit.Label, limit.Def.description, ref limit.Limit,
+                    PawnSkillLimit.LimitMinCap,
                     PawnSkillLimit.LimitMaxCap, PawnSkillLimit.ValueStep, null, out remRect);
                 if (oldValue != limit.Limit || deleted)
                     filterChanged = true;
                 if (i < limits.Count && ReferenceEquals(limits[i], limit))
                     i++;
             }
-            var existingDefNames = new HashSet<string>(limits.Count, StringComparer.OrdinalIgnoreCase);
+            var existingDefNames =
+                new HashSet<string>(limits.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var limit in limits)
             {
                 existingDefNames.Add(limit.DefName);
@@ -528,7 +557,8 @@ public static class PawnFilterWidget
                         added = true;
                     }));
                 }
-                options.Sort((a, b) => string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
+                options.Sort((a, b) =>
+                    string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
                 Find.WindowStack.Add(new FloatMenu(options));
             });
             if (added) filterChanged = true;
@@ -567,16 +597,17 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnStats;
             y += Sections.DoToggleableSectionHeader(rect, ref pawnFilter.FilterPawnStats,
-                Strings.GetFilterPawnStatsTooltip(true), Strings.PawnStatLimitsLabel, Strings.PawnStatLimitsTooltip,
-                out remRect);
+                Strings.GetFilterPawnStatsTooltip(true), Strings.PawnStatLimitsLabel,
+                Strings.PawnStatLimitsTooltip, out remRect);
             if (oldValue != pawnFilter.FilterPawnStats) filterChanged = true;
         }
         else
         {
             var oldValue = pawnFilter.FilterPawnStats;
             var enabled = pawnFilter.FilterPawnStats == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterPawnStatsTooltip(false),
-                Strings.PawnStatLimitsLabel, Strings.PawnStatLimitsTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterPawnStatsTooltip(false), Strings.PawnStatLimitsLabel,
+                Strings.PawnStatLimitsTooltip, out remRect);
             pawnFilter.FilterPawnStats = enabled;
             if (oldValue != pawnFilter.FilterPawnStats) filterChanged = true;
         }
@@ -592,7 +623,8 @@ public static class PawnFilterWidget
             }
             var label = limit.Label;
             var description = limit.Def.description;
-            if (limit.ValueStyle is ToStringStyle.PercentZero or ToStringStyle.PercentOne or ToStringStyle.PercentTwo)
+            if (limit.ValueStyle is ToStringStyle.PercentZero or ToStringStyle.PercentOne
+                or ToStringStyle.PercentTwo)
             {
                 var index = i;
                 var deleted = false;
@@ -603,8 +635,8 @@ public static class PawnFilterWidget
                             statLimits.RemoveAt(index);
                             deleted = true;
                         }, Resources.Strings.Actions.Delete)
-                    ], label, description, ref limit.Limit, limit.LimitMinCap, limit.LimitMaxCap, limit.ValueStep,
-                    limit.ValueStyle, null, out remRect);
+                    ], label, description, ref limit.Limit, limit.LimitMinCap, limit.LimitMaxCap,
+                    limit.ValueStep, limit.ValueStyle, null, out remRect);
                 if (oldValue != limit.Limit || deleted)
                     filterChanged = true;
             }
@@ -621,8 +653,8 @@ public static class PawnFilterWidget
                             statLimits.RemoveAt(index);
                             deleted = true;
                         }, Resources.Strings.Actions.Delete)
-                    ], label, description, ref minBuffer, ref maxBuffer, limit.LimitMinCap, limit.LimitMaxCap,
-                    limit.ValueStyle, null, out remRect);
+                    ], label, description, ref minBuffer, ref maxBuffer, limit.LimitMinCap,
+                    limit.LimitMaxCap, limit.ValueStyle, null, out remRect);
                 limit.MinValueBuffer = minBuffer;
                 limit.MaxValueBuffer = maxBuffer;
                 if (oldValue != limit.Limit || deleted) filterChanged = true;
@@ -630,7 +662,8 @@ public static class PawnFilterWidget
             if (i < statLimits.Count && statLimits[i] == limit)
                 i++;
         }
-        var statDefNamesSet = new HashSet<string>(statLimits.Count, StringComparer.OrdinalIgnoreCase);
+        var statDefNamesSet =
+            new HashSet<string>(statLimits.Count, StringComparer.OrdinalIgnoreCase);
         foreach (var l in statLimits)
         {
             statDefNamesSet.Add(l.DefName);
@@ -660,7 +693,8 @@ public static class PawnFilterWidget
                     added = true;
                 }));
             }
-            options.Sort((a, b) => string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
+            options.Sort((a, b) =>
+                string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
             Find.WindowStack.Add(new FloatMenu(options));
         });
         if (added) filterChanged = true;
@@ -689,8 +723,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">Outputs the remaining rectangle area after the section is drawn.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnTraitsSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoPawnTraitsSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -698,16 +732,17 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnTraits;
             y += Sections.DoToggleableSectionHeader(rect, ref pawnFilter.FilterPawnTraits,
-                Strings.GetFilterPawnTraitsTooltip(true), Strings.PawnTraitLimitsLabel, Strings.PawnTraitLimitsTooltip,
-                out remRect);
+                Strings.GetFilterPawnTraitsTooltip(true), Strings.PawnTraitLimitsLabel,
+                Strings.PawnTraitLimitsTooltip, out remRect);
             if (oldValue != pawnFilter.FilterPawnTraits) filterChanged = true;
         }
         else
         {
             var oldValue = pawnFilter.FilterPawnTraits;
             var enabled = pawnFilter.FilterPawnTraits == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterPawnTraitsTooltip(false),
-                Strings.PawnTraitLimitsLabel, Strings.PawnTraitLimitsTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterPawnTraitsTooltip(false), Strings.PawnTraitLimitsLabel,
+                Strings.PawnTraitLimitsTooltip, out remRect);
             pawnFilter.FilterPawnTraits = enabled;
             if (oldValue != pawnFilter.FilterPawnTraits) filterChanged = true;
         }
@@ -715,8 +750,9 @@ public static class PawnFilterWidget
         {
             var traitLimits = pawnFilter.PawnTraitLimits;
             var traitCount = traitLimits.Count;
-            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin, Layout.ElementGapSmall, Layout.RowHeight,
-                Layout.ElementGapSmall, traitCount + 1, out var gridHeight, out remRect);
+            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
+                Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall, traitCount + 1,
+                out var gridHeight, out remRect);
             y += gridHeight;
             for (var i = 0; i < traitLimits.Count;)
             {
@@ -742,7 +778,8 @@ public static class PawnFilterWidget
                     filterChanged = true;
                 if (i < traitLimits.Count && traitLimits[i] == limit) i++;
             }
-            var traitDefNames = new HashSet<string>(traitLimits.Count, StringComparer.OrdinalIgnoreCase);
+            var traitDefNames =
+                new HashSet<string>(traitLimits.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var limit in traitLimits)
             {
                 traitDefNames.Add(limit.DefName);
@@ -768,7 +805,8 @@ public static class PawnFilterWidget
                         added = true;
                     }));
                 }
-                options.Sort((a, b) => string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
+                options.Sort((a, b) =>
+                    string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
                 Find.WindowStack.Add(new FloatMenu(options));
             }, null, canAdd);
             if (added) filterChanged = true;
@@ -797,8 +835,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">Outputs the remaining portion of the <paramref name="rect" /> that was not used by the section.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnTypesSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoPawnTypesSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -807,8 +845,8 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnTypes;
             y += Sections.DoToggleableSectionHeader(rect, ref pawnFilter.FilterPawnTypes,
-                Strings.GetFilterPawnTypesTooltip(true), Strings.AllowedPawnTypesLabel, Strings.AllowedPawnTypesTooltip,
-                out remRect);
+                Strings.GetFilterPawnTypesTooltip(true), Strings.AllowedPawnTypesLabel,
+                Strings.AllowedPawnTypesTooltip, out remRect);
             enabled = pawnFilter.FilterPawnTypes == true;
             if (pawnFilter.FilterPawnTypes != oldValue) filterChanged = true;
         }
@@ -816,8 +854,9 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterPawnTypes;
             enabled = pawnFilter.FilterPawnTypes == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterPawnTypesTooltip(false),
-                Strings.AllowedPawnTypesLabel, Strings.AllowedPawnTypesTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterPawnTypesTooltip(false), Strings.AllowedPawnTypesLabel,
+                Strings.AllowedPawnTypesTooltip, out remRect);
             pawnFilter.FilterPawnTypes = enabled;
             if (pawnFilter.FilterPawnTypes != oldValue) filterChanged = true;
         }
@@ -830,8 +869,9 @@ public static class PawnFilterWidget
             }
             if (count != 0)
             {
-                var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin, Layout.ElementGapSmall,
-                    Layout.RowHeight, Layout.ElementGapSmall, count, out var gridHeight, out remRect);
+                var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
+                    Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall, count,
+                    out var gridHeight, out remRect);
                 y += gridHeight;
                 var allowed = pawnFilter.AllowedPawnTypes;
                 var i = 0;
@@ -842,7 +882,8 @@ public static class PawnFilterWidget
                     var label = Resources.Strings.PawnType.GetLabel(pawnType);
                     var value = allowed.Contains(pawnType);
                     var oldValue = value;
-                    Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, label, null, null, out _);
+                    Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, label, null, null,
+                        out _);
                     if (value)
                         allowed.Add(pawnType);
                     else
@@ -871,8 +912,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">Outputs the remaining rectangular area after rendering the section.</param>
     /// <returns>The total height of the rendered section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoWorkCapacitiesSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoWorkCapacitiesSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -888,8 +929,9 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterWorkCapacities;
             var enabled = pawnFilter.FilterWorkCapacities == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterWorkCapacitiesTooltip(false),
-                Strings.WorkCapacityLimitsLabel, Strings.WorkCapacityLimitsTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterWorkCapacitiesTooltip(false), Strings.WorkCapacityLimitsLabel,
+                Strings.WorkCapacityLimitsTooltip, out remRect);
             pawnFilter.FilterWorkCapacities = enabled;
             if (oldValue != pawnFilter.FilterWorkCapacities) filterChanged = true;
         }
@@ -905,8 +947,9 @@ public static class PawnFilterWidget
                     break;
                 }
             }
-            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin, Layout.ElementGapSmall, Layout.RowHeight,
-                Layout.ElementGapSmall, canAdd ? count + 1 : count, out var gridHeight, out remRect);
+            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
+                Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall,
+                canAdd ? count + 1 : count, out var gridHeight, out remRect);
             y += gridHeight;
             var i = 0;
             var keys = pawnFilter.WorkCapacityLimits.Keys.ToArray();
@@ -949,7 +992,8 @@ public static class PawnFilterWidget
                             }));
                         }
                     }
-                    options.Sort((a, b) => string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
+                    options.Sort((a, b) =>
+                        string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
                     Find.WindowStack.Add(new FloatMenu(options));
                 });
                 if (added) filterChanged = true;
@@ -977,8 +1021,8 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The total vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoWorkPassionsSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoWorkPassionsSection(Rect rect, [NotNull] PawnFilter pawnFilter,
+        ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -994,16 +1038,18 @@ public static class PawnFilterWidget
         {
             var oldValue = pawnFilter.FilterWorkPassions;
             var enabled = pawnFilter.FilterWorkPassions == true;
-            y += Sections.DoToggleableSectionHeader(rect, ref enabled, Strings.GetFilterWorkPassionsTooltip(false),
-                Strings.AllowedWorkPassionsLabel, Strings.AllowedWorkPassionsTooltip, out remRect);
+            y += Sections.DoToggleableSectionHeader(rect, ref enabled,
+                Strings.GetFilterWorkPassionsTooltip(false), Strings.AllowedWorkPassionsLabel,
+                Strings.AllowedWorkPassionsTooltip, out remRect);
             pawnFilter.FilterWorkPassions = enabled;
             if (oldValue != pawnFilter.FilterWorkPassions) filterChanged = true;
         }
         if (pawnFilter.FilterWorkPassions == true)
         {
             var passionCaches = PassionHelper.Passions;
-            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin, Layout.ElementGapSmall, Layout.RowHeight,
-                Layout.ElementGapSmall, passionCaches.Count, out var gridHeight, out remRect);
+            var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
+                Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall,
+                passionCaches.Count, out var gridHeight, out remRect);
             y += gridHeight;
             for (var i = 0; i < passionCaches.Count; i++)
             {
@@ -1011,8 +1057,8 @@ public static class PawnFilterWidget
                 var selectorRect = rects[i];
                 var value = pawnFilter.AllowedWorkPassions.Contains(passionCache.Passion);
                 var oldValue = value;
-                Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, passionCache.Label, passionCache.Description,
-                    passionCache.Icon, out _);
+                Fields.DoLabeledCheckbox(selectorRect, 0, null, ref value, passionCache.Label,
+                    passionCache.Description, passionCache.Icon, out _);
                 if (value)
                     pawnFilter.AllowedWorkPassions.Add(passionCache.Passion);
                 else

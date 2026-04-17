@@ -43,7 +43,7 @@ public static class DefHelper
     {
         if (def == null) throw new ArgumentNullException(nameof(def), "Def cannot be null.");
         if (LabelCache.TryGetValue(def.defName, out var label)) return label;
-        label = def is WorkTypeDef wtd ? GetLabel(wtd) :
+        label = def is WorkTypeDef wtd ? wtd.GetLabel() :
             !string.IsNullOrWhiteSpace(def.LabelCap) ? def.LabelCap : def.defName;
         LabelCache[def.defName] = label;
         return label;

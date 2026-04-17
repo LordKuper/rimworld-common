@@ -61,7 +61,8 @@ public static class EnumHelper
         foreach (T flag in Enum.GetValues(typeof(T)))
         {
             var flagLong = Convert.ToInt64(flag);
-            if ((valueLong & flagLong) == flagLong && (excludedLong & flagLong) != flagLong && flagLong != 0)
+            if ((valueLong & flagLong) == flagLong && (excludedLong & flagLong) != flagLong &&
+                flagLong != 0)
                 yield return flag;
         }
     }

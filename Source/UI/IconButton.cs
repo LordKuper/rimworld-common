@@ -37,8 +37,8 @@ public struct IconButton
     /// <param name="tooltip">The tooltip to display for the button.</param>
     /// <param name="isEnabled">Whether the button is enabled.</param>
     [UsedImplicitly]
-    public IconButton([CanBeNull] Texture2D icon, [NotNull] Action action, [CanBeNull] string tooltip = null,
-        bool isEnabled = true)
+    public IconButton([CanBeNull] Texture2D icon, [NotNull] Action action,
+        [CanBeNull] string tooltip = null, bool isEnabled = true)
     {
         Icon = icon;
         Action = action ?? throw new ArgumentNullException(nameof(action));

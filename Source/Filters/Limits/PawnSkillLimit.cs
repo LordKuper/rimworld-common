@@ -18,10 +18,8 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     internal const int LimitMaxCap = 20;
     internal const int LimitMinCap = 0;
     internal const int ValueStep = 1;
-
     private string _maxValueBuffer;
     private string _minValueBuffer;
-
     public IntRange Limit = new(LimitMinCap, LimitMaxCap);
 
     [UsedImplicitly]
@@ -31,7 +29,8 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     public PawnSkillLimit([NotNull] string skillDefName) : base(skillDefName) { }
 
     [UsedImplicitly]
-    public PawnSkillLimit([NotNull] string skillDefName, float? minValue, float? maxValue) : this(skillDefName)
+    public PawnSkillLimit([NotNull] string skillDefName, float? minValue, float? maxValue) : this(
+        skillDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -41,9 +40,6 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     {
         if (def == null) throw new ArgumentNullException(nameof(def));
     }
-
-    public SkillDef SkillDef => Def;
-    public string SkillDefName => DefName;
 
     public float? MaxValue
     {
@@ -61,6 +57,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
         }
     }
 
+    [NotNull]
     public string MaxValueBuffer
     {
         get => string.IsNullOrEmpty(_maxValueBuffer)
@@ -74,14 +71,11 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MaxValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
-            {
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
                 MaxValue = parsed;
-            }
             else
-            {
                 _maxValueBuffer = value;
-            }
         }
     }
 
@@ -101,6 +95,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
         }
     }
 
+    [NotNull]
     public string MinValueBuffer
     {
         get => string.IsNullOrEmpty(_minValueBuffer)
@@ -114,16 +109,16 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MinValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
-            {
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
                 MinValue = parsed;
-            }
             else
-            {
                 _minValueBuffer = value;
-            }
         }
     }
+
+    public SkillDef SkillDef => Def;
+    public string SkillDefName => DefName;
 
     public new void ExposeData()
     {

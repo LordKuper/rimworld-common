@@ -85,7 +85,8 @@ public class WorkTypeThingRule : IExposable
             var rules = new List<WorkTypeThingRule>();
             if (WorkTypeStatMap.DefaultStatsMap == null)
             {
-                Logger.LogError("Tried to get default WorkTypeThingRules with uninitialized WorkTypeStatMap.");
+                Logger.LogError(
+                    "Tried to get default WorkTypeThingRules with uninitialized WorkTypeStatMap.");
                 return rules;
             }
             foreach (var map in WorkTypeStatMap.DefaultStatsMap)
@@ -107,7 +108,9 @@ public class WorkTypeThingRule : IExposable
     [UsedImplicitly]
     public string Label =>
         WorkTypeDef != null
-            ? WorkTypeDef.labelShort.NullOrEmpty() ? WorkTypeDefName : WorkTypeDef.labelShort.CapitalizeFirst()
+            ? WorkTypeDef.labelShort.NullOrEmpty()
+                ? WorkTypeDefName
+                : WorkTypeDef.labelShort.CapitalizeFirst()
             : WorkTypeDefName;
 
     /// <summary>
@@ -146,7 +149,8 @@ public class WorkTypeThingRule : IExposable
     public void ExposeData()
     {
         Scribe_Values.Look(ref _workTypeDefName, nameof(WorkTypeDefName));
-        Scribe_Collections.Look(ref _statWeights, nameof(StatWeights), LookMode.Value, LookMode.Deep);
+        Scribe_Collections.Look(ref _statWeights, nameof(StatWeights), LookMode.Value,
+            LookMode.Deep);
     }
 
     /// <summary>
@@ -205,8 +209,8 @@ public class WorkTypeThingRule : IExposable
         return thing == null
             ? throw new ArgumentNullException(nameof(thing))
             : _statWeights.Values.Where(sw => sw.StatDef != null).Sum(sw =>
-                StatRanges.NormalizeStatValue(sw.StatDef, StatHelper.GetStatValueDeviation(thing, sw.StatDef)) *
-                sw.Weight);
+                StatRanges.NormalizeStatValue(sw.StatDef,
+                    StatHelper.GetStatValueDeviation(thing, sw.StatDef)) * sw.Weight);
     }
 
     /// <summary>
@@ -220,10 +224,13 @@ public class WorkTypeThingRule : IExposable
         if (_workTypeDef == null) return;
         if (WorkTypeStatMap.DefaultStatsMap == null)
             throw new NullReferenceException("Tried to access uninitialized WorkTypeStatMap.");
-        if (!WorkTypeStatMap.DefaultStatsMap.TryGetValue(_workTypeDef, out var defaultStatWeights)) return;
-        foreach (var kvp in defaultStatWeights.Where(kvp => !_statWeights.ContainsKey(kvp.Key.defName)))
+        if (!WorkTypeStatMap.DefaultStatsMap.TryGetValue(_workTypeDef, out var defaultStatWeights))
+            return;
+        foreach (var kvp in defaultStatWeights.Where(kvp =>
+                     !_statWeights.ContainsKey(kvp.Key.defName)))
         {
-            _statWeights.Add(kvp.Key.defName, new StatWeight(kvp.Key, kvp.Value.Weight, kvp.Value.Protected));
+            _statWeights.Add(kvp.Key.defName,
+                new StatWeight(kvp.Key, kvp.Value.Weight, kvp.Value.Protected));
         }
     }
 

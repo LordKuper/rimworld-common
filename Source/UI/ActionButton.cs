@@ -39,8 +39,8 @@ public struct ActionButton
     ///     Thrown if <paramref name="label" /> is null or empty, or if <paramref name="action" /> is null.
     /// </exception>
     [UsedImplicitly]
-    public ActionButton([NotNull] string label, [NotNull] Action action, [CanBeNull] string tooltip = null,
-        bool isEnabled = true)
+    public ActionButton([NotNull] string label, [NotNull] Action action,
+        [CanBeNull] string tooltip = null, bool isEnabled = true)
     {
         if (string.IsNullOrEmpty(label)) throw new ArgumentNullException(nameof(label));
         if (action == null) throw new ArgumentNullException(nameof(action));

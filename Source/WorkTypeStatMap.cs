@@ -29,18 +29,24 @@ public class WorkTypeStatMap
     /// <summary>
     ///     Default stat weights for specific work types, keyed by work type defName and stat defName.
     /// </summary>
-    private static readonly Dictionary<string, Dictionary<string, float>> DefaultWorkTypeStats = new()
-    {
+    private static readonly Dictionary<string, Dictionary<string, float>> DefaultWorkTypeStats =
+        new()
         {
-            "Cooking", new Dictionary<string, float>
             {
-                { "FoodPoisonChance", 2f }, { "DrugCookingSpeed", 1f }, { "ButcheryFleshSpeed", 1f },
-                { "ButcheryFleshEfficiency", 1.5f }, { "CookSpeed", 1f }
+                "Cooking", new Dictionary<string, float>
+                {
+                    { "FoodPoisonChance", 2f }, { "DrugCookingSpeed", 1f },
+                    { "ButcheryFleshSpeed", 1f },
+                    { "ButcheryFleshEfficiency", 1.5f }, { "CookSpeed", 1f }
+                }
+            },
+            { "Hunting", new Dictionary<string, float> { { "HuntingStealth", 2f } } },
+            {
+                "Doctor",
+                new Dictionary<string, float>
+                    { { "MedicalTendQualityOffset", 2f }, { "MedicalPotency", 2f } }
             }
-        },
-        { "Hunting", new Dictionary<string, float> { { "HuntingStealth", 2f } } },
-        { "Doctor", new Dictionary<string, float> { { "MedicalTendQualityOffset", 2f }, { "MedicalPotency", 2f } } }
-    };
+        };
 
     /// <summary>
     ///     Gets a mapping from <see cref="WorkTypeDef" /> to a set of <see cref="StatDef" />s used for auto-switching.
@@ -81,7 +87,8 @@ public class WorkTypeStatMap
         var workTypes = WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.ToList();
         var allRecipes = DefDatabase<RecipeDef>.AllDefsListForReading;
         var workTypeStatDefs = StatHelper.GetStatsByCategory(StatCategory.Work);
-        _defaultStatsMap = new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
+        _defaultStatsMap =
+            new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
         _autoSwitchStatsMap = new Dictionary<WorkTypeDef, HashSet<StatDef>>(workTypes.Count);
         foreach (var workType in workTypes)
         {

@@ -35,13 +35,14 @@ public static partial class Fields
     /// <returns>The height of the selector row.</returns>
     [UsedImplicitly]
     public static float DoLabeledSelector<T>(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip, T value,
-        [NotNull] IReadOnlyCollection<T> options, [NotNull] Func<T, string> getLabelAction,
-        [CanBeNull] Func<T, string> getTooltipAction, [NotNull] Action<T> selectAction, [CanBeNull] Texture icon,
-        out Rect remRect)
+        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
+        T value, [NotNull] IReadOnlyCollection<T> options, [NotNull] Func<T, string> getLabelAction,
+        [CanBeNull] Func<T, string> getTooltipAction, [NotNull] Action<T> selectAction,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SelectorRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
+            out var inputRect);
         DoSelector(inputRect, value, options, getLabelAction, getTooltipAction, selectAction);
         return SelectorRowHeight;
     }
@@ -72,7 +73,8 @@ public static partial class Fields
         {
             optionList.Add(new FloatMenuOption(getLabelAction(o), () => { selectAction(o); }));
         }
-        Buttons.DoActionButton(rect, getLabelAction(value), () => { Find.WindowStack.Add(new FloatMenu(optionList)); },
+        Buttons.DoActionButton(rect, getLabelAction(value),
+            () => { Find.WindowStack.Add(new FloatMenu(optionList)); },
             getTooltipAction?.Invoke(value), optionList.Count > 0);
     }
 }

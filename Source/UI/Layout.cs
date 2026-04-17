@@ -179,7 +179,8 @@ public static class Layout
     ///     <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="Rect.zero" />.
     /// </returns>
     [UsedImplicitly]
-    public static Rect GetCenterRowRect(Rect rect, float rowHeight, out Rect topRect, out Rect bottomRect)
+    public static Rect GetCenterRowRect(Rect rect, float rowHeight, out Rect topRect,
+        out Rect bottomRect)
     {
         if (rect.height <= rowHeight)
         {
@@ -193,8 +194,8 @@ public static class Layout
     }
 
     [NotNull]
-    internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap, float rowHeight, float rowGap,
-        int cellCount, out float gridHeight, out Rect remRect)
+    internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap,
+        float rowHeight, float rowGap, int cellCount, out float gridHeight, out Rect remRect)
     {
         var columnCount = Mathf.FloorToInt(rect.width / (minColumnWidth + columnGap));
         if (cellCount < columnCount)
@@ -209,8 +210,8 @@ public static class Layout
         {
             var row = i / columnCount;
             var column = i % columnCount;
-            rects[i] = new Rect(rect.x + column * (columnWidth + columnGap), rect.y + row * (rowHeight + rowGap),
-                columnWidth, rowHeight);
+            rects[i] = new Rect(rect.x + column * (columnWidth + columnGap),
+                rect.y + row * (rowHeight + rowGap), columnWidth, rowHeight);
         }
         return rects;
     }

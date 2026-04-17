@@ -40,8 +40,10 @@ public static class PassionHelper
         get
         {
             Initialize();
-            return _cachedPassions ??= PassionCache.Values.OrderByDescending(pc => pc.Passion == Passion.None)
-                .ThenBy(pc => pc.LearnRateFactor).ThenBy(pc => pc.ForgetRateFactor).ThenBy(pc => pc.DefName).ToList();
+            return _cachedPassions ??= PassionCache.Values
+                .OrderByDescending(pc => pc.Passion == Passion.None)
+                .ThenBy(pc => pc.LearnRateFactor).ThenBy(pc => pc.ForgetRateFactor)
+                .ThenBy(pc => pc.DefName).ToList();
         }
     }
 
@@ -78,7 +80,8 @@ public static class PassionHelper
         Initialize();
         if (string.IsNullOrEmpty(defName))
             throw new ArgumentNullException(nameof(defName), "DefName cannot be null or empty.");
-        return Passions.FirstOrDefault(p => p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
+        return Passions.FirstOrDefault(p =>
+            p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
@@ -117,8 +120,9 @@ public static class PassionHelper
             foreach (var passion in Vse.GetPassions())
             {
                 if (!PassionCache.ContainsKey(passion))
-                    PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion), Vse.GetLabel(passion),
-                        Vse.GetLearnRateFactor(passion), Vse.GetForgetRateFactor(passion));
+                    PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion),
+                        Vse.GetLabel(passion), Vse.GetLearnRateFactor(passion),
+                        Vse.GetForgetRateFactor(passion));
             }
         }
         else
@@ -126,8 +130,8 @@ public static class PassionHelper
             foreach (Passion passion in Enum.GetValues(typeof(Passion)))
             {
                 if (!PassionCache.ContainsKey(passion))
-                    PassionCache[passion] = new PassionCache(passion, passion.ToString(), passion.GetLabel(),
-                        passion.GetLearningFactor(), 1f);
+                    PassionCache[passion] = new PassionCache(passion, passion.ToString(),
+                        passion.GetLabel(), passion.GetLearningFactor(), 1f);
             }
         }
     }

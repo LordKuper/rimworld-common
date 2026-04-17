@@ -56,7 +56,8 @@ public static class Buttons
     /// <returns>The height of the button row.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="actionButtons" /> is null.</exception>
     [UsedImplicitly]
-    public static float DoActionButtonGrid(Rect rect, [NotNull] ActionButton[] actionButtons, out Rect remRect)
+    public static float DoActionButtonGrid(Rect rect, [NotNull] ActionButton[] actionButtons,
+        out Rect remRect)
     {
         if (actionButtons == null) throw new ArgumentNullException(nameof(actionButtons));
         if (actionButtons.Length == 0)
@@ -64,13 +65,15 @@ public static class Buttons
             remRect = rect;
             return 0f;
         }
-        var buttonRects = Layout.GetGridRects(rect, ActionButtonWidthMin, Layout.ElementGapSmall, ActionButtonHeight,
-            Layout.ElementGapSmall, actionButtons.Length, out var height, out remRect);
+        var buttonRects = Layout.GetGridRects(rect, ActionButtonWidthMin, Layout.ElementGapSmall,
+            ActionButtonHeight, Layout.ElementGapSmall, actionButtons.Length, out var height,
+            out remRect);
         for (var i = 0; i < actionButtons.Length; i++)
         {
             var button = actionButtons[i];
             var buttonRect = buttonRects[i];
-            DoActionButton(buttonRect, button.Label, button.Action, button.Tooltip, button.IsEnabled);
+            DoActionButton(buttonRect, button.Label, button.Action, button.Tooltip,
+                button.IsEnabled);
         }
         return height;
     }
@@ -91,7 +94,8 @@ public static class Buttons
         {
             Verse.Widgets.DrawTextureFitted(rect, iconButton.Icon, 1f, 0.25f);
         }
-        if (!string.IsNullOrEmpty(iconButton.Tooltip)) TooltipHandler.TipRegion(rect, iconButton.Tooltip);
+        if (!string.IsNullOrEmpty(iconButton.Tooltip))
+            TooltipHandler.TipRegion(rect, iconButton.Tooltip);
     }
 
     /// <summary>
@@ -116,16 +120,17 @@ public static class Buttons
     ///     is <see langword="null" />.
     /// </exception>
     [UsedImplicitly]
-    public static void DoIconButtonToggle(Rect rect, [NotNull] Func<bool> getter, [NotNull] Action<bool> setter,
-        string enabledTooltip, [NotNull] Texture2D enabledIcon, string disabledTooltip,
-        [NotNull] Texture2D disabledIcon)
+    public static void DoIconButtonToggle(Rect rect, [NotNull] Func<bool> getter,
+        [NotNull] Action<bool> setter, string enabledTooltip, [NotNull] Texture2D enabledIcon,
+        string disabledTooltip, [NotNull] Texture2D disabledIcon)
     {
         if (getter == null) throw new ArgumentNullException(nameof(getter));
         if (setter == null) throw new ArgumentNullException(nameof(setter));
         if (enabledIcon == null) throw new ArgumentNullException(nameof(enabledIcon));
         if (disabledIcon == null) throw new ArgumentNullException(nameof(disabledIcon));
         var value = getter();
-        DoIconButtonToggle(rect, ref value, enabledTooltip, enabledIcon, disabledTooltip, disabledIcon);
+        DoIconButtonToggle(rect, ref value, enabledTooltip, enabledIcon, disabledTooltip,
+            disabledIcon);
         setter(value);
     }
 
@@ -151,8 +156,9 @@ public static class Buttons
     /// <param name="disabledTooltip">The tooltip text to display when the button is in the disabled state.</param>
     /// <param name="disabledIcon">The icon to display when the button is in the disabled state.</param>
     [UsedImplicitly]
-    public static void DoIconButtonToggle(Rect rect, ref bool value, [CanBeNull] string enabledTooltip,
-        [NotNull] Texture2D enabledIcon, [CanBeNull] string disabledTooltip, [NotNull] Texture2D disabledIcon)
+    public static void DoIconButtonToggle(Rect rect, ref bool value,
+        [CanBeNull] string enabledTooltip, [NotNull] Texture2D enabledIcon,
+        [CanBeNull] string disabledTooltip, [NotNull] Texture2D disabledIcon)
     {
         if (enabledIcon == null) throw new ArgumentNullException(nameof(enabledIcon));
         if (disabledIcon == null) throw new ArgumentNullException(nameof(disabledIcon));
