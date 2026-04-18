@@ -167,8 +167,13 @@ public class StatLimit : DefCache<StatDef>, IExposable
     public new void ExposeData()
     {
         base.ExposeData();
-        var minValue = MinValue;
-        var maxValue = MaxValue;
+        float? minValue = null;
+        float? maxValue = null;
+        if (Scribe.mode == LoadSaveMode.Saving)
+        {
+            minValue = MinValue;
+            maxValue = MaxValue;
+        }
         Scribe_Values.Look(ref minValue, nameof(MinValue));
         Scribe_Values.Look(ref maxValue, nameof(MaxValue));
         Scribe_Values.Look(ref Limit, nameof(Limit));

@@ -34,17 +34,32 @@ public static class MeleeWeaponStats
     private static IEnumerable<string> StatDefNames =>
         Enum.GetValues(typeof(MeleeWeaponStat)).OfType<MeleeWeaponStat>().Select(GetStatDefName);
 
-    /// <summary>
-    ///     Gets the collection of custom stat definitions.
-    /// </summary>
-    public static IEnumerable<StatDef> StatDefs { get; } = StatDefNames.Select(defName =>
+    private static readonly List<StatDef> StatDefList = StatDefNames.Select(defName =>
         new StatDef
         {
             defName = defName,
-            label = Resources.Strings.Stats.GetLabel(defName),
-            description = Resources.Strings.Stats.GetDescription(defName),
+            label = defName,
+            description = string.Empty,
             category = CategoryDef
-        });
+        }).ToList();
+
+    /// <summary>
+    ///     Gets the collection of custom stat definitions.
+    /// </summary>
+    public static IEnumerable<StatDef> StatDefs => StatDefList;
+
+    /// <summary>
+    ///     Updates stat labels and descriptions with translated strings.
+    ///     Called from <see cref="StatHelper" /> post-init after language is loaded.
+    /// </summary>
+    internal static void UpdateLabels()
+    {
+        foreach (var def in StatDefList)
+        {
+            def.label = Resources.Strings.Stats.GetLabel(def.defName);
+            def.description = Resources.Strings.Stats.GetDescription(def.defName);
+        }
+    }
 
     /// <summary>
     ///     Gets the stat definition name for a given <see cref="MeleeWeaponStat" />.

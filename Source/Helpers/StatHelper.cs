@@ -374,4 +374,31 @@ public static class StatHelper
             nameof(StatCategoryDefOf.PawnSocial)
         ];
     }
+
+    /// <summary>
+    ///     Rebuilds custom and union stat collections after labels are updated.
+    /// </summary>
+    private static void ReinitializeLabels()
+    {
+        InitializeCustomStats();
+        InitializeUnionStats();
+        Stats.Clear();
+    }
+
+    /// <summary>
+    ///     Runs after all defs and language files are loaded.
+    ///     Updates custom stat labels/descriptions and rebuilds sorted collections.
+    /// </summary>
+    [StaticConstructorOnStartup]
+    [UsedImplicitly]
+    private static class PostInit
+    {
+        static PostInit()
+        {
+            MeleeWeaponStats.UpdateLabels();
+            RangedWeaponStats.UpdateLabels();
+            ToolStats.UpdateLabels();
+            ReinitializeLabels();
+        }
+    }
 }
