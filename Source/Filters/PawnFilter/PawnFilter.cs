@@ -605,7 +605,7 @@ public class PawnFilter : IExposable
             var satisfied = true;
             foreach (var limit in WorkCapacityLimits)
             {
-                if (pawn.WorkTagIsDisabled(limit.Key) != limit.Value)
+                if (pawn.WorkTagIsDisabled(limit.Key) == limit.Value)
                 {
                     satisfied = false;
                     break;
