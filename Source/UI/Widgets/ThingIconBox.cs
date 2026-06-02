@@ -10,6 +10,7 @@ namespace LordKuper.Common.UI.Widgets;
 /// <summary>
 ///     Provides utility methods for rendering a scrollable box of thing icons with tooltips and click actions.
 /// </summary>
+[PublicAPI]
 public static class ThingIconBox
 {
     /// <summary>
@@ -27,7 +28,6 @@ public static class ThingIconBox
     /// </summary>
     private static readonly Color OutlineColor = new(1f, 1f, 1f, 0.4f);
 
-    [UsedImplicitly]
     /// <summary>
     ///     Renders a scrollable grid of <see cref="Thing" /> icons within the specified rectangle.
     /// </summary>
@@ -36,14 +36,12 @@ public static class ThingIconBox
     /// <param name="things">A read-only list of <see cref="Thing" /> objects to display in the grid.</param>
     /// <param name="rightClickAction">An action to execute when a <see cref="Thing" /> is right-clicked.</param>
     /// <param name="tooltipGetter">A function that provides a tooltip string for a given <see cref="Thing" />.</param>
-    public static void DoThingBox(Rect rect, ref Vector2 scrollPosition,
-        [NotNull] IReadOnlyList<Thing> things, [CanBeNull] Action<Thing> rightClickAction,
-        [CanBeNull] Func<Thing, string> tooltipGetter)
+    public static void DoThingBox(Rect rect, ref Vector2 scrollPosition, [NotNull] IReadOnlyList<Thing> things,
+        [CanBeNull] Action<Thing> rightClickAction, [CanBeNull] Func<Thing, string> tooltipGetter)
     {
         if (things == null) throw new ArgumentNullException(nameof(things));
         var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + Layout.ElementGapTiny * 2;
-        var itemsPerRow = (int)Math.Floor((rect.width - horizontalMargin) /
-                                          (ThingIconSize + Layout.ElementGapTiny));
+        var itemsPerRow = (int)Math.Floor((rect.width - horizontalMargin) / (ThingIconSize + Layout.ElementGapTiny));
         var rowCount = (int)Math.Ceiling((double)things.Count / itemsPerRow);
         Verse.Widgets.DrawBoxSolidWithOutline(rect, BackgroundColor, OutlineColor);
         var outRect = new Rect(rect.x + Layout.ElementGapTiny, rect.y + Layout.ElementGapTiny,
@@ -58,8 +56,7 @@ public static class ThingIconBox
             GUI.color = !Mouse.IsOver(thingRect) ? Color.white : GenUI.MouseoverColor;
             var texture = thing.StyleDef?.UIIcon != null ? thing.StyleDef.UIIcon :
                 !thing.def.uiIconPath.NullOrEmpty() ? thing.def.uiIcon :
-                thing.Graphic.ExtractInnerGraphicFor(thing).MatAt(thing.def.defaultPlacingRot)
-                    .mainTexture;
+                thing.Graphic.ExtractInnerGraphicFor(thing).MatAt(thing.def.defaultPlacingRot).mainTexture;
             GUI.DrawTexture(thingRect, texture, ScaleMode.ScaleToFit);
             GUI.color = Color.white;
             MouseoverSounds.DoRegion(thingRect);
@@ -78,7 +75,6 @@ public static class ThingIconBox
         Verse.Widgets.EndScrollView();
     }
 
-    [UsedImplicitly]
     /// <summary>
     ///     Renders a scrollable grid of <see cref="ThingDef" /> icons within the specified rectangle.
     /// </summary>
@@ -95,14 +91,12 @@ public static class ThingIconBox
     ///     A function that provides a tooltip string for a given <see cref="ThingDef" />.  The tooltip is displayed when
     ///     the user hovers over an icon.
     /// </param>
-    public static void DoThingDefBox(Rect rect, ref Vector2 scrollPosition,
-        [NotNull] IReadOnlyList<ThingDef> things, [CanBeNull] Action<ThingDef> rightClickAction,
-        [CanBeNull] Func<ThingDef, string> tooltipGetter)
+    public static void DoThingDefBox(Rect rect, ref Vector2 scrollPosition, [NotNull] IReadOnlyList<ThingDef> things,
+        [CanBeNull] Action<ThingDef> rightClickAction, [CanBeNull] Func<ThingDef, string> tooltipGetter)
     {
         if (things == null) throw new ArgumentNullException(nameof(things));
         var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + Layout.ElementGapTiny * 2;
-        var itemsPerRow = (int)Math.Floor((rect.width - horizontalMargin) /
-                                          (ThingIconSize + Layout.ElementGapTiny));
+        var itemsPerRow = (int)Math.Floor((rect.width - horizontalMargin) / (ThingIconSize + Layout.ElementGapTiny));
         var rowCount = (int)Math.Ceiling((double)things.Count / itemsPerRow);
         Verse.Widgets.DrawBoxSolidWithOutline(rect, BackgroundColor, OutlineColor);
         var outRect = new Rect(rect.x + Layout.ElementGapTiny, rect.y + Layout.ElementGapTiny,
@@ -115,8 +109,7 @@ public static class ThingIconBox
             var thingDef = things[i];
             var thingRect = GetThingRect(boxRect, itemsPerRow, i);
             GUI.color = !Mouse.IsOver(thingRect) ? Color.white : GenUI.MouseoverColor;
-            GUI.DrawTexture(thingRect,
-                thingDef.uiIcon ? thingDef.uiIcon : Resources.Textures.BadTexture,
+            GUI.DrawTexture(thingRect, thingDef.uiIcon ? thingDef.uiIcon : Resources.Textures.BadTexture,
                 ScaleMode.ScaleToFit);
             GUI.color = Color.white;
             MouseoverSounds.DoRegion(thingRect);
@@ -145,8 +138,7 @@ public static class ThingIconBox
     internal static float GetThingIconBoxHeight(int rowCount)
     {
         if (rowCount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(rowCount),
-                "Row count must be a positive number.");
+            throw new ArgumentOutOfRangeException(nameof(rowCount), "Row count must be a positive number.");
         return rowCount * ThingIconSize + (rowCount + 1) * Layout.ElementGapTiny;
     }
 
@@ -161,7 +153,6 @@ public static class ThingIconBox
     {
         var rowIndex = Math.DivRem(index, columnCount, out var columnIndex);
         return new Rect(rect.x + (ThingIconSize + Layout.ElementGapTiny) * columnIndex,
-            rect.y + (ThingIconSize + Layout.ElementGapTiny) * rowIndex, ThingIconSize,
-            ThingIconSize);
+            rect.y + (ThingIconSize + Layout.ElementGapTiny) * rowIndex, ThingIconSize, ThingIconSize);
     }
 }

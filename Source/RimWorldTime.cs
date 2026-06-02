@@ -8,8 +8,8 @@ namespace LordKuper.Common;
 /// <summary>
 ///     Represents a point in RimWorld time, including year, day, and hour.
 /// </summary>
-public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimWorldTime>,
-    IComparable
+[PublicAPI]
+public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimWorldTime>, IComparable
 {
     /// <summary>
     ///     Initializes a new instance of <see cref="RimWorldTime" /> from year, day, and hour.
@@ -31,7 +31,6 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
         return year * HoursInYear + day * HoursInDay + hour;
     }
 
-    [UsedImplicitly]
     /// <summary>
     ///     Initializes a new instance of <see cref="RimWorldTime" /> from total hours.
     /// </summary>
@@ -163,12 +162,12 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// <summary>
     ///     The day of the year.
     /// </summary>
-    [UsedImplicitly] public readonly int Day;
+    public readonly int Day;
 
     /// <summary>
     ///     The hour of the day.
     /// </summary>
-    [UsedImplicitly] public readonly float Hour;
+    public readonly float Hour;
 
     /// <summary>
     ///     Gets the total hours represented by this instance.
@@ -178,20 +177,18 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// <summary>
     ///     The year.
     /// </summary>
-    [UsedImplicitly] public readonly int Year;
+    public readonly int Year;
 
     /// <summary>
     ///     Gets the current map time as a <see cref="RimWorldTime" />.
     /// </summary>
     /// <param name="map">The map to get time from.</param>
     /// <returns>The current <see cref="RimWorldTime" /> for the map.</returns>
-    [UsedImplicitly]
     public static RimWorldTime GetMapTime([CanBeNull] Map map)
     {
         return map == null
             ? new RimWorldTime(0, 0, 0)
-            : new RimWorldTime(GenLocalDate.Year(map), GenLocalDate.DayOfYear(map),
-                GenLocalDate.HourFloat(map));
+            : new RimWorldTime(GenLocalDate.Year(map), GenLocalDate.DayOfYear(map), GenLocalDate.HourFloat(map));
     }
 
     /// <summary>
@@ -201,7 +198,6 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     ///     The current <see cref="RimWorldTime" /> for the player's home map.
     ///     If there is no home map, returns a default <see cref="RimWorldTime" /> (year 0, day 0, hour 0).
     /// </returns>
-    [UsedImplicitly]
     public static RimWorldTime GetHomeTime()
     {
         return GetMapTime(Find.AnyPlayerHomeMap);
@@ -221,32 +217,32 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// <summary>
     ///     The number of days in a year.
     /// </summary>
-    [UsedImplicitly] public const byte DaysInYear = QuadrumsInYear * DaysInQuadrum;
+    public const byte DaysInYear = QuadrumsInYear * DaysInQuadrum;
 
     /// <summary>
     ///     The number of quadrums in a year.
     /// </summary>
-    [UsedImplicitly] public const byte QuadrumsInYear = 4;
+    public const byte QuadrumsInYear = 4;
 
     /// <summary>
     ///     The number of days in a quadrum.
     /// </summary>
-    [UsedImplicitly] public const byte DaysInQuadrum = 15;
+    public const byte DaysInQuadrum = 15;
 
     /// <summary>
     ///     The number of hours in a day.
     /// </summary>
-    [UsedImplicitly] public const byte HoursInDay = 24;
+    public const byte HoursInDay = 24;
 
     /// <summary>
     ///     The number of hours in a year.
     /// </summary>
-    [UsedImplicitly] public const uint HoursInYear = HoursInQuadrum * QuadrumsInYear;
+    public const uint HoursInYear = HoursInQuadrum * QuadrumsInYear;
 
     /// <summary>
     ///     The number of hours in a quadrum.
     /// </summary>
-    [UsedImplicitly] public const uint HoursInQuadrum = HoursInDay * DaysInQuadrum;
+    public const uint HoursInQuadrum = HoursInDay * DaysInQuadrum;
 
     /// <summary>
     ///     Adds a number of hours to a <see cref="RimWorldTime" /> instance.
@@ -263,8 +259,8 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     ///     Returns a string representation of the time span in years, days, and hours.
     /// </summary>
     /// <returns>
-    ///     A string formatted as "{Year}y {Day}d {Hour}h", where the year is displayed with four decimal places, the day as
-    ///     an integer, and the hour with one decimal place.
+    ///     A string formatted as "{Year}y {Day}d {Hour}h", where the year and day are displayed as integers and the hour
+    ///     with one decimal place.
     /// </returns>
     public override string ToString()
     {

@@ -15,6 +15,7 @@ namespace LordKuper.Common.Helpers;
 ///     such as their health state, type, primary weapon type, and work passion. These methods are designed to simplify
 ///     common operations related to pawns and provide consistent results based on game logic.
 /// </remarks>
+[PublicAPI]
 public static class PawnHelper
 {
     /// <summary>
@@ -22,7 +23,6 @@ public static class PawnHelper
     /// </summary>
     /// <param name="pawn">The pawn whose health state is to be determined.</param>
     /// <returns>The <see cref="PawnHealthState" /> of the pawn.</returns>
-    [UsedImplicitly]
     public static PawnHealthState GetPawnHealthState([NotNull] Pawn pawn)
     {
         if (pawn.Dead)
@@ -45,14 +45,13 @@ public static class PawnHelper
     /// </summary>
     /// <param name="pawn">The pawn whose type is to be determined.</param>
     /// <returns>The <see cref="PawnType" /> of the pawn.</returns>
-    [UsedImplicitly]
     public static PawnType GetPawnType([NotNull] Pawn pawn)
     {
         if (pawn.IsFreeNonSlaveColonist) return PawnType.Colonist;
         if (pawn.IsSlaveOfColony) return PawnType.Slave;
         if (pawn.IsPrisonerOfColony) return PawnType.Prisoner;
-        if (pawn is { IsColonist: true, GuestStatus: GuestStatus.Guest } ||
-            pawn.HasExtraHomeFaction() || pawn.HasExtraMiniFaction())
+        if (pawn is { IsColonist: true, GuestStatus: GuestStatus.Guest } || pawn.HasExtraHomeFaction() ||
+            pawn.HasExtraMiniFaction())
             return PawnType.Guest;
         if (pawn.IsAnimal && pawn.Faction == Faction.OfPlayer) return PawnType.Animal;
         return PawnType.Undefined;
@@ -73,7 +72,6 @@ public static class PawnHelper
     ///     if the weapon type cannot be determined.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawn" /> is <see langword="null" />.</exception>
-    [UsedImplicitly]
     public static PawnPrimaryWeaponType GetPrimaryWeaponType([NotNull] Pawn pawn)
     {
         if (pawn == null) throw new ArgumentNullException(nameof(pawn));
@@ -94,7 +92,6 @@ public static class PawnHelper
     /// <param name="pawn">The pawn whose work passion is to be determined.</param>
     /// <param name="workType">The work type to check for passion.</param>
     /// <returns>The highest <see cref="Passion" /> for the given work type, or <see cref="Passion.None" /> if unavailable.</returns>
-    [UsedImplicitly]
     public static Passion GetWorkPassion([NotNull] Pawn pawn, [NotNull] WorkTypeDef workType)
     {
         if (pawn == null) throw new ArgumentNullException(nameof(pawn));

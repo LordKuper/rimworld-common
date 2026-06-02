@@ -5,7 +5,7 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Enumeration of custom tool statistics.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public enum ToolStat
 {
     /// <summary>

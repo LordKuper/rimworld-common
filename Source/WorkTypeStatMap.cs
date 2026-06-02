@@ -11,7 +11,7 @@ namespace LordKuper.Common;
 ///     Provides a mapping between <see cref="WorkTypeDef" /> and relevant <see cref="StatDef" />s with associated weights.
 ///     Used to determine which stats are important for each work type in the game.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class WorkTypeStatMap
 {
     /// <summary>
@@ -29,31 +29,28 @@ public class WorkTypeStatMap
     /// <summary>
     ///     Default stat weights for specific work types, keyed by work type defName and stat defName.
     /// </summary>
-    private static readonly Dictionary<string, Dictionary<string, float>> DefaultWorkTypeStats =
-        new()
+    private static readonly Dictionary<string, Dictionary<string, float>> DefaultWorkTypeStats = new()
+    {
         {
+            "Cooking", new Dictionary<string, float>
             {
-                "Cooking", new Dictionary<string, float>
-                {
-                    { "FoodPoisonChance", 2f }, { "DrugCookingSpeed", 1f },
-                    { "ButcheryFleshSpeed", 1f },
-                    { "ButcheryFleshEfficiency", 1.5f }, { "CookSpeed", 1f }
-                }
-            },
-            { "Hunting", new Dictionary<string, float> { { "HuntingStealth", 2f } } },
-            {
-                "Doctor",
-                new Dictionary<string, float>
-                    { { "MedicalTendQualityOffset", 2f }, { "MedicalPotency", 2f } }
+                { "FoodPoisonChance", 2f }, { "DrugCookingSpeed", 1f },
+                { "ButcheryFleshSpeed", 1f },
+                { "ButcheryFleshEfficiency", 1.5f }, { "CookSpeed", 1f }
             }
-        };
+        },
+        { "Hunting", new Dictionary<string, float> { { "HuntingStealth", 2f } } },
+        {
+            "Doctor",
+            new Dictionary<string, float> { { "MedicalTendQualityOffset", 2f }, { "MedicalPotency", 2f } }
+        }
+    };
 
     /// <summary>
     ///     Gets a mapping from <see cref="WorkTypeDef" /> to a set of <see cref="StatDef" />s used for auto-switching.
     ///     The map is built on first access if not already initialized.
     /// </summary>
     [CanBeNull]
-    [UsedImplicitly]
     public static Dictionary<WorkTypeDef, HashSet<StatDef>> AutoSwitchStatsMap
     {
         get
@@ -87,8 +84,7 @@ public class WorkTypeStatMap
         var workTypes = WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.ToList();
         var allRecipes = DefDatabase<RecipeDef>.AllDefsListForReading;
         var workTypeStatDefs = StatHelper.GetStatsByCategory(StatCategory.Work);
-        _defaultStatsMap =
-            new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
+        _defaultStatsMap = new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
         _autoSwitchStatsMap = new Dictionary<WorkTypeDef, HashSet<StatDef>>(workTypes.Count);
         foreach (var workType in workTypes)
         {

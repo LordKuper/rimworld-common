@@ -7,18 +7,17 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides utility methods for drawing labels in the UI.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public static class Labels
 {
     /// <summary>
     ///     The height of a standard label using the medium font.
     /// </summary>
-    [UsedImplicitly] public static readonly float LabelHeight = Text.LineHeightOf(GameFont.Medium);
+    public static readonly float LabelHeight = Text.LineHeightOf(GameFont.Medium);
 
     /// <summary>
     ///     The height of a section header.
     /// </summary>
-    [UsedImplicitly]
     public static readonly float SectionHeaderHeight = Text.LineHeightOf(GameFont.Medium) + 4f;
 
     /// <summary>
@@ -27,8 +26,7 @@ public static class Labels
     /// <param name="rect">The rectangle in which to draw the label.</param>
     /// <param name="label">The text to display.</param>
     /// <param name="anchor">The text alignment.</param>
-    [UsedImplicitly]
-    public static void DoLabel(Rect rect, string label, TextAnchor anchor)
+    public static void DoLabel(Rect rect, [CanBeNull] string label, TextAnchor anchor)
     {
         var font = Text.Font;
         var textAnchor = Text.Anchor;
@@ -45,7 +43,7 @@ public static class Labels
     /// <param name="text">The text.</param>
     /// <param name="font">The font to use for measurement.</param>
     /// <returns>The width in pixels.</returns>
-    internal static float GetTextWidth(string text, GameFont font)
+    internal static float GetTextWidth([NotNull] string text, GameFont font)
     {
         var prevFont = Text.Font;
         Text.Font = font;

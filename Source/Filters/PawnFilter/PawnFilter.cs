@@ -13,24 +13,28 @@ namespace LordKuper.Common.Filters;
 /// <summary>
 ///     Provides filtering logic for pawns.
 /// </summary>
+[PublicAPI]
 public class PawnFilter : IExposable
 {
+    /// <summary>
+    ///     The set of allowed pawn health states for filtering.
+    /// </summary>
     public PawnHealthState AllowedPawnHealthStates = PawnHealthState.None;
 
     /// <summary>
     ///     Defines the set of allowed primary weapon types for pawns.
     /// </summary>
-    public HashSet<PawnPrimaryWeaponType> AllowedPawnPrimaryWeaponTypes = [];
+    [NotNull] public HashSet<PawnPrimaryWeaponType> AllowedPawnPrimaryWeaponTypes = [];
 
     /// <summary>
     ///     The set of allowed pawn types for filtering.
     /// </summary>
-    public HashSet<PawnType> AllowedPawnTypes = [];
+    [NotNull] public HashSet<PawnType> AllowedPawnTypes = [];
 
     /// <summary>
     ///     The set of allowed work passions for filtering.
     /// </summary>
-    public HashSet<Passion> AllowedWorkPassions = [];
+    [NotNull] public HashSet<Passion> AllowedWorkPassions = [];
 
     /// <summary>
     ///     Whether to filter pawns by their capacities.
@@ -77,35 +81,35 @@ public class PawnFilter : IExposable
     /// </summary>
     public bool? FilterWorkPassions;
 
+    /// <summary>
+    ///     The set of forbidden pawn health states for filtering.
+    /// </summary>
     public PawnHealthState ForbiddenPawnHealthStates = PawnHealthState.None;
 
     /// <summary>
     ///     The set of forbidden pawn types for filtering.
     /// </summary>
-    public HashSet<PawnType> ForbiddenPawnTypes = [];
+    [NotNull] public HashSet<PawnType> ForbiddenPawnTypes = [];
 
     /// <summary>
-    ///     The dictionary of pawn capacity limits for filtering.
-    ///     The key is the capacity name, and the value is the allowed range.
+    ///     The list of pawn capacity limits for filtering.
     /// </summary>
-    public List<PawnCapacityLimit> PawnCapacityLimits = [];
+    [NotNull] public List<PawnCapacityLimit> PawnCapacityLimits = [];
 
     /// <summary>
-    ///     The dictionary of pawn skill limits for filtering.
-    ///     The key is the skill name, and the value is the allowed range.
+    ///     The list of pawn skill limits for filtering.
     /// </summary>
-    public List<PawnSkillLimit> PawnSkillLimits = [];
+    [NotNull] public List<PawnSkillLimit> PawnSkillLimits = [];
 
     /// <summary>
     ///     The list of stat limits for filtering pawns.
     /// </summary>
-    public List<StatLimit> PawnStatLimits = [];
+    [NotNull] public List<StatLimit> PawnStatLimits = [];
 
     /// <summary>
-    ///     The dictionary of pawn trait limits for filtering.
-    ///     The key is the trait name, and the value indicates if the trait is required (true) or forbidden (false).
+    ///     The list of pawn trait limits for filtering. Each limit indicates whether its trait is required or forbidden.
     /// </summary>
-    public List<PawnTraitLimit> PawnTraitLimits = [];
+    [NotNull] public List<PawnTraitLimit> PawnTraitLimits = [];
 
     /// <summary>
     ///     Indicates whether the control is in tri-state mode.
@@ -116,7 +120,7 @@ public class PawnFilter : IExposable
     ///     The dictionary of work capacity limits for filtering.
     ///     The key is the work capacity name, and the value indicates if the capacity is required (true) or forbidden (false).
     /// </summary>
-    public Dictionary<WorkTags, bool> WorkCapacityLimits = [];
+    [NotNull] public Dictionary<WorkTags, bool> WorkCapacityLimits = [];
 
     /// <summary>
     ///     Exposes the filter data for saving and loading.
@@ -132,22 +136,20 @@ public class PawnFilter : IExposable
         Scribe_Values.Look(ref AllowedPawnHealthStates, nameof(AllowedPawnHealthStates));
         Scribe_Values.Look(ref ForbiddenPawnHealthStates, nameof(ForbiddenPawnHealthStates));
         Scribe_Values.Look(ref FilterWorkPassions, nameof(FilterWorkPassions));
-        Scribe_Collections.Look(ref AllowedWorkPassions, nameof(AllowedWorkPassions),
-            LookMode.Value);
+        Scribe_Collections.Look(ref AllowedWorkPassions, nameof(AllowedWorkPassions), LookMode.Value);
         Scribe_Values.Look(ref FilterPawnTraits, nameof(FilterPawnTraits));
         Scribe_Collections.Look(ref PawnTraitLimits, nameof(PawnTraitLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterPawnCapacities, nameof(FilterPawnCapacities));
         Scribe_Collections.Look(ref PawnCapacityLimits, nameof(PawnCapacityLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterWorkCapacities, nameof(FilterWorkCapacities));
-        Scribe_Collections.Look(ref WorkCapacityLimits, nameof(WorkCapacityLimits), LookMode.Value,
-            LookMode.Value);
+        Scribe_Collections.Look(ref WorkCapacityLimits, nameof(WorkCapacityLimits), LookMode.Value, LookMode.Value);
         Scribe_Values.Look(ref FilterPawnSkills, nameof(FilterPawnSkills));
         Scribe_Collections.Look(ref PawnSkillLimits, nameof(PawnSkillLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterPawnStats, nameof(FilterPawnStats));
         Scribe_Collections.Look(ref PawnStatLimits, nameof(PawnStatLimits), LookMode.Deep);
         Scribe_Values.Look(ref FilterPawnPrimaryWeaponTypes, nameof(FilterPawnPrimaryWeaponTypes));
-        Scribe_Collections.Look(ref AllowedPawnPrimaryWeaponTypes,
-            nameof(AllowedPawnPrimaryWeaponTypes), LookMode.Value);
+        Scribe_Collections.Look(ref AllowedPawnPrimaryWeaponTypes, nameof(AllowedPawnPrimaryWeaponTypes),
+            LookMode.Value);
     }
 
     /// <summary>
@@ -166,7 +168,6 @@ public class PawnFilter : IExposable
     /// <exception cref="ArgumentNullException">
     ///     Thrown if either <paramref name="main" /> or <paramref name="fallback" /> is <c>null</c>.
     /// </exception>
-    [UsedImplicitly]
     public static PawnFilter Combine([NotNull] PawnFilter main, [NotNull] PawnFilter fallback)
     {
         if (main == null) throw new ArgumentNullException(nameof(main));
@@ -237,8 +238,7 @@ public class PawnFilter : IExposable
         else
         {
             combined.FilterWorkCapacities = fallback.FilterWorkCapacities;
-            combined.WorkCapacityLimits =
-                new Dictionary<WorkTags, bool>(fallback.WorkCapacityLimits);
+            combined.WorkCapacityLimits = new Dictionary<WorkTags, bool>(fallback.WorkCapacityLimits);
         }
         if (main.FilterPawnSkills.HasValue)
         {
@@ -282,7 +282,6 @@ public class PawnFilter : IExposable
     ///     changes to the copy do not affect the original instance, and vice versa.
     /// </remarks>
     /// <returns>A new <see cref="PawnFilter" /> instance with the same configuration and state as the current instance.</returns>
-    [UsedImplicitly]
     [NotNull]
     public PawnFilter Copy()
     {
@@ -303,20 +302,42 @@ public class PawnFilter : IExposable
             ForbiddenPawnTypes = [..ForbiddenPawnTypes],
             PawnCapacityLimits =
             [
-                .. PawnCapacityLimits.Select(l => new PawnCapacityLimit(l.Def) { Limit = l.Limit })
+                .. PawnCapacityLimits.Select(l =>
+                {
+                    var def = l.Def;
+                    return def == null ? null : new PawnCapacityLimit(def) { Limit = l.Limit };
+                }).Where(l => l != null)
             ],
             PawnSkillLimits =
-                [.. PawnSkillLimits.Select(l => new PawnSkillLimit(l.Def) { Limit = l.Limit })],
+            [
+                .. PawnSkillLimits.Select(l =>
+                {
+                    var def = l.Def;
+                    return def == null ? null : new PawnSkillLimit(def) { Limit = l.Limit };
+                }).Where(l => l != null)
+            ],
             PawnStatLimits =
             [
-                .. PawnStatLimits.Select(l => new StatLimit(l.Def)
+                .. PawnStatLimits.Select(l =>
                 {
-                    Limit = l.Limit, LimitMaxCap = l.LimitMaxCap, LimitMinCap = l.LimitMinCap,
-                    ValueStyle = l.ValueStyle
-                })
+                    var def = l.Def;
+                    return def == null
+                        ? null
+                        : new StatLimit(def)
+                        {
+                            Limit = l.Limit, LimitMaxCap = l.LimitMaxCap, LimitMinCap = l.LimitMinCap,
+                            ValueStyle = l.ValueStyle
+                        };
+                }).Where(l => l != null)
             ],
             PawnTraitLimits =
-                [.. PawnTraitLimits.Select(l => new PawnTraitLimit(l.Def) { Limit = l.Limit })],
+            [
+                .. PawnTraitLimits.Select(l =>
+                {
+                    var def = l.Def;
+                    return def == null ? null : new PawnTraitLimit(def) { Limit = l.Limit };
+                }).Where(l => l != null)
+            ],
             TriStateMode = TriStateMode,
             WorkCapacityLimits = new Dictionary<WorkTags, bool>(WorkCapacityLimits),
             FilterPawnPrimaryWeaponTypes = FilterPawnPrimaryWeaponTypes,
@@ -330,10 +351,8 @@ public class PawnFilter : IExposable
     /// <param name="maps">The maps to search for pawns.</param>
     /// <param name="workType">The work type to filter by passion, or null to ignore passion filtering.</param>
     /// <returns>A set of filtered pawns.</returns>
-    [UsedImplicitly]
     [NotNull]
-    public HashSet<Pawn> GetFilteredPawns([NotNull] IEnumerable<Map> maps,
-        [CanBeNull] WorkTypeDef workType)
+    public HashSet<Pawn> GetFilteredPawns([NotNull] IEnumerable<Map> maps, [CanBeNull] WorkTypeDef workType)
     {
         if (maps == null) throw new ArgumentNullException(nameof(maps));
         var pawns = new HashSet<Pawn>();
@@ -365,7 +384,6 @@ public class PawnFilter : IExposable
     /// </param>
     /// <returns>A string containing the formatted summary of the pawn filter configuration.</returns>
     [NotNull]
-    [UsedImplicitly]
     public string GetSummary(int indentationLevel)
     {
         var stringBuilder = new StringBuilder();
@@ -374,8 +392,8 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedPawnTypesLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedPawnTypesLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterPawnTypes.Value
                 ? string.Join(", ", AllowedPawnTypes.Select(Resources.Strings.PawnType.GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
@@ -396,32 +414,30 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedPawnPrimaryWeaponTypesLabel}: ".Colorize(
-                    ColoredText.ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedPawnPrimaryWeaponTypesLabel}: ".Colorize(ColoredText
+                    .ExpectationsColor), indentationLevel);
             stringBuilder.AppendLine(FilterPawnPrimaryWeaponTypes.Value
                 ? string.Join(", ",
-                    AllowedPawnPrimaryWeaponTypes.Select(Resources.Strings.PawnPrimaryWeaponType
-                        .GetLabel))
+                    AllowedPawnPrimaryWeaponTypes.Select(Resources.Strings.PawnPrimaryWeaponType.GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterPawnSkills.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnSkillLimitsLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnSkillLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterPawnSkills.Value
                 ? string.Join(", ",
-                    PawnSkillLimits.Select(l =>
-                        $"{l.Label} [{l.Limit.TrueMin:N0}..{l.Limit.TrueMax:N0}]"))
+                    PawnSkillLimits.Select(l => $"{l.Label} [{l.Limit.TrueMin:N0}..{l.Limit.TrueMax:N0}]"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterWorkPassions.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.AllowedWorkPassionsLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.AllowedWorkPassionsLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterWorkPassions.Value
                 ? string.Join(", ",
                     AllowedWorkPassions.Select(PassionHelper.GetPassionCache).Where(p => p != null)
@@ -432,31 +448,28 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.WorkCapacityLimitsLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.WorkCapacityLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterWorkCapacities.Value
-                ? string.Join(", ",
-                    WorkCapacityLimits.Select(l =>
-                        $"{(l.Value ? "+" : "-")}{l.Key.LabelTranslated()}"))
+                ? string.Join(", ", WorkCapacityLimits.Select(l => $"{(l.Value ? "+" : "-")}{l.Key.LabelTranslated()}"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterPawnTraits.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnTraitLimitsLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnTraitLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterPawnTraits.Value
-                ? string.Join(", ",
-                    PawnTraitLimits.Select(l => $"{(l.Limit ? "+" : "-")}{l.Label}"))
+                ? string.Join(", ", PawnTraitLimits.Select(l => $"{(l.Limit ? "+" : "-")}{l.Label}"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterPawnStats.HasValue)
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnStatLimitsLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnStatLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterPawnStats.Value
                 ? string.Join(", ",
                     PawnStatLimits.Select(l =>
@@ -467,8 +480,8 @@ public class PawnFilter : IExposable
         {
             anyValue = true;
             stringBuilder.AppendIndented(
-                $"{Resources.Strings.PawnFilter.PawnCapacityLimitsLabel}: ".Colorize(ColoredText
-                    .ExpectationsColor), indentationLevel);
+                $"{Resources.Strings.PawnFilter.PawnCapacityLimitsLabel}: ".Colorize(ColoredText.ExpectationsColor),
+                indentationLevel);
             stringBuilder.AppendLine(FilterPawnCapacities.Value
                 ? string.Join(", ",
                     PawnCapacityLimits.Select(l =>
@@ -476,8 +489,7 @@ public class PawnFilter : IExposable
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (!anyValue)
-            stringBuilder.AppendIndented(Resources.Strings.PawnFilter.UndefinedFilterTooltip,
-                indentationLevel);
+            stringBuilder.AppendIndented(Resources.Strings.PawnFilter.UndefinedFilterTooltip, indentationLevel);
         return stringBuilder.ToString();
     }
 
@@ -500,7 +512,6 @@ public class PawnFilter : IExposable
     ///     otherwise, <see langword="false" />.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawn" /> is <see langword="null" />.</exception>
-    [UsedImplicitly]
     public bool SatisfiesFilter([NotNull] Pawn pawn, [CanBeNull] WorkTypeDef workType)
     {
         if (pawn == null) throw new ArgumentNullException(nameof(pawn));
@@ -674,7 +685,6 @@ public class PawnFilter : IExposable
     ///     <see cref="TriStateMode" /> is not enabled. It is intended to maintain consistent  state for filter-related
     ///     settings.
     /// </remarks>
-    [UsedImplicitly]
     public void Validate()
     {
         if (!TriStateMode)

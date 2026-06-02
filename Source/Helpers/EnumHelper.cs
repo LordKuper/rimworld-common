@@ -24,7 +24,6 @@ public static class EnumHelper
     ///     in the specified <paramref name="value" />.
     /// </returns>
     [NotNull]
-    [UsedImplicitly]
     public static T AbsentFlags<T>(T value) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
@@ -53,7 +52,6 @@ public static class EnumHelper
     ///     in <paramref name="excludedFlags" />.
     /// </returns>
     [ItemNotNull]
-    [UsedImplicitly]
     public static IEnumerable<T> GetUniqueFlags<T>(T value, T excludedFlags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
@@ -61,8 +59,7 @@ public static class EnumHelper
         foreach (T flag in Enum.GetValues(typeof(T)))
         {
             var flagLong = Convert.ToInt64(flag);
-            if ((valueLong & flagLong) == flagLong && (excludedLong & flagLong) != flagLong &&
-                flagLong != 0)
+            if ((valueLong & flagLong) == flagLong && (excludedLong & flagLong) != flagLong && flagLong != 0)
                 yield return flag;
         }
     }
@@ -82,7 +79,6 @@ public static class EnumHelper
     ///     specified <paramref name="value" />. The collection will be empty if no flags are set.
     /// </returns>
     [ItemNotNull]
-    [UsedImplicitly]
     public static IEnumerable<T> GetUniqueFlags<T>(T value) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
@@ -104,7 +100,6 @@ public static class EnumHelper
     ///     <see langword="true" /> if all the flags in <paramref name="flags" /> are set in <paramref name="value" />  and
     ///     <paramref name="flags" /> is not zero; otherwise, <see langword="false" />.
     /// </returns>
-    [UsedImplicitly]
     public static bool HasAllFlags<T>(T value, T flags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
@@ -124,7 +119,6 @@ public static class EnumHelper
     ///         langword="false" />
     ///     .
     /// </returns>
-    [UsedImplicitly]
     public static bool HasAnyFlag<T>(T value, T flags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);

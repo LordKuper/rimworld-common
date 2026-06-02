@@ -8,7 +8,7 @@ namespace LordKuper.Common.Cache;
 /// <remarks>
 ///     The cache is updated only if the specified interval in in-game hours has passed since the last update.
 /// </remarks>
-[UsedImplicitly]
+[PublicAPI]
 public abstract class TimedCache
 {
     private readonly float _updateInterval;
@@ -25,11 +25,12 @@ public abstract class TimedCache
     private RimWorldTime _lastUpdate = new(0);
 
     /// <summary>
-    ///     Provides a base class for caches that update at a specified interval of RimWorld time.
+    ///     Initializes a new instance of the <see cref="TimedCache" /> class.
     /// </summary>
-    /// <remarks>
-    ///     The cache is updated only if the specified interval in in-game hours has passed since the last update.
-    /// </remarks>
+    /// <param name="updateInterval">The minimum interval, in in-game hours, between updates.</param>
+    /// <param name="updateOnFirstAccess">
+    ///     Whether the first call to <see cref="Update" /> should report that an update is due.
+    /// </param>
     protected TimedCache(float updateInterval, bool updateOnFirstAccess = false)
     {
         _updateInterval = updateInterval;
@@ -37,13 +38,12 @@ public abstract class TimedCache
     }
 
     /// <summary>
-    ///     Determines whether the cache should be updated based on the given time.
+    ///     Records the given time and reports whether the configured interval has elapsed since the last update.
     /// </summary>
     /// <param name="time">The current RimWorld time.</param>
     /// <returns>
-    ///     <c>true</c> if the cache was updated; otherwise, <c>false</c>.
+    ///     <c>true</c> if the cache is due for an update; otherwise, <c>false</c>.
     /// </returns>
-    [UsedImplicitly]
     public virtual bool Update(RimWorldTime time)
     {
         if (!_hasUpdated)

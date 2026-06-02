@@ -8,12 +8,13 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides utility methods for drawing icon buttons in the UI.
 /// </summary>
+[PublicAPI]
 public static class Buttons
 {
     /// <summary>
     ///     The default height of an action button in pixels.
     /// </summary>
-    [UsedImplicitly] public const float ActionButtonHeight = Layout.GridSize * 8;
+    public const float ActionButtonHeight = Layout.GridSize * 8;
 
     /// <summary>
     ///     The minimum width of an action button in pixels.
@@ -23,7 +24,7 @@ public static class Buttons
     /// <summary>
     ///     The default size (in pixels) for icon buttons.
     /// </summary>
-    [UsedImplicitly] public const float IconButtonSize = Layout.GridSize * 6;
+    public const float IconButtonSize = Layout.GridSize * 6;
 
     /// <summary>
     ///     Draws a standard action button with a label and invokes the specified action when clicked.
@@ -34,8 +35,7 @@ public static class Buttons
     /// <param name="tooltip">The tooltip text to display when hovering over the button. Can be null.</param>
     /// <param name="isEnabled">Indicates whether the button is enabled and interactive. Default is true.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="action" /> is null.</exception>
-    [UsedImplicitly]
-    public static void DoActionButton(Rect rect, string label, [NotNull] Action action,
+    public static void DoActionButton(Rect rect, [CanBeNull] string label, [NotNull] Action action,
         [CanBeNull] string tooltip = null, bool isEnabled = true)
     {
         if (action == null) throw new ArgumentNullException(nameof(action));
@@ -55,9 +55,7 @@ public static class Buttons
     /// <param name="remRect">The remaining rectangle after the row is drawn.</param>
     /// <returns>The height of the button row.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="actionButtons" /> is null.</exception>
-    [UsedImplicitly]
-    public static float DoActionButtonGrid(Rect rect, [NotNull] ActionButton[] actionButtons,
-        out Rect remRect)
+    public static float DoActionButtonGrid(Rect rect, [NotNull] ActionButton[] actionButtons, out Rect remRect)
     {
         if (actionButtons == null) throw new ArgumentNullException(nameof(actionButtons));
         if (actionButtons.Length == 0)
@@ -65,15 +63,13 @@ public static class Buttons
             remRect = rect;
             return 0f;
         }
-        var buttonRects = Layout.GetGridRects(rect, ActionButtonWidthMin, Layout.ElementGapSmall,
-            ActionButtonHeight, Layout.ElementGapSmall, actionButtons.Length, out var height,
-            out remRect);
+        var buttonRects = Layout.GetGridRects(rect, ActionButtonWidthMin, Layout.ElementGapSmall, ActionButtonHeight,
+            Layout.ElementGapSmall, actionButtons.Length, out var height, out remRect);
         for (var i = 0; i < actionButtons.Length; i++)
         {
             var button = actionButtons[i];
             var buttonRect = buttonRects[i];
-            DoActionButton(buttonRect, button.Label, button.Action, button.Tooltip,
-                button.IsEnabled);
+            DoActionButton(buttonRect, button.Label, button.Action, button.Tooltip, button.IsEnabled);
         }
         return height;
     }
@@ -83,7 +79,6 @@ public static class Buttons
     /// </summary>
     /// <param name="rect">The rectangle area where the button will be drawn.</param>
     /// <param name="iconButton">The <see cref="IconButton" /> to display and handle.</param>
-    [UsedImplicitly]
     public static void DoIconButton(Rect rect, IconButton iconButton)
     {
         if (iconButton.IsEnabled)
@@ -119,18 +114,16 @@ public static class Buttons
     ///         name="disabledIcon" />
     ///     is <see langword="null" />.
     /// </exception>
-    [UsedImplicitly]
-    public static void DoIconButtonToggle(Rect rect, [NotNull] Func<bool> getter,
-        [NotNull] Action<bool> setter, string enabledTooltip, [NotNull] Texture2D enabledIcon,
-        string disabledTooltip, [NotNull] Texture2D disabledIcon)
+    public static void DoIconButtonToggle(Rect rect, [NotNull] Func<bool> getter, [NotNull] Action<bool> setter,
+        [CanBeNull] string enabledTooltip, [NotNull] Texture2D enabledIcon, [CanBeNull] string disabledTooltip,
+        [NotNull] Texture2D disabledIcon)
     {
         if (getter == null) throw new ArgumentNullException(nameof(getter));
         if (setter == null) throw new ArgumentNullException(nameof(setter));
         if (enabledIcon == null) throw new ArgumentNullException(nameof(enabledIcon));
         if (disabledIcon == null) throw new ArgumentNullException(nameof(disabledIcon));
         var value = getter();
-        DoIconButtonToggle(rect, ref value, enabledTooltip, enabledIcon, disabledTooltip,
-            disabledIcon);
+        DoIconButtonToggle(rect, ref value, enabledTooltip, enabledIcon, disabledTooltip, disabledIcon);
         setter(value);
     }
 
@@ -155,10 +148,8 @@ public static class Buttons
     /// <param name="enabledIcon">The icon to display when the button is in the enabled state.</param>
     /// <param name="disabledTooltip">The tooltip text to display when the button is in the disabled state.</param>
     /// <param name="disabledIcon">The icon to display when the button is in the disabled state.</param>
-    [UsedImplicitly]
-    public static void DoIconButtonToggle(Rect rect, ref bool value,
-        [CanBeNull] string enabledTooltip, [NotNull] Texture2D enabledIcon,
-        [CanBeNull] string disabledTooltip, [NotNull] Texture2D disabledIcon)
+    public static void DoIconButtonToggle(Rect rect, ref bool value, [CanBeNull] string enabledTooltip,
+        [NotNull] Texture2D enabledIcon, [CanBeNull] string disabledTooltip, [NotNull] Texture2D disabledIcon)
     {
         if (enabledIcon == null) throw new ArgumentNullException(nameof(enabledIcon));
         if (disabledIcon == null) throw new ArgumentNullException(nameof(disabledIcon));

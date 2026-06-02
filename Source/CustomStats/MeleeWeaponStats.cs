@@ -10,13 +10,21 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Provides helper methods and properties for custom melee weapon stats.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public static class MeleeWeaponStats
 {
     /// <summary>
     ///     The category name for custom melee weapon stats.
     /// </summary>
     private const string Category = "MeleeWeapons";
+
+    private static readonly List<StatDef> StatDefList = StatDefNames.Select(defName => new StatDef
+    {
+        defName = defName,
+        label = defName,
+        description = string.Empty,
+        category = CategoryDef
+    }).ToList();
 
     /// <summary>
     ///     The stat category definition for custom melee weapon stats.
@@ -34,32 +42,12 @@ public static class MeleeWeaponStats
     private static IEnumerable<string> StatDefNames =>
         Enum.GetValues(typeof(MeleeWeaponStat)).OfType<MeleeWeaponStat>().Select(GetStatDefName);
 
-    private static readonly List<StatDef> StatDefList = StatDefNames.Select(defName =>
-        new StatDef
-        {
-            defName = defName,
-            label = defName,
-            description = string.Empty,
-            category = CategoryDef
-        }).ToList();
-
     /// <summary>
     ///     Gets the collection of custom stat definitions.
     /// </summary>
+    [NotNull]
+    [ItemNotNull]
     public static IEnumerable<StatDef> StatDefs => StatDefList;
-
-    /// <summary>
-    ///     Updates stat labels and descriptions with translated strings.
-    ///     Called from <see cref="StatHelper" /> post-init after language is loaded.
-    /// </summary>
-    internal static void UpdateLabels()
-    {
-        foreach (var def in StatDefList)
-        {
-            def.label = Resources.Strings.Stats.GetLabel(def.defName);
-            def.description = Resources.Strings.Stats.GetDescription(def.defName);
-        }
-    }
 
     /// <summary>
     ///     Gets the stat definition name for a given <see cref="MeleeWeaponStat" />.
@@ -91,8 +79,21 @@ public static class MeleeWeaponStats
     /// </summary>
     /// <param name="defName">The stat definition name.</param>
     /// <returns><c>true</c> if the definition name is a custom stat; otherwise, <c>false</c>.</returns>
-    public static bool IsCustomStat(string defName)
+    public static bool IsCustomStat([NotNull] string defName)
     {
         return StatDefNames.Contains(defName);
+    }
+
+    /// <summary>
+    ///     Updates stat labels and descriptions with translated strings.
+    ///     Called from <see cref="StatHelper" /> post-init after language is loaded.
+    /// </summary>
+    internal static void UpdateLabels()
+    {
+        foreach (var def in StatDefList)
+        {
+            def.label = Resources.Strings.Stats.GetLabel(def.defName);
+            def.description = Resources.Strings.Stats.GetDescription(def.defName);
+        }
     }
 }

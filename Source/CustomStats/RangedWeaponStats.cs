@@ -10,13 +10,21 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Provides utilities for working with custom ranged weapon statistics.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public static class RangedWeaponStats
 {
     /// <summary>
     ///     The category name for custom ranged weapon stats.
     /// </summary>
     private const string Category = "RangedWeapons";
+
+    private static readonly List<StatDef> StatDefList = StatDefNames.Select(defName => new StatDef
+    {
+        defName = defName,
+        label = defName,
+        description = string.Empty,
+        category = CategoryDef
+    }).ToList();
 
     /// <summary>
     ///     The <see cref="StatCategoryDef" /> for custom ranged weapon stats.
@@ -34,32 +42,12 @@ public static class RangedWeaponStats
     private static IEnumerable<string> StatDefNames =>
         Enum.GetValues(typeof(RangedWeaponStat)).OfType<RangedWeaponStat>().Select(GetStatDefName);
 
-    private static readonly List<StatDef> StatDefList = StatDefNames.Select(defName =>
-        new StatDef
-        {
-            defName = defName,
-            label = defName,
-            description = string.Empty,
-            category = CategoryDef
-        }).ToList();
-
     /// <summary>
     ///     Gets the collection of all <see cref="StatDef" />s for custom ranged weapon stats.
     /// </summary>
+    [NotNull]
+    [ItemNotNull]
     public static IEnumerable<StatDef> StatDefs => StatDefList;
-
-    /// <summary>
-    ///     Updates stat labels and descriptions with translated strings.
-    ///     Called from <see cref="StatHelper" /> post-init after language is loaded.
-    /// </summary>
-    internal static void UpdateLabels()
-    {
-        foreach (var def in StatDefList)
-        {
-            def.label = Resources.Strings.Stats.GetLabel(def.defName);
-            def.description = Resources.Strings.Stats.GetDescription(def.defName);
-        }
-    }
 
     /// <summary>
     ///     Gets the stat definition name for a given <see cref="RangedWeaponStat" />.
@@ -91,8 +79,21 @@ public static class RangedWeaponStats
     /// </summary>
     /// <param name="defName">The stat definition name.</param>
     /// <returns><c>true</c> if the definition name is a custom stat; otherwise, <c>false</c>.</returns>
-    public static bool IsCustomStat(string defName)
+    public static bool IsCustomStat([NotNull] string defName)
     {
         return StatDefNames.Contains(defName);
+    }
+
+    /// <summary>
+    ///     Updates stat labels and descriptions with translated strings.
+    ///     Called from <see cref="StatHelper" /> post-init after language is loaded.
+    /// </summary>
+    internal static void UpdateLabels()
+    {
+        foreach (var def in StatDefList)
+        {
+            def.label = Resources.Strings.Stats.GetLabel(def.defName);
+            def.description = Resources.Strings.Stats.GetDescription(def.defName);
+        }
     }
 }

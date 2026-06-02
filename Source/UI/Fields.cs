@@ -9,7 +9,7 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides utility methods and constants for rendering input fields in the UI.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public static partial class Fields
 {
     /// <summary>
@@ -18,8 +18,8 @@ public static partial class Fields
     /// <param name="rect">The rectangle in which to draw the action buttons.</param>
     /// <param name="actionButtons">A collection of <see cref="IconButton" />s to display.</param>
     /// <param name="remRect">Outputs the remaining rectangle after the buttons are drawn.</param>
-    private static void DoFieldActionButtons(Rect rect,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, out Rect remRect)
+    private static void DoFieldActionButtons(Rect rect, [CanBeNull] IReadOnlyCollection<IconButton> actionButtons,
+        out Rect remRect)
     {
         if (actionButtons == null || actionButtons.Count == 0)
         {
@@ -30,8 +30,7 @@ public static partial class Fields
             (Buttons.IconButtonSize + Layout.ElementGapSmall) * actionButtons.Count, out remRect);
         foreach (var actionButton in actionButtons)
         {
-            var buttonRect =
-                Layout.GetLeftColumnRect(buttonsRect, Buttons.IconButtonSize, out buttonsRect);
+            var buttonRect = Layout.GetLeftColumnRect(buttonsRect, Buttons.IconButtonSize, out buttonsRect);
             Buttons.DoIconButton(buttonRect, actionButton);
             Layout.GetLeftColumnRect(buttonsRect, Layout.ElementGapSmall, out buttonsRect);
         }
@@ -61,8 +60,7 @@ public static partial class Fields
     /// <param name="label">The text to display as the label.</param>
     /// <param name="iconRect">The rectangle in which to draw the icon.</param>
     /// <param name="icon">The icon texture to draw, or null for none.</param>
-    private static void DoFieldLabel(Rect labelRect, [NotNull] string label, Rect iconRect,
-        [CanBeNull] Texture icon)
+    private static void DoFieldLabel(Rect labelRect, [NotNull] string label, Rect iconRect, [CanBeNull] Texture icon)
     {
         if (string.IsNullOrWhiteSpace(label)) throw new ArgumentNullException(nameof(label));
         if (icon != null) DoFieldLabelIcon(iconRect, icon);
@@ -79,8 +77,7 @@ public static partial class Fields
     {
         if (icon == null) throw new ArgumentNullException(nameof(icon));
         if (rect == Rect.zero)
-            throw new ArgumentNullException(nameof(rect),
-                "Icon rectangle must not be zero when an icon is provided.");
+            throw new ArgumentNullException(nameof(rect), "Icon rectangle must not be zero when an icon is provided.");
         Verse.Widgets.DrawTextureFitted(rect, icon, 1f);
     }
 
@@ -95,12 +92,12 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after the field label and buttons are rendered.</param>
     private static void DoFieldLabelWithButtons(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string tooltip, [CanBeNull] Texture icon, out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, [CanBeNull] string tooltip,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         if (string.IsNullOrWhiteSpace(label)) throw new ArgumentNullException(nameof(label));
-        GetLabeledFieldRects(rect, 0.5f, indentationLevel, icon != null, out var labelRect,
-            out remRect, out var iconRect, out var tooltipRect);
+        GetLabeledFieldRects(rect, 0.5f, indentationLevel, icon != null, out var labelRect, out remRect,
+            out var iconRect, out var tooltipRect);
         DoFieldActionButtons(labelRect, actionButtons, out labelRect);
         DoFieldLabel(labelRect, label, iconRect, icon);
         if (!string.IsNullOrWhiteSpace(tooltip))
@@ -142,21 +139,17 @@ public static partial class Fields
     ///     Thrown if <paramref name="labelWidthFactor" /> is outside the range [0.25..0.75] or if
     ///     <paramref name="indentationLevel" /> is negative.
     /// </exception>
-    private static void GetLabeledFieldRects(Rect rowRect, float labelWidthFactor,
-        int indentationLevel, bool icon, out Rect labelRect, out Rect inputRect, out Rect iconRect,
-        out Rect tooltipRect)
+    private static void GetLabeledFieldRects(Rect rowRect, float labelWidthFactor, int indentationLevel, bool icon,
+        out Rect labelRect, out Rect inputRect, out Rect iconRect, out Rect tooltipRect)
     {
         if (labelWidthFactor is < 0.25f or > 0.75f)
             throw new ArgumentOutOfRangeException(nameof(labelWidthFactor),
                 "Label width factor must be in [0.25..0.75] range.");
         if (indentationLevel < 0)
-            throw new ArgumentOutOfRangeException(nameof(indentationLevel),
-                "Indentation level must be non-negative.");
-        labelRect =
-            Layout.GetLeftColumnRect(rowRect, rowRect.width * labelWidthFactor, out inputRect);
+            throw new ArgumentOutOfRangeException(nameof(indentationLevel), "Indentation level must be non-negative.");
+        labelRect = Layout.GetLeftColumnRect(rowRect, rowRect.width * labelWidthFactor, out inputRect);
         if (indentationLevel > 0)
-            Layout.GetLeftColumnRect(labelRect, indentationLevel * Layout.IndentationSize,
-                out labelRect);
+            Layout.GetLeftColumnRect(labelRect, indentationLevel * Layout.IndentationSize, out labelRect);
         tooltipRect = labelRect;
         if (icon)
         {

@@ -5,7 +5,7 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Enumerates all custom ranged weapon statistics.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public enum RangedWeaponStat
 {
     /// <summary>

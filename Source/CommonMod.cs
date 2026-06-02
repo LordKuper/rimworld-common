@@ -10,7 +10,7 @@ namespace LordKuper.Common;
 ///     Represents the core mod class for the LordKuper.Common mod.
 ///     Handles initialization and provides a unique mod identifier.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class CommonMod : Mod
 {
     /// <summary>
@@ -22,10 +22,9 @@ public class CommonMod : Mod
     ///     Initializes a new instance of the <see cref="CommonMod" /> class and logs the initialization message.
     /// </summary>
     /// <param name="content">The mod content pack.</param>
-    public CommonMod(ModContentPack content) : base(content)
+    public CommonMod([NotNull] ModContentPack content) : base(content)
     {
-        Logger.LogMessage(
-            $"Initializing (v.{Assembly.GetExecutingAssembly().GetName().Version})...");
+        Logger.LogMessage($"Initializing (v.{Assembly.GetExecutingAssembly().GetName().Version})...");
         Harmony harmony = new(ModId);
         harmony.PatchAll(Assembly.GetExecutingAssembly());
         Vse.Initialize();

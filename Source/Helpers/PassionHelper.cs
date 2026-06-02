@@ -12,6 +12,7 @@ namespace LordKuper.Common.Helpers;
 /// <summary>
 ///     Provides helper methods and caching for handling <see cref="Passion" /> values and their associated data.
 /// </summary>
+[PublicAPI]
 public static class PassionHelper
 {
     /// <summary>
@@ -34,16 +35,13 @@ public static class PassionHelper
     ///     Gets an ordered, cached list of all <see cref="PassionCache" /> entries.
     /// </summary>
     [NotNull]
-    [UsedImplicitly]
     public static IReadOnlyList<PassionCache> Passions
     {
         get
         {
             Initialize();
-            return _cachedPassions ??= PassionCache.Values
-                .OrderByDescending(pc => pc.Passion == Passion.None)
-                .ThenBy(pc => pc.LearnRateFactor).ThenBy(pc => pc.ForgetRateFactor)
-                .ThenBy(pc => pc.DefName).ToList();
+            return _cachedPassions ??= PassionCache.Values.OrderByDescending(pc => pc.Passion == Passion.None)
+                .ThenBy(pc => pc.LearnRateFactor).ThenBy(pc => pc.ForgetRateFactor).ThenBy(pc => pc.DefName).ToList();
         }
     }
 
@@ -54,7 +52,6 @@ public static class PassionHelper
     /// <returns>
     ///     The <see cref="PassionCache" /> entry if found; otherwise, <c>null</c>.
     /// </returns>
-    [UsedImplicitly]
     [CanBeNull]
     public static PassionCache GetPassionCache(Passion passion)
     {
@@ -74,14 +71,12 @@ public static class PassionHelper
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="defName" /> is null or empty.</exception>
     [CanBeNull]
-    [UsedImplicitly]
     public static PassionCache GetPassionCache([NotNull] string defName)
     {
         Initialize();
         if (string.IsNullOrEmpty(defName))
             throw new ArgumentNullException(nameof(defName), "DefName cannot be null or empty.");
-        return Passions.FirstOrDefault(p =>
-            p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
+        return Passions.FirstOrDefault(p => p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
@@ -94,6 +89,7 @@ public static class PassionHelper
     /// <exception cref="ArgumentOutOfRangeException">
     ///     Thrown if the specified <paramref name="passion" /> is not recognized.
     /// </exception>
+    [NotNull]
     internal static Texture2D GetPassionIcon(Passion passion)
     {
         if (Vse.VanillaSkillsExpandedActive) return Vse.GetIcon(passion);
@@ -117,12 +113,11 @@ public static class PassionHelper
         _cachedPassions = null;
         if (Vse.VanillaSkillsExpandedActive)
         {
-            foreach (var passion in Vse.GetPassions())
+            foreach (var passion in Vse.GetPassions?.Invoke() ?? Enumerable.Empty<Passion>())
             {
                 if (!PassionCache.ContainsKey(passion))
-                    PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion),
-                        Vse.GetLabel(passion), Vse.GetLearnRateFactor(passion),
-                        Vse.GetForgetRateFactor(passion));
+                    PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion), Vse.GetLabel(passion),
+                        Vse.GetLearnRateFactor(passion), Vse.GetForgetRateFactor(passion));
             }
         }
         else
@@ -130,8 +125,8 @@ public static class PassionHelper
             foreach (Passion passion in Enum.GetValues(typeof(Passion)))
             {
                 if (!PassionCache.ContainsKey(passion))
-                    PassionCache[passion] = new PassionCache(passion, passion.ToString(),
-                        passion.GetLabel(), passion.GetLearningFactor(), 1f);
+                    PassionCache[passion] = new PassionCache(passion, passion.ToString(), passion.GetLabel(),
+                        passion.GetLearningFactor(), 1f);
             }
         }
     }

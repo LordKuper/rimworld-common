@@ -11,7 +11,7 @@ namespace LordKuper.Common;
 /// <summary>
 ///     Represents a rule that associates a work type with a set of stat weights for evaluating things.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class WorkTypeThingRule : IExposable
 {
     /// <summary>
@@ -49,7 +49,7 @@ public class WorkTypeThingRule : IExposable
     ///     name.
     /// </summary>
     /// <param name="workTypeDefName">The name of the work type definition.</param>
-    public WorkTypeThingRule(string workTypeDefName)
+    public WorkTypeThingRule([CanBeNull] string workTypeDefName)
     {
         _workTypeDefName = workTypeDefName;
     }
@@ -76,7 +76,6 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the default rules for all work types defined in <see cref="WorkTypeStatMap.DefaultStatsMap" />.
     /// </summary>
-    [UsedImplicitly]
     [NotNull]
     public static IEnumerable<WorkTypeThingRule> DefaultRules
     {
@@ -85,8 +84,7 @@ public class WorkTypeThingRule : IExposable
             var rules = new List<WorkTypeThingRule>();
             if (WorkTypeStatMap.DefaultStatsMap == null)
             {
-                Logger.LogError(
-                    "Tried to get default WorkTypeThingRules with uninitialized WorkTypeStatMap.");
+                Logger.LogError("Tried to get default WorkTypeThingRules with uninitialized WorkTypeStatMap.");
                 return rules;
             }
             foreach (var map in WorkTypeStatMap.DefaultStatsMap)
@@ -94,7 +92,9 @@ public class WorkTypeThingRule : IExposable
                 var rule = new WorkTypeThingRule(map.Key.defName);
                 foreach (var statWeight in map.Value.Values)
                 {
-                    rule.SetStatWeight(statWeight.StatDef, statWeight.Weight, statWeight.Protected);
+                    var statDef = statWeight.StatDef;
+                    if (statDef != null)
+                        rule.SetStatWeight(statDef, statWeight.Weight, statWeight.Protected);
                 }
                 rules.Add(rule);
             }
@@ -105,12 +105,10 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the label for this rule, using the short label of the work type if available.
     /// </summary>
-    [UsedImplicitly]
+    [CanBeNull]
     public string Label =>
         WorkTypeDef != null
-            ? WorkTypeDef.labelShort.NullOrEmpty()
-                ? WorkTypeDefName
-                : WorkTypeDef.labelShort.CapitalizeFirst()
+            ? WorkTypeDef.labelShort.NullOrEmpty() ? WorkTypeDefName : WorkTypeDef.labelShort.CapitalizeFirst()
             : WorkTypeDefName;
 
     /// <summary>
@@ -141,6 +139,7 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the name of the work type definition associated with this rule.
     /// </summary>
+    [CanBeNull]
     public string WorkTypeDefName => _workTypeDefName;
 
     /// <summary>
@@ -149,15 +148,13 @@ public class WorkTypeThingRule : IExposable
     public void ExposeData()
     {
         Scribe_Values.Look(ref _workTypeDefName, nameof(WorkTypeDefName));
-        Scribe_Collections.Look(ref _statWeights, nameof(StatWeights), LookMode.Value,
-            LookMode.Deep);
+        Scribe_Collections.Look(ref _statWeights, nameof(StatWeights), LookMode.Value, LookMode.Deep);
     }
 
     /// <summary>
     ///     Removes the <see cref="StatWeight" /> associated with the specified stat definition name from this rule.
     /// </summary>
     /// <param name="statDefName">The name of the stat definition to remove.</param>
-    [UsedImplicitly]
     public void DeleteStatWeight([NotNull] string statDefName)
     {
         _ = _statWeights.Remove(statDefName);
@@ -169,7 +166,6 @@ public class WorkTypeThingRule : IExposable
     /// <returns>
     ///     An enumerable list of <see cref="ThingDef" /> objects sorted descending by their calculated score.
     /// </returns>
-    [UsedImplicitly]
     [NotNull]
     public IEnumerable<ThingDef> GetGloballyAvailableItems()
     {
@@ -203,14 +199,13 @@ public class WorkTypeThingRule : IExposable
     /// <param name="thing">The thing to score.</param>
     /// <returns>The calculated score.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="thing" /> is null.</exception>
-    [UsedImplicitly]
     public float GetThingScore([NotNull] Thing thing)
     {
         return thing == null
             ? throw new ArgumentNullException(nameof(thing))
             : _statWeights.Values.Where(sw => sw.StatDef != null).Sum(sw =>
-                StatRanges.NormalizeStatValue(sw.StatDef,
-                    StatHelper.GetStatValueDeviation(thing, sw.StatDef)) * sw.Weight);
+                StatRanges.NormalizeStatValue(sw.StatDef, StatHelper.GetStatValueDeviation(thing, sw.StatDef)) *
+                sw.Weight);
     }
 
     /// <summary>
@@ -226,11 +221,9 @@ public class WorkTypeThingRule : IExposable
             throw new NullReferenceException("Tried to access uninitialized WorkTypeStatMap.");
         if (!WorkTypeStatMap.DefaultStatsMap.TryGetValue(_workTypeDef, out var defaultStatWeights))
             return;
-        foreach (var kvp in defaultStatWeights.Where(kvp =>
-                     !_statWeights.ContainsKey(kvp.Key.defName)))
+        foreach (var kvp in defaultStatWeights.Where(kvp => !_statWeights.ContainsKey(kvp.Key.defName)))
         {
-            _statWeights.Add(kvp.Key.defName,
-                new StatWeight(kvp.Key, kvp.Value.Weight, kvp.Value.Protected));
+            _statWeights.Add(kvp.Key.defName, new StatWeight(kvp.Key, kvp.Value.Weight, kvp.Value.Protected));
         }
     }
 
@@ -244,7 +237,6 @@ public class WorkTypeThingRule : IExposable
     ///     protection status remains unchanged.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="statDef" /> is <see langword="null" />.</exception>
-    [UsedImplicitly]
     public void SetStatWeight([NotNull] StatDef statDef, float weight, bool? isProtected = null)
     {
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));

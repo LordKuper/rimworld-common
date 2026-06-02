@@ -8,6 +8,7 @@ namespace LordKuper.Common.Helpers;
 /// <summary>
 ///     Provides extension methods for retrieving user-friendly labels from <see cref="Def" /> instances.
 /// </summary>
+[PublicAPI]
 public static class DefHelper
 {
     /// <summary>
@@ -35,10 +36,11 @@ public static class DefHelper
     /// </summary>
     /// <param name="def">The <see cref="Def" /> instance. Must not be null.</param>
     /// <returns>
-    ///     The capitalized label if available, otherwise the <c>defName</c>.
+    ///     For a <see cref="WorkTypeDef" />, its capitalized label, then short label, then <c>defName</c>;
+    ///     for any other def, the capitalized label if available, otherwise the <c>defName</c>.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    [UsedImplicitly]
+    [NotNull]
     public static string GetLabel([NotNull] this Def def)
     {
         if (def == null) throw new ArgumentNullException(nameof(def), "Def cannot be null.");

@@ -8,6 +8,7 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides utility methods for rendering checkboxes in the UI.
 /// </summary>
+[PublicAPI]
 public static class Checkboxes
 {
     /// <summary>

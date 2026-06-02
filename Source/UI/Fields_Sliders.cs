@@ -21,11 +21,11 @@ public static partial class Fields
     /// <param name="minValue">The minimum value of the slider.</param>
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="step">The step size for the slider.</param>
-    private static void DoFloatRangeSlider(Rect rect, int inputId, ref FloatRange value,
-        float minValue, float maxValue, float step)
+    private static void DoFloatRangeSlider(Rect rect, int inputId, ref FloatRange value, float minValue, float maxValue,
+        float step)
     {
-        Verse.Widgets.FloatRange(rect, inputId, ref value, minValue, maxValue,
-            valueStyle: ToStringStyle.FloatMaxTwo, roundTo: step);
+        Verse.Widgets.FloatRange(rect, inputId, ref value, minValue, maxValue, valueStyle: ToStringStyle.FloatMaxTwo,
+            roundTo: step);
     }
 
     /// <summary>
@@ -36,11 +36,10 @@ public static partial class Fields
     /// <param name="minValue">The minimum value of the slider.</param>
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="step">The step size for the slider.</param>
-    private static void DoFloatSlider(Rect rect, ref float value, float minValue, float maxValue,
-        float step)
+    private static void DoFloatSlider(Rect rect, ref float value, float minValue, float maxValue, float step)
     {
-        value = Verse.Widgets.HorizontalSlider(rect, value, minValue, maxValue, true, $"{value:N2}",
-            $"{minValue:N2}", $"{maxValue:N2}", step);
+        value = Verse.Widgets.HorizontalSlider(rect, value, minValue, maxValue, true, $"{value:N2}", $"{minValue:N2}",
+            $"{maxValue:N2}", step);
     }
 
     /// <summary>
@@ -51,11 +50,9 @@ public static partial class Fields
     /// <param name="minValue">The minimum value of the slider.</param>
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="roundToInt">Whether to round the slider value to an integer.</param>
-    private static void DoFrequencySlider(Rect rect, ref float value, float minValue,
-        float maxValue, bool roundToInt)
+    private static void DoFrequencySlider(Rect rect, ref float value, float minValue, float maxValue, bool roundToInt)
     {
-        value = Verse.Widgets.FrequencyHorizontalSlider(rect, value, minValue, maxValue,
-            roundToInt);
+        value = Verse.Widgets.FrequencyHorizontalSlider(rect, value, minValue, maxValue, roundToInt);
     }
 
     /// <summary>
@@ -67,12 +64,12 @@ public static partial class Fields
     /// <param name="minValue">The minimum value of the slider.</param>
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="step">The step size for the slider.</param>
-    private static void DoIntegerRangeSlider(Rect rect, int inputId, ref IntRange value,
-        int minValue, int maxValue, float step)
+    private static void DoIntegerRangeSlider(Rect rect, int inputId, ref IntRange value, int minValue, int maxValue,
+        float step)
     {
         var buffer = new FloatRange(value.min, value.max);
-        Verse.Widgets.FloatRange(rect, inputId, ref buffer, minValue, maxValue,
-            valueStyle: ToStringStyle.FloatMaxTwo, roundTo: step);
+        Verse.Widgets.FloatRange(rect, inputId, ref buffer, minValue, maxValue, valueStyle: ToStringStyle.FloatMaxTwo,
+            roundTo: step);
         value.min = Mathf.RoundToInt(buffer.min);
         value.max = Mathf.RoundToInt(buffer.max);
     }
@@ -85,11 +82,10 @@ public static partial class Fields
     /// <param name="minValue">The minimum value of the slider.</param>
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="step">The step size for the slider.</param>
-    private static void DoIntegerSlider(Rect rect, ref int value, int minValue, int maxValue,
-        int step)
+    private static void DoIntegerSlider(Rect rect, ref int value, int minValue, int maxValue, int step)
     {
-        value = (int)Verse.Widgets.HorizontalSlider(rect, value, minValue, maxValue, true,
-            $"{value:N0}", $"{minValue:N0}", $"{maxValue:N0}", step);
+        value = (int)Verse.Widgets.HorizontalSlider(rect, value, minValue, maxValue, true, $"{value:N0}",
+            $"{minValue:N0}", $"{maxValue:N0}", step);
     }
 
     /// <summary>
@@ -108,15 +104,13 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledFloatRangeSlider(Rect rect, int inputId, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref FloatRange value, float minValue, float maxValue, float step, [CanBeNull] Texture icon,
-        out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref FloatRange value, float minValue, float maxValue, float step,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoFloatRangeSlider(inputRect, inputId, ref value, minValue, maxValue, step);
         return SliderRowHeight;
     }
@@ -136,15 +130,13 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledFloatSlider(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref float value, float minValue, float maxValue, float step, [CanBeNull] Texture icon,
-        out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref float value, float minValue, float maxValue, float step,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoFloatSlider(inputRect, ref value, minValue, maxValue, step);
         return SliderRowHeight;
     }
@@ -164,15 +156,13 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledFrequencySlider(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref float value, float minValue, float maxValue, bool roundToInt, [CanBeNull] Texture icon,
-        out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref float value, float minValue, float maxValue, bool roundToInt,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoFrequencySlider(inputRect, ref value, minValue, maxValue, roundToInt);
         return SliderRowHeight;
     }
@@ -193,15 +183,13 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledIntegerRangeSlider(Rect rect, int inputId, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref IntRange value, int minValue, int maxValue, int step, [CanBeNull] Texture icon,
-        out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref IntRange value, int minValue, int maxValue, int step,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoIntegerRangeSlider(inputRect, inputId, ref value, minValue, maxValue, step);
         return SliderRowHeight;
     }
@@ -221,15 +209,13 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledIntegerSlider(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref int value, int minValue, int maxValue, int step, [CanBeNull] Texture icon,
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref int value, int minValue, int maxValue, int step, [CanBeNull] Texture icon,
         out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoIntegerSlider(inputRect, ref value, minValue, maxValue, step);
         return SliderRowHeight;
     }
@@ -251,15 +237,13 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <param name="style">The style to use for displaying the value.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledPercentRangeSlider(Rect rect, int inputId, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref FloatRange value, float minValue, float maxValue, float step, ToStringStyle style,
-        [CanBeNull] Texture icon, out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref FloatRange value, float minValue, float maxValue, float step,
+        ToStringStyle style, [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoPercentRangeSlider(inputRect, inputId, ref value, minValue, maxValue, step, style);
         return SliderRowHeight;
     }
@@ -279,15 +263,13 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
-    [UsedImplicitly]
     public static float DoLabeledPercentSlider(Rect rect, int indentationLevel,
-        IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, string labelTooltip,
-        ref float value, float minValue, float maxValue, float step, [CanBeNull] Texture icon,
-        out Rect remRect)
+        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
+        [CanBeNull] string labelTooltip, ref float value, float minValue, float maxValue, float step,
+        [CanBeNull] Texture icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
-            out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
         DoPercentSlider(inputRect, ref value, minValue, maxValue, step);
         return SliderRowHeight;
     }
@@ -302,11 +284,10 @@ public static partial class Fields
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="step">The step size for the slider.</param>
     /// <param name="style">The style to use for displaying the value.</param>
-    private static void DoPercentRangeSlider(Rect rect, int inputId, ref FloatRange value,
-        float minValue, float maxValue, float step, ToStringStyle style)
+    private static void DoPercentRangeSlider(Rect rect, int inputId, ref FloatRange value, float minValue,
+        float maxValue, float step, ToStringStyle style)
     {
-        Verse.Widgets.FloatRange(rect, inputId, ref value, minValue, maxValue, valueStyle: style,
-            roundTo: step);
+        Verse.Widgets.FloatRange(rect, inputId, ref value, minValue, maxValue, valueStyle: style, roundTo: step);
     }
 
     /// <summary>
@@ -317,11 +298,10 @@ public static partial class Fields
     /// <param name="minValue">The minimum value of the slider.</param>
     /// <param name="maxValue">The maximum value of the slider.</param>
     /// <param name="step">The step size for the slider.</param>
-    private static void DoPercentSlider(Rect rect, ref float value, float minValue, float maxValue,
-        float step)
+    private static void DoPercentSlider(Rect rect, ref float value, float minValue, float maxValue, float step)
     {
-        value = Verse.Widgets.HorizontalSlider(rect, value, minValue, maxValue, true, $"{value:P0}",
-            $"{minValue:P0}", $"{maxValue:P0}", step);
+        value = Verse.Widgets.HorizontalSlider(rect, value, minValue, maxValue, true, $"{value:P0}", $"{minValue:P0}",
+            $"{maxValue:P0}", step);
     }
 
     /// <summary>

@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using JetBrains.Annotations;
 using LordKuper.Common.Cache;
@@ -12,7 +11,7 @@ namespace LordKuper.Common.Filters.Limits;
 ///     Represents a limit for a specific <see cref="PawnCapacityDef" />.
 ///     Provides range constraints and value step for UI sliders.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
 {
     internal const float LimitMaxCap = 5f;
@@ -20,33 +19,55 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     internal const ToStringStyle ValueStyle = ToStringStyle.PercentZero;
     private string _maxValueBuffer;
     private string _minValueBuffer;
-    private float _valueStep;
+
+    /// <summary>
+    ///     The allowed value range for the capacity, clamped between <see cref="LimitMinCap" /> and
+    ///     <see cref="LimitMaxCap" />.
+    /// </summary>
     public FloatRange Limit = new(LimitMinCap, LimitMaxCap);
 
-    [UsedImplicitly]
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class.
+    /// </summary>
     public PawnCapacityLimit() { }
 
-    [UsedImplicitly]
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class for the capacity with the specified
+    ///     def name.
+    /// </summary>
+    /// <param name="pawnCapacityDefName">The def name of the <see cref="PawnCapacityDef" /> to limit.</param>
     public PawnCapacityLimit([NotNull] string pawnCapacityDefName) : base(pawnCapacityDefName) { }
 
-    [UsedImplicitly]
-    public PawnCapacityLimit([NotNull] string pawnCapacityDefName, float? minValue, float? maxValue)
-        : this(pawnCapacityDefName)
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class for the capacity with the specified
+    ///     def name and value bounds.
+    /// </summary>
+    /// <param name="pawnCapacityDefName">The def name of the <see cref="PawnCapacityDef" /> to limit.</param>
+    /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
+    /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
+    public PawnCapacityLimit([NotNull] string pawnCapacityDefName, float? minValue, float? maxValue) : this(
+        pawnCapacityDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
     }
 
-    public PawnCapacityLimit([NotNull] PawnCapacityDef def) : base(def.defName)
-    {
-        if (def == null) throw new ArgumentNullException(nameof(def));
-    }
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class from the specified
+    ///     <see cref="PawnCapacityDef" /> instance.
+    /// </summary>
+    /// <param name="def">The capacity definition to limit.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
+    public PawnCapacityLimit([NotNull] PawnCapacityDef def) : base(GetDefName(def)) { }
 
+    /// <summary>
+    ///     Gets or sets the upper bound of the allowed range, or <c>null</c> when no upper bound is set
+    ///     (the value is at <see cref="LimitMaxCap" />). Setting clamps the value between
+    ///     <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
+    /// </summary>
     public float? MaxValue
     {
-        get => string.IsNullOrEmpty(_maxValueBuffer) && Mathf.Approximately(Limit.max, LimitMaxCap)
-            ? null
-            : Limit.max;
+        get => string.IsNullOrEmpty(_maxValueBuffer) && Mathf.Approximately(Limit.max, LimitMaxCap) ? null : Limit.max;
         set
         {
             if (!value.HasValue)
@@ -60,6 +81,10 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the UI text-input buffer for the upper bound. Parses valid numeric input into
+    ///     <see cref="MaxValue" /> and otherwise retains the raw text.
+    /// </summary>
     [NotNull]
     public string MaxValueBuffer
     {
@@ -74,19 +99,21 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 MaxValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
-                    out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
                 MaxValue = parsed;
             else
                 _maxValueBuffer = value;
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the lower bound of the allowed range, or <c>null</c> when no lower bound is set
+    ///     (the value is at <see cref="LimitMinCap" />). Setting clamps the value between
+    ///     <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
+    /// </summary>
     public float? MinValue
     {
-        get => string.IsNullOrEmpty(_minValueBuffer) && Mathf.Approximately(Limit.min, LimitMinCap)
-            ? null
-            : Limit.min;
+        get => string.IsNullOrEmpty(_minValueBuffer) && Mathf.Approximately(Limit.min, LimitMinCap) ? null : Limit.min;
         set
         {
             if (!value.HasValue)
@@ -100,6 +127,10 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the UI text-input buffer for the lower bound. Parses valid numeric input into
+    ///     <see cref="MinValue" /> and otherwise retains the raw text.
+    /// </summary>
     [NotNull]
     public string MinValueBuffer
     {
@@ -114,26 +145,37 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 MinValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
-                    out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
                 MinValue = parsed;
             else
                 _minValueBuffer = value;
         }
     }
 
+    /// <summary>
+    ///     Gets the resolved <see cref="PawnCapacityDef" /> for this limit, or <c>null</c> if it could not be resolved.
+    /// </summary>
+    [CanBeNull]
     public PawnCapacityDef PawnCapacityDef => Def;
+
+    /// <summary>
+    ///     Gets the def name of the capacity this limit targets, or <c>null</c> if none is set.
+    /// </summary>
+    [CanBeNull]
     public string PawnCapacityDefName => DefName;
 
     internal float ValueStep
     {
         get
         {
-            if (_valueStep == 0f) _valueStep = Fields.GetFloatSliderStepByValueStyle(ValueStyle);
-            return _valueStep;
+            if (field == 0f) field = Fields.GetFloatSliderStepByValueStyle(ValueStyle);
+            return field;
         }
     }
 
+    /// <summary>
+    ///     Serializes the limit's state (def name and value range) for saving and loading.
+    /// </summary>
     public new void ExposeData()
     {
         base.ExposeData();
