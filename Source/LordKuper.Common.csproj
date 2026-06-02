@@ -8,7 +8,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>..\1.6\Assemblies\</OutputPath>
-    <Version>1.6.3.4</Version>
+    <Version>1.6.4.0</Version>
     <Company>LordKuper</Company>
     <Product>LordKuper.Common</Product>
     <Copyright>Copyright ©LordKuper</Copyright>
