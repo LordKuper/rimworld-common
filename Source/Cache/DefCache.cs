@@ -71,7 +71,7 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// <summary>
     ///     Serializes the def name for saving/loading.
     /// </summary>
-    public void ExposeData()
+    public virtual void ExposeData()
     {
         Scribe_Values.Look(ref _defName, nameof(DefName));
     }
