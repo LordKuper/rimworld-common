@@ -37,8 +37,7 @@ public class EnumHelperTests
     [Fact]
     public void AbsentFlags_AllFlagsPresent_ReturnsNone()
     {
-        const TestFlags value =
-            TestFlags.FlagA | TestFlags.FlagB | TestFlags.FlagC | TestFlags.FlagD;
+        const TestFlags value = TestFlags.FlagA | TestFlags.FlagB | TestFlags.FlagC | TestFlags.FlagD;
         var absent = EnumHelper.AbsentFlags(value);
         Assert.Equal(TestFlags.None, absent);
     }

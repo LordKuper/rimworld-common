@@ -1,11 +1,8 @@
-﻿using JetBrains.Annotations;
-
-namespace LordKuper.Common;
+﻿namespace LordKuper.Common;
 
 /// <summary>
 ///     Represents the category of a stat.
 /// </summary>
-[UsedImplicitly]
 public enum StatCategory
 {
     /// <summary>

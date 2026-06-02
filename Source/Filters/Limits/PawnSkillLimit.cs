@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using JetBrains.Annotations;
 using LordKuper.Common.Cache;
@@ -12,7 +11,7 @@ namespace LordKuper.Common.Filters.Limits;
 ///     Represents a skill limit filter for a pawn, based on a specific <see cref="SkillDef" />.
 ///     Stores a range for the allowed skill level and supports serialization.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class PawnSkillLimit : DefCache<SkillDef>, IExposable
 {
     internal const int LimitMaxCap = 20;
@@ -20,27 +19,49 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     internal const int ValueStep = 1;
     private string _maxValueBuffer;
     private string _minValueBuffer;
+
+    /// <summary>
+    ///     The allowed skill level range, clamped between <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
+    /// </summary>
     public IntRange Limit = new(LimitMinCap, LimitMaxCap);
 
-    [UsedImplicitly]
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class.
+    /// </summary>
     public PawnSkillLimit() { }
 
-    [UsedImplicitly]
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class for the skill with the specified def name.
+    /// </summary>
+    /// <param name="skillDefName">The def name of the <see cref="SkillDef" /> to limit.</param>
     public PawnSkillLimit([NotNull] string skillDefName) : base(skillDefName) { }
 
-    [UsedImplicitly]
-    public PawnSkillLimit([NotNull] string skillDefName, float? minValue, float? maxValue) : this(
-        skillDefName)
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class for the skill with the specified def name
+    ///     and value bounds.
+    /// </summary>
+    /// <param name="skillDefName">The def name of the <see cref="SkillDef" /> to limit.</param>
+    /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
+    /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
+    public PawnSkillLimit([NotNull] string skillDefName, float? minValue, float? maxValue) : this(skillDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
     }
 
-    public PawnSkillLimit([NotNull] SkillDef def) : base(def.defName)
-    {
-        if (def == null) throw new ArgumentNullException(nameof(def));
-    }
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class from the specified <see cref="SkillDef" />
+    ///     instance.
+    /// </summary>
+    /// <param name="def">The skill definition to limit.</param>
+    /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
+    public PawnSkillLimit([NotNull] SkillDef def) : base(GetDefName(def)) { }
 
+    /// <summary>
+    ///     Gets or sets the upper bound of the allowed skill level, or <c>null</c> when no upper bound is set
+    ///     (the value is at <see cref="LimitMaxCap" />). Setting clamps and rounds the value between
+    ///     <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
+    /// </summary>
     public float? MaxValue
     {
         get => string.IsNullOrEmpty(_maxValueBuffer) && Limit.max == LimitMaxCap ? null : Limit.max;
@@ -57,6 +78,10 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the UI text-input buffer for the upper bound. Parses valid numeric input into
+    ///     <see cref="MaxValue" /> and otherwise retains the raw text.
+    /// </summary>
     [NotNull]
     public string MaxValueBuffer
     {
@@ -71,14 +96,18 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MaxValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
-                    out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
                 MaxValue = parsed;
             else
                 _maxValueBuffer = value;
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the lower bound of the allowed skill level, or <c>null</c> when no lower bound is set
+    ///     (the value is at <see cref="LimitMinCap" />). Setting clamps and rounds the value between
+    ///     <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
+    /// </summary>
     public float? MinValue
     {
         get => string.IsNullOrEmpty(_minValueBuffer) && Limit.min == LimitMinCap ? null : Limit.min;
@@ -95,6 +124,10 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
         }
     }
 
+    /// <summary>
+    ///     Gets or sets the UI text-input buffer for the lower bound. Parses valid numeric input into
+    ///     <see cref="MinValue" /> and otherwise retains the raw text.
+    /// </summary>
     [NotNull]
     public string MinValueBuffer
     {
@@ -109,17 +142,28 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MinValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
-                    out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
                 MinValue = parsed;
             else
                 _minValueBuffer = value;
         }
     }
 
+    /// <summary>
+    ///     Gets the resolved <see cref="SkillDef" /> for this limit, or <c>null</c> if it could not be resolved.
+    /// </summary>
+    [CanBeNull]
     public SkillDef SkillDef => Def;
+
+    /// <summary>
+    ///     Gets the def name of the skill this limit targets, or <c>null</c> if none is set.
+    /// </summary>
+    [CanBeNull]
     public string SkillDefName => DefName;
 
+    /// <summary>
+    ///     Serializes the limit's state (def name and value range) for saving and loading.
+    /// </summary>
     public new void ExposeData()
     {
         base.ExposeData();

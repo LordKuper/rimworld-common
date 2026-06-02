@@ -6,21 +6,23 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides layout utilities for UI elements.
 /// </summary>
+[PublicAPI]
 public static class Layout
 {
     /// <summary>
     ///     The gap in pixels between UI elements.
     /// </summary>
-    [UsedImplicitly] public const float ElementGap = GridSize * 3;
+    public const float ElementGap = GridSize * 3;
 
     /// <summary>
     ///     The smaller gap in pixels between UI elements.
     /// </summary>
-    [UsedImplicitly] public const float ElementGapSmall = GridSize * 2;
+    public const float ElementGapSmall = GridSize * 2;
 
-    /// The smallest gap in pixels between UI elements.
+    /// <summary>
+    ///     The smallest gap in pixels between UI elements.
     /// </summary>
-    [UsedImplicitly] public const float ElementGapTiny = GridSize;
+    public const float ElementGapTiny = GridSize;
 
     /// <summary>
     ///     The base grid size in pixels.
@@ -40,12 +42,12 @@ public static class Layout
     /// <summary>
     ///     The default height in pixels for a row.
     /// </summary>
-    [UsedImplicitly] public const float RowHeight = GridSize * 8;
+    public const float RowHeight = GridSize * 8;
 
     /// <summary>
     ///     The height in pixels for a large row.
     /// </summary>
-    [UsedImplicitly] public const float RowHeightLarge = GridSize * 10;
+    public const float RowHeightLarge = GridSize * 10;
 
     /// <summary>
     ///     Draws two horizontal gap lines and returns the remaining rectangle below the lines.
@@ -90,7 +92,6 @@ public static class Layout
     /// <param name="remRect">
     ///     When this method returns, contains the remaining rectangle to the right of the drawn line.
     /// </param>
-    [UsedImplicitly]
     public static void DoGapLineVertical(Rect rect, out Rect remRect)
     {
         var color = GUI.color;
@@ -106,7 +107,6 @@ public static class Layout
     /// <param name="rect">The original rectangle from which the top row and remaining area are calculated.</param>
     /// <param name="remRect">When this method returns, contains the remaining rectangle after the top row is extracted.</param>
     /// <returns>A <see cref="Rect" /> representing the top row rectangle, adjusted by the vertical gap.</returns>
-    [UsedImplicitly]
     public static Rect DoVerticalGap(Rect rect, out Rect remRect)
     {
         return GetTopRowRect(rect, ElementGap, out remRect);
@@ -130,7 +130,6 @@ public static class Layout
     /// <param name="rowHeight">The height of the bottom row to extract.</param>
     /// <param name="remRect">The remaining rectangle above the bottom row.</param>
     /// <returns>The rectangle representing the bottom row.</returns>
-    [UsedImplicitly]
     public static Rect GetBottomRowRect(Rect rect, float rowHeight, out Rect remRect)
     {
         remRect = rect;
@@ -155,7 +154,6 @@ public static class Layout
     ///     If the specified width or height is greater than the dimensions of <paramref name="rect" />, the original
     ///     rectangle is returned.
     /// </returns>
-    [UsedImplicitly]
     public static Rect GetCenteredRect(Rect rect, float width, float height)
     {
         if (rect.width <= width || rect.height <= height)
@@ -178,9 +176,7 @@ public static class Layout
     ///     rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
     ///     <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="Rect.zero" />.
     /// </returns>
-    [UsedImplicitly]
-    public static Rect GetCenterRowRect(Rect rect, float rowHeight, out Rect topRect,
-        out Rect bottomRect)
+    public static Rect GetCenterRowRect(Rect rect, float rowHeight, out Rect topRect, out Rect bottomRect)
     {
         if (rect.height <= rowHeight)
         {
@@ -194,8 +190,8 @@ public static class Layout
     }
 
     [NotNull]
-    internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap,
-        float rowHeight, float rowGap, int cellCount, out float gridHeight, out Rect remRect)
+    internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap, float rowHeight, float rowGap,
+        int cellCount, out float gridHeight, out Rect remRect)
     {
         var columnCount = Mathf.FloorToInt(rect.width / (minColumnWidth + columnGap));
         if (cellCount < columnCount)
@@ -210,8 +206,8 @@ public static class Layout
         {
             var row = i / columnCount;
             var column = i % columnCount;
-            rects[i] = new Rect(rect.x + column * (columnWidth + columnGap),
-                rect.y + row * (rowHeight + rowGap), columnWidth, rowHeight);
+            rects[i] = new Rect(rect.x + column * (columnWidth + columnGap), rect.y + row * (rowHeight + rowGap),
+                columnWidth, rowHeight);
         }
         return rects;
     }
@@ -223,7 +219,6 @@ public static class Layout
     /// <param name="columnWidth">The width of the left column to extract.</param>
     /// <param name="remRect">The remaining rectangle to the right of the left column.</param>
     /// <returns>The rectangle representing the left column.</returns>
-    [UsedImplicitly]
     public static Rect GetLeftColumnRect(Rect rect, float columnWidth, out Rect remRect)
     {
         remRect = rect;
@@ -238,7 +233,6 @@ public static class Layout
     /// <param name="columnWidth">The width of the right column to extract.</param>
     /// <param name="remRect">The remaining rectangle to the left of the right column.</param>
     /// <returns>The rectangle representing the right column.</returns>
-    [UsedImplicitly]
     public static Rect GetRightColumnRect(Rect rect, float columnWidth, out Rect remRect)
     {
         remRect = rect;
@@ -253,7 +247,6 @@ public static class Layout
     /// <param name="rowHeight">The height of the top row to extract.</param>
     /// <param name="remRect">The remaining rectangle below the top row.</param>
     /// <returns>The rectangle representing the top row.</returns>
-    [UsedImplicitly]
     public static Rect GetTopRowRect(Rect rect, float rowHeight, out Rect remRect)
     {
         remRect = rect;

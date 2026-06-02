@@ -8,6 +8,7 @@ namespace LordKuper.Common.Helpers;
 /// <summary>
 ///     Provides helper methods for appending indented text to a <see cref="StringBuilder" />.
 /// </summary>
+[PublicAPI]
 public static class TextHelper
 {
     /// <summary>
@@ -37,9 +38,7 @@ public static class TextHelper
     /// <exception cref="ArgumentNullException">
     ///     Thrown if <paramref name="sb" /> is <c>null</c> or <paramref name="text" /> is <c>null</c> or empty.
     /// </exception>
-    [UsedImplicitly]
-    public static void AppendIndented([NotNull] this StringBuilder sb, [NotNull] string text,
-        int indentationLevel)
+    public static void AppendIndented([NotNull] this StringBuilder sb, [NotNull] string text, int indentationLevel)
     {
         if (sb == null) throw new ArgumentNullException(nameof(sb));
         if (text.NullOrEmpty()) throw new ArgumentNullException(nameof(text));
@@ -57,9 +56,7 @@ public static class TextHelper
     /// <exception cref="ArgumentNullException">
     ///     Thrown if <paramref name="sb" /> is <c>null</c> or <paramref name="text" /> is <c>null</c> or empty.
     /// </exception>
-    [UsedImplicitly]
-    public static void AppendLineIndented([NotNull] this StringBuilder sb, [NotNull] string text,
-        int indentationLevel)
+    public static void AppendLineIndented([NotNull] this StringBuilder sb, [NotNull] string text, int indentationLevel)
     {
         if (sb == null) throw new ArgumentNullException(nameof(sb));
         if (text.NullOrEmpty()) throw new ArgumentNullException(nameof(text));

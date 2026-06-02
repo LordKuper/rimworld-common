@@ -1,11 +1,8 @@
-﻿using JetBrains.Annotations;
-
-namespace LordKuper.Common.Filters;
+﻿namespace LordKuper.Common.Filters;
 
 /// <summary>
 ///     Specifies the primary weapon type of pawn.
 /// </summary>
-[UsedImplicitly]
 public enum PawnPrimaryWeaponType
 {
     /// <summary>

@@ -8,6 +8,7 @@ namespace LordKuper.Common.Helpers;
 /// <summary>
 ///     Provides utility methods for mathematical operations.
 /// </summary>
+[PublicAPI]
 public static class MathHelper
 {
     /// <summary>
@@ -16,7 +17,6 @@ public static class MathHelper
     /// <param name="value">The value to normalize.</param>
     /// <param name="range">The range to normalize within.</param>
     /// <returns>The normalized value.</returns>
-    [UsedImplicitly]
     public static float NormalizeValue(float value, FloatRange range)
     {
         value = Mathf.Clamp(value, range.min, range.max);

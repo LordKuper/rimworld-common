@@ -9,7 +9,7 @@ namespace LordKuper.Common;
 /// <summary>
 ///     Provides a cache for storing stat values of a <see cref="Thing" /> and manages cache updates based on a timer.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class ThingCache
 {
     /// <summary>
@@ -20,7 +20,7 @@ public class ThingCache
     /// <summary>
     ///     Stores cached stat values for the associated <see cref="Thing" />.
     /// </summary>
-    [UsedImplicitly] protected readonly Dictionary<StatDef, float> StatValues = new();
+    [NotNull] protected readonly Dictionary<StatDef, float> StatValues = new();
 
     /// <summary>
     ///     The last time the cache was updated.
@@ -42,7 +42,7 @@ public class ThingCache
     /// <summary>
     ///     Gets the <see cref="Thing" /> associated with this cache.
     /// </summary>
-    [UsedImplicitly]
+    [NotNull]
     public Thing Thing { get; }
 
     /// <summary>
@@ -52,7 +52,6 @@ public class ThingCache
     /// <returns>
     ///     <c>true</c> if the cache was updated; otherwise, <c>false</c>.
     /// </returns>
-    [UsedImplicitly]
     public virtual bool Update(RimWorldTime time)
     {
         var hoursPassed = time - _updateTime;

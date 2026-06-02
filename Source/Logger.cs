@@ -8,6 +8,7 @@ namespace LordKuper.Common;
 ///     Provides logging utilities for error, warning, and informational messages,
 ///     with support for mod identification and exception details.
 /// </summary>
+[PublicAPI]
 public static class Logger
 {
     /// <summary>
@@ -29,8 +30,7 @@ public static class Logger
     /// <param name="modId">The mod identifier.</param>
     /// <param name="message">The error message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    [UsedImplicitly]
-    public static void LogError(string modId, string message,
+    public static void LogError([NotNull] string modId, [NotNull] string message,
         [CanBeNull] Exception exception = null)
     {
         Log.Error($"{modId}: {AppendExceptionMessage(message, exception)}");
@@ -41,7 +41,7 @@ public static class Logger
     /// </summary>
     /// <param name="message">The error message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    internal static void LogError(string message, [CanBeNull] Exception exception = null)
+    internal static void LogError([NotNull] string message, [CanBeNull] Exception exception = null)
     {
         LogError(CommonMod.ModId, message, exception);
     }
@@ -51,8 +51,7 @@ public static class Logger
     /// </summary>
     /// <param name="modId">The mod identifier.</param>
     /// <param name="message">The message to log.</param>
-    [UsedImplicitly]
-    public static void LogMessage(string modId, string message)
+    public static void LogMessage([NotNull] string modId, [NotNull] string message)
     {
         Log.Message($"{modId}: {message}");
     }
@@ -61,7 +60,7 @@ public static class Logger
     ///     Logs a message using the default mod ID.
     /// </summary>
     /// <param name="message">The message to log.</param>
-    internal static void LogMessage(string message)
+    internal static void LogMessage([NotNull] string message)
     {
         LogMessage(CommonMod.ModId, message);
     }
@@ -72,8 +71,7 @@ public static class Logger
     /// <param name="modId">The mod identifier.</param>
     /// <param name="message">The warning message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    [UsedImplicitly]
-    public static void LogWarning(string modId, string message,
+    public static void LogWarning([NotNull] string modId, [NotNull] string message,
         [CanBeNull] Exception exception = null)
     {
         Log.Warning($"{modId}: {AppendExceptionMessage(message, exception)}");
@@ -84,7 +82,7 @@ public static class Logger
     /// </summary>
     /// <param name="message">The warning message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    internal static void LogWarning(string message, [CanBeNull] Exception exception = null)
+    internal static void LogWarning([NotNull] string message, [CanBeNull] Exception exception = null)
     {
         LogWarning(CommonMod.ModId, message, exception);
     }

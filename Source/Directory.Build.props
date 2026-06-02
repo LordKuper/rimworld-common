@@ -1,7 +1,7 @@
 <Project>
-  <PropertyGroup>
-    <RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
-    <RimWorldDir Condition="'$(RimWorldDir)' == ''">d:\Games\SteamLibrary\steamapps\common\RimWorld</RimWorldDir>
-    <RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
-  </PropertyGroup>
+	<PropertyGroup>
+		<RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
+		<RimWorldDir Condition="'$(RimWorldDir)' == ''">d:\Games\SteamLibrary\steamapps\common\RimWorld</RimWorldDir>
+		<RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
+	</PropertyGroup>
 </Project>

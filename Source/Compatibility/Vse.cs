@@ -17,6 +17,7 @@ public static class Vse
     /// <summary>
     ///     Delegate type for retrieving all <see cref="Passion" /> values from VSE.
     /// </summary>
+    [NotNull]
     public delegate IEnumerable<Passion> GetPassionsDelegate();
 
     /// <summary>
@@ -47,7 +48,7 @@ public static class Vse
     /// <summary>
     ///     Delegate for retrieving all available passions from VSE.
     /// </summary>
-    [UsedImplicitly] public static GetPassionsDelegate GetPassions;
+    [CanBeNull] public static GetPassionsDelegate GetPassions;
 
     /// <summary>
     ///     Cache for mapping <see cref="Passion" /> to their corresponding VSE passion definitions.
@@ -57,7 +58,7 @@ public static class Vse
     /// <summary>
     ///     Indicates whether the Vanilla Skills Expanded mod is active.
     /// </summary>
-    [UsedImplicitly] public static bool VanillaSkillsExpandedActive;
+    public static bool VanillaSkillsExpandedActive;
 
     /// <summary>
     ///     Gets the VSE <see cref="Def" /> for the specified <see cref="Passion" />.
@@ -79,7 +80,7 @@ public static class Vse
     /// </summary>
     /// <param name="passion">The passion to query.</param>
     /// <returns>The defName string.</returns>
-    [UsedImplicitly]
+    [NotNull]
     public static string GetDefName(Passion passion)
     {
         return GetDef(passion).defName;
@@ -91,7 +92,6 @@ public static class Vse
     /// <param name="passion">The passion to query.</param>
     /// <returns>The forget rate factor.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the field is not initialized or not a float.</exception>
-    [UsedImplicitly]
     public static float GetForgetRateFactor(Passion passion)
     {
         var def = GetDef(passion);
@@ -109,7 +109,6 @@ public static class Vse
     /// <returns>The icon as a <see cref="Texture2D" />.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the property is not initialized or not a Texture2D.</exception>
     [NotNull]
-    [UsedImplicitly]
     public static Texture2D GetIcon(Passion passion)
     {
         var passionDef = GetPassionDef(passion);
@@ -125,7 +124,7 @@ public static class Vse
     /// </summary>
     /// <param name="passion">The passion to query.</param>
     /// <returns>The label string.</returns>
-    [UsedImplicitly]
+    [NotNull]
     public static string GetLabel(Passion passion)
     {
         var def = GetDef(passion);
@@ -138,7 +137,6 @@ public static class Vse
     /// <param name="passion">The passion to query.</param>
     /// <returns>The learn rate factor.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the field is not initialized or not a float.</exception>
-    [UsedImplicitly]
     public static float GetLearnRateFactor(Passion passion)
     {
         var def = GetDef(passion);
@@ -178,44 +176,37 @@ public static class Vse
             "vanillaexpanded.skills".Equals(m.PackageId, StringComparison.OrdinalIgnoreCase));
         if (!VanillaSkillsExpandedActive) return;
 #if DEBUG
-            Logger.LogMessage("Vanilla Skills Expanded detected.");
+        Logger.LogMessage("Vanilla Skills Expanded detected.");
 #endif
         try
         {
             var passionManager = AccessTools.TypeByName("VSE.Passions.PassionManager") ??
-                                 throw new InvalidOperationException(
-                                     "Could not find 'PassionManager' type.");
+                                 throw new InvalidOperationException("Could not find 'PassionManager' type.");
             GetPassions = AccessTools.MethodDelegate<GetPassionsDelegate>(
                 AccessTools.PropertyGetter(passionManager, "AllPassions"));
             if (GetPassions == null)
-                throw new InvalidOperationException(
-                    "Could not create 'GetPassions' method delegate.");
+                throw new InvalidOperationException("Could not create 'GetPassions' method delegate.");
             _passionToDef = AccessTools.MethodDelegate<PassionToDefDelegate>(
                 AccessTools.Method(passionManager, "PassionToDef"));
             if (_passionToDef == null)
-                throw new InvalidOperationException(
-                    "Could not create 'PassionToDef' method delegate.");
+                throw new InvalidOperationException("Could not create 'PassionToDef' method delegate.");
             var passionDef = AccessTools.TypeByName("VSE.Passions.PassionDef") ??
-                             throw new InvalidOperationException(
-                                 "Could not find 'PassionDef' type.");
+                             throw new InvalidOperationException("Could not find 'PassionDef' type.");
             _learnRateFactorField = AccessTools.Field(passionDef, "learnRateFactor");
             if (_learnRateFactorField == null)
-                throw new InvalidOperationException(
-                    "Could not find 'learnRateFactor' field in 'PassionDef'.");
+                throw new InvalidOperationException("Could not find 'learnRateFactor' field in 'PassionDef'.");
             if (_learnRateFactorField.FieldType != typeof(float))
                 throw new InvalidOperationException(
                     $"Expected 'learnRateFactor' field to be of type float, but found {_learnRateFactorField.FieldType.Name}.");
             _forgetRateFactorField = AccessTools.Field(passionDef, "forgetRateFactor");
             if (_forgetRateFactorField == null)
-                throw new InvalidOperationException(
-                    "Could not find 'forgetRateFactor' field in 'PassionDef'.");
+                throw new InvalidOperationException("Could not find 'forgetRateFactor' field in 'PassionDef'.");
             if (_forgetRateFactorField.FieldType != typeof(float))
                 throw new InvalidOperationException(
                     $"Expected 'forgetRateFactor' field to be of type float, but found {_forgetRateFactorField.FieldType.Name}.");
             _iconProperty = AccessTools.Property(passionDef, "Icon");
             if (_iconProperty == null)
-                throw new InvalidOperationException(
-                    "Could not find 'Icon' property in 'PassionDef'.");
+                throw new InvalidOperationException("Could not find 'Icon' property in 'PassionDef'.");
             if (_iconProperty.PropertyType != typeof(Texture2D))
                 throw new InvalidOperationException(
                     $"Expected 'Icon' property to be of type Texture2D, but found {_iconProperty.PropertyType.Name}.");

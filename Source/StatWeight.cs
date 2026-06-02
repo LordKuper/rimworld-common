@@ -8,6 +8,7 @@ namespace LordKuper.Common;
 /// <summary>
 ///     Represents a weighted stat definition, with optional protection and serialization support.
 /// </summary>
+[PublicAPI]
 public class StatWeight : IExposable
 {
     /// <summary>
@@ -31,8 +32,7 @@ public class StatWeight : IExposable
     /// </summary>
     /// <param name="statDef">The stat definition.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight([NotNull] StatDef statDef, bool isProtected) : this(statDef.defName,
-        isProtected)
+    internal StatWeight([NotNull] StatDef statDef, bool isProtected) : this(statDef.defName, isProtected)
     {
         _statDef = statDef;
         _isInitialized = true;
@@ -45,8 +45,7 @@ public class StatWeight : IExposable
     /// <param name="statDef">The stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight([NotNull] StatDef statDef, float weight, bool isProtected) : this(statDef,
-        isProtected)
+    internal StatWeight([NotNull] StatDef statDef, float weight, bool isProtected) : this(statDef, isProtected)
     {
         Weight = weight;
     }
@@ -54,7 +53,6 @@ public class StatWeight : IExposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatWeight" /> class.
     /// </summary>
-    [UsedImplicitly]
     public StatWeight() { }
 
     /// <summary>
@@ -75,8 +73,7 @@ public class StatWeight : IExposable
     /// <param name="statDefName">The name of the stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    public StatWeight(string statDefName, float weight, bool isProtected) : this(statDefName,
-        isProtected)
+    public StatWeight([CanBeNull] string statDefName, float weight, bool isProtected) : this(statDefName, isProtected)
     {
         Weight = weight;
     }
@@ -93,7 +90,7 @@ public class StatWeight : IExposable
     /// <summary>
     ///     Gets the <see cref="StatDef" /> associated with this instance.
     /// </summary>
-    [UsedImplicitly]
+    [CanBeNull]
     public StatDef StatDef
     {
         get
@@ -106,6 +103,7 @@ public class StatWeight : IExposable
     /// <summary>
     ///     Gets the name of the stat definition.
     /// </summary>
+    [CanBeNull]
     public string StatDefName => _statDefName;
 
     /// <summary>

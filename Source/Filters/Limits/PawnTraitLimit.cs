@@ -7,28 +7,29 @@ using Verse;
 namespace LordKuper.Common.Filters.Limits;
 
 /// <summary>
-///     Represents a limit for a pawn capacity stat.
+///     Represents a limit for a specific <see cref="TraitDef" />, indicating whether the trait is required or forbidden.
 ///     Inherits from <see cref="DefCache{T}" /> for caching the <see cref="TraitDef" />.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class PawnTraitLimit : DefCache<TraitDef>, IExposable
 {
+    /// <summary>
+    ///     Indicates whether the trait is required (<c>true</c>) or forbidden (<c>false</c>).
+    /// </summary>
     public bool Limit;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnTraitLimit" /> class.
     /// </summary>
-    [UsedImplicitly]
     public PawnTraitLimit() { }
 
     /// <summary>
-    ///     Initializes a new instance of the <see cref="PawnTraitLimit" /> class with the specified stat definition.
+    ///     Initializes a new instance of the <see cref="PawnTraitLimit" /> class with the specified trait definition.
     /// </summary>
-    /// <param name="def">The stat definition to use for limits and formatting.</param>
+    /// <param name="def">The trait definition to limit.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public PawnTraitLimit([NotNull] TraitDef def) : base(def.defName)
+    public PawnTraitLimit([NotNull] TraitDef def) : base(GetDefName(def))
     {
-        if (def == null) throw new ArgumentNullException(nameof(def));
         Limit = true;
     }
 

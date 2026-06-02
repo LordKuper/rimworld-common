@@ -7,7 +7,7 @@ namespace LordKuper.Common.Filters;
 ///     Represents the available pawn filter sections for rendering.
 ///     Supports bitwise combination of multiple sections.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 [Flags]
 public enum PawnFilterSections
 {
@@ -64,6 +64,6 @@ public enum PawnFilterSections
     /// <summary>
     ///     All filter sections.
     /// </summary>
-    All = PawnTypes | PawnHealthStates | PawnSkills | WorkPassions | WorkCapacities | PawnTraits |
-          PawnStats | PawnCapacities | PawnPrimaryWeaponTypes
+    All = PawnTypes | PawnHealthStates | PawnSkills | WorkPassions | WorkCapacities | PawnTraits | PawnStats |
+          PawnCapacities | PawnPrimaryWeaponTypes
 }

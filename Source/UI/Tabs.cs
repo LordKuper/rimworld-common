@@ -9,7 +9,7 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides utility methods for tabbed UI elements.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public static class Tabs
 {
     /// <summary>
@@ -42,19 +42,17 @@ public static class Tabs
     ///     Delegate to draw the bottom fixed region. Should return the height used for the bottom region.
     ///     If null, the bottom region is omitted.
     /// </param>
-    [UsedImplicitly]
-    public static void DoTab(Rect tabRect, float topFixedHeight,
-        [CanBeNull] Action<Rect> doTopContentAction, float scrollableContentHeight,
-        ref Vector2 scrollPosition, [CanBeNull] Action<Rect> doScrollableContentAction,
+    public static void DoTab(Rect tabRect, float topFixedHeight, [CanBeNull] Action<Rect> doTopContentAction,
+        float scrollableContentHeight, ref Vector2 scrollPosition, [CanBeNull] Action<Rect> doScrollableContentAction,
         float bottomFixedHeight, [CanBeNull] Action<Rect> doBottomContentAction)
     {
         GetTabRects(tabRect, doTopContentAction == null ? 0f : topFixedHeight,
-            doBottomContentAction == null ? 0f : bottomFixedHeight, out var topFixedRect,
-            out var scrollableRect, out var bottomFixedRect);
+            doBottomContentAction == null ? 0f : bottomFixedHeight, out var topFixedRect, out var scrollableRect,
+            out var bottomFixedRect);
         doTopContentAction?.Invoke(topFixedRect);
         if (doScrollableContentAction != null)
-            ScrollView.DoScrollableContent(scrollableRect, scrollableContentHeight,
-                ref scrollPosition, doScrollableContentAction);
+            ScrollView.DoScrollableContent(scrollableRect, scrollableContentHeight, ref scrollPosition,
+                doScrollableContentAction);
         doBottomContentAction?.Invoke(bottomFixedRect);
     }
 
@@ -66,8 +64,7 @@ public static class Tabs
     /// <returns>
     ///     The rectangle representing the area of the active tab.
     /// </returns>
-    [UsedImplicitly]
-    public static Rect DoTabs(Rect container, List<TabRecord> tabs)
+    public static Rect DoTabs(Rect container, [NotNull] List<TabRecord> tabs)
     {
         var tabDrawerRect = container;
         tabDrawerRect.yMin += 32f;
@@ -102,13 +99,11 @@ public static class Tabs
     /// <exception cref="ArgumentOutOfRangeException">
     ///     Thrown if the combined height of the fixed regions exceeds the available tab area.
     /// </exception>
-    [UsedImplicitly]
-    public static void GetTabRects(Rect tabRect, float topFixedHeight, float bottomFixedHeight,
-        out Rect topFixedRect, out Rect scrollableRect, out Rect bottomFixedRect)
+    public static void GetTabRects(Rect tabRect, float topFixedHeight, float bottomFixedHeight, out Rect topFixedRect,
+        out Rect scrollableRect, out Rect bottomFixedRect)
     {
         if (topFixedHeight + bottomFixedHeight > tabRect.height - 100f)
-            throw new ArgumentOutOfRangeException("Height of fixed regions is too large.",
-                (Exception)null);
+            throw new ArgumentOutOfRangeException("Height of fixed regions is too large.", (Exception)null);
         var remRect = tabRect;
         if (topFixedHeight > 0)
         {

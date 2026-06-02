@@ -11,6 +11,7 @@ namespace LordKuper.Common.Helpers;
 /// <summary>
 ///     Provides helper methods and properties for working with StatDefs and stat values.
 /// </summary>
+[PublicAPI]
 public static class StatHelper
 {
     /// <summary>
@@ -130,7 +131,7 @@ public static class StatHelper
     /// </summary>
     /// <param name="category">The stat category.</param>
     /// <returns>A read-only collection of <see cref="StatDef" /> for the specified category.</returns>
-    [UsedImplicitly]
+    [NotNull]
     public static IReadOnlyCollection<StatDef> GetStatsByCategory(StatCategory category)
     {
         if (Stats.TryGetValue(category, out var stats)) return stats;
@@ -176,9 +177,7 @@ public static class StatHelper
         }
         catch (Exception exception)
         {
-            Logger.LogWarning(
-                $"Could not evaluate stat '{statDef.LabelCap}' of {thing.LabelCapNoCount}.",
-                exception);
+            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {thing.LabelCapNoCount}.", exception);
             return 0f;
         }
     }
@@ -217,8 +216,7 @@ public static class StatHelper
         }
         catch (Exception exception)
         {
-            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {def.LabelCap}",
-                exception);
+            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {def.LabelCap}", exception);
             return 0f;
         }
     }
@@ -271,8 +269,7 @@ public static class StatHelper
     private static void InitializeCustomStats()
     {
         _customStatsDefs = new SortedSet<StatDef>(
-            MeleeWeaponStats.StatDefs.Concat(RangedWeaponStats.StatDefs).Concat(ToolStats.StatDefs),
-            Comparer);
+            MeleeWeaponStats.StatDefs.Concat(RangedWeaponStats.StatDefs).Concat(ToolStats.StatDefs), Comparer);
     }
 
     /// <summary>
@@ -390,7 +387,6 @@ public static class StatHelper
     ///     Updates custom stat labels/descriptions and rebuilds sorted collections.
     /// </summary>
     [StaticConstructorOnStartup]
-    [UsedImplicitly]
     private static class PostInit
     {
         static PostInit()

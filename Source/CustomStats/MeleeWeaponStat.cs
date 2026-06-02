@@ -5,7 +5,7 @@ namespace LordKuper.Common.CustomStats;
 /// <summary>
 ///     Enumerates the custom melee weapon stats available for use.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public enum MeleeWeaponStat
 {
     /// <summary>

@@ -7,7 +7,7 @@ namespace LordKuper.Common.UI;
 /// <summary>
 ///     Provides utility methods for rendering scrollable UI sections.
 /// </summary>
-[UsedImplicitly]
+[PublicAPI]
 public class ScrollView
 {
     /// <summary>
@@ -25,8 +25,8 @@ public class ScrollView
     /// <param name="doContentAction">
     ///     A delegate that renders the content.
     /// </param>
-    internal static void DoScrollableContent(Rect containerRect, float contentHeight,
-        ref Vector2 scrollPosition, [NotNull] Action<Rect> doContentAction)
+    internal static void DoScrollableContent(Rect containerRect, float contentHeight, ref Vector2 scrollPosition,
+        [NotNull] Action<Rect> doContentAction)
     {
         var scrollViewRect = new Rect(containerRect.x, containerRect.y,
             containerRect.width - GUI.skin.verticalScrollbar.fixedWidth - 4f, contentHeight);
