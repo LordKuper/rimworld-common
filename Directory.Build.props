@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <RimWorldManagedDir Condition="'$(RimWorldManagedDir)' == '' AND '$(RIMWORLD_MANAGED)' != ''">$(RIMWORLD_MANAGED)</RimWorldManagedDir>
+    <RimWorldManagedDir Condition="'$(RimWorldManagedDir)' == ''">d:\Games\SteamLibrary\steamapps\common\RimWorld\RimWorldWin64_Data\Managed</RimWorldManagedDir>
+  </PropertyGroup>
+</Project>
