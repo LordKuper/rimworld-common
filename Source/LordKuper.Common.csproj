@@ -1,48 +1,36 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E80CCD84-5C19-420B-8A2B-AD0AE5D1E1DF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>LordKuper.Common</RootNamespace>
     <AssemblyName>LordKuper.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\1.6\Assemblies\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutputPath>..\1.6\Assemblies\</OutputPath>
+    <Version>1.6.3.4</Version>
+    <Company>LordKuper</Company>
+    <Product>LordKuper.Common</Product>
+    <Copyright>Copyright ©LordKuper</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>portable</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\1.6\Assemblies\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>0</WarningLevel>
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Lib.Harmony.2.4.2\lib\net472\0Harmony.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
+    <PackageReference Include="Lib.Harmony" Version="2.4.2">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>runtime</ExcludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(RimWorldManagedDir)\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(RimWorldManagedDir)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
@@ -56,69 +44,5 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Cache\PassionCache.cs" />
-    <Compile Include="Cache\TimedCache.cs" />
-    <Compile Include="CommonMod.cs" />
-    <Compile Include="Compatibility\Vse.cs" />
-    <Compile Include="CustomStats\MeleeWeaponStat.cs" />
-    <Compile Include="CustomStats\MeleeWeaponStats.cs" />
-    <Compile Include="CustomStats\RangedWeaponStat.cs" />
-    <Compile Include="CustomStats\RangedWeaponStats.cs" />
-    <Compile Include="CustomStats\ToolStat.cs" />
-    <Compile Include="CustomStats\ToolStats.cs" />
-    <Compile Include="Filters\Limits\PawnSkillLimit.cs" />
-    <Compile Include="Filters\Limits\PawnTraitLimit.cs" />
-    <Compile Include="Filters\Limits\PawnCapacityLimit.cs" />
-    <Compile Include="Filters\PawnFilter\PawnFilterSections.cs" />
-    <Compile Include="Filters\PawnFilter\PawnPrimaryWeaponType.cs" />
-    <Compile Include="Helpers\EnumHelper.cs" />
-    <Compile Include="Helpers\MathHelper.cs" />
-    <Compile Include="Helpers\PawnHelper.cs" />
-    <Compile Include="Helpers\StatDefCategoryComparer.cs" />
-    <Compile Include="Helpers\DefHelper.cs" />
-    <Compile Include="Helpers\PassionHelper.cs" />
-    <Compile Include="Cache\DefCache.cs" />
-    <Compile Include="Helpers\TextHelper.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Filters\PawnFilter\PawnFilter.cs" />
-    <Compile Include="Filters\PawnFilter\PawnHealthState.cs" />
-    <Compile Include="Filters\Limits\StatLimit.cs" />
-    <Compile Include="Filters\PawnFilter\PawnType.cs" />
-    <Compile Include="StatCategory.cs" />
-    <Compile Include="StatRanges.cs" />
-    <Compile Include="ThingCache.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resources.cs" />
-    <Compile Include="RimWorldTime.cs" />
-    <Compile Include="SkillStatMap.cs" />
-    <Compile Include="Helpers\StatHelper.cs" />
-    <Compile Include="StatWeight.cs" />
-    <Compile Include="UI\ActionButton.cs" />
-    <Compile Include="UI\Checkboxes.cs" />
-    <Compile Include="UI\Fields_Inputs.cs" />
-    <Compile Include="UI\Fields_Selectors.cs" />
-    <Compile Include="UI\Fields_Sliders.cs" />
-    <Compile Include="UI\Fields_Checkbox.cs" />
-    <Compile Include="UI\IconButton.cs" />
-    <Compile Include="UI\Buttons.cs" />
-    <Compile Include="UI\Icons.cs" />
-    <Compile Include="UI\Layout.cs" />
-    <Compile Include="UI\ScrollView.cs" />
-    <Compile Include="UI\Tabs.cs" />
-    <Compile Include="UI\Fields.cs" />
-    <Compile Include="UI\Labels.cs" />
-    <Compile Include="UI\Widgets\PawnBox.cs" />
-    <Compile Include="UI\Widgets\PawnFilterWidget.cs" />
-    <Compile Include="UI\Widgets\ThingIconBox.cs" />
-    <Compile Include="UI\Sections.cs" />
-    <Compile Include="UI\Widgets\WorkTypeThingRuleWidget.cs" />
-    <Compile Include="UI\Windows.cs" />
-    <Compile Include="WorkTypeThingRule.cs" />
-    <Compile Include="WorkTypeStatMap.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>
