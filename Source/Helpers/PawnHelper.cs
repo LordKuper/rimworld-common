@@ -79,11 +79,8 @@ public static class PawnHelper
         if (weapon == null)
             return PawnPrimaryWeaponType.None;
         var def = weapon.def;
-        if (def.IsMeleeWeapon)
-            return PawnPrimaryWeaponType.Melee;
-        if (def.IsRangedWeapon)
-            return PawnPrimaryWeaponType.Ranged;
-        return PawnPrimaryWeaponType.Undefined;
+        return def.IsMeleeWeapon ? PawnPrimaryWeaponType.Melee :
+            def.IsRangedWeapon ? PawnPrimaryWeaponType.Ranged : PawnPrimaryWeaponType.Undefined;
     }
 
     /// <summary>

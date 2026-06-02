@@ -56,8 +56,7 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
         var yearComparison = Year.CompareTo(other.Year);
         if (yearComparison != 0) return yearComparison;
         var dayComparison = Day.CompareTo(other.Day);
-        if (dayComparison != 0) return dayComparison;
-        return Hour.CompareTo(other.Hour);
+        return dayComparison != 0 ? dayComparison : Hour.CompareTo(other.Hour);
     }
 
     /// <summary>

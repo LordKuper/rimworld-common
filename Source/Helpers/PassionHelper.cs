@@ -74,9 +74,9 @@ public static class PassionHelper
     public static PassionCache GetPassionCache([NotNull] string defName)
     {
         Initialize();
-        if (string.IsNullOrEmpty(defName))
-            throw new ArgumentNullException(nameof(defName), "DefName cannot be null or empty.");
-        return Passions.FirstOrDefault(p => p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
+        return string.IsNullOrEmpty(defName)
+            ? throw new ArgumentNullException(nameof(defName), "DefName cannot be null or empty.")
+            : Passions.FirstOrDefault(p => p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>

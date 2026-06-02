@@ -19,9 +19,7 @@ public static class Logger
     /// <returns>The combined message.</returns>
     private static string AppendExceptionMessage(string message, [CanBeNull] Exception exception)
     {
-        if (exception != null)
-            return $"{message}{Environment.NewLine}{exception}";
-        return message;
+        return exception != null ? $"{message}{Environment.NewLine}{exception}" : message;
     }
 
     /// <summary>

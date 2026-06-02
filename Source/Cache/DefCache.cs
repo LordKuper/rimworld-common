@@ -85,8 +85,7 @@ public abstract class DefCache<T> : IExposable where T : Def
     [NotNull]
     protected static string GetDefName([NotNull] T def)
     {
-        if (def == null) throw new ArgumentNullException(nameof(def));
-        return def.defName;
+        return def == null ? throw new ArgumentNullException(nameof(def)) : def.defName;
     }
 
     /// <summary>
