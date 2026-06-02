@@ -17,7 +17,7 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Stores all relevant <see cref="ThingDef" /> objects for evaluation.
     /// </summary>
-    private static HashSet<ThingDef> _allRelevantThings;
+    private static HashSet<ThingDef>? _allRelevantThings;
 
     /// <summary>
     ///     Indicates whether the rule has been initialized.
@@ -32,12 +32,12 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     The <see cref="WorkTypeDef" /> associated with this rule.
     /// </summary>
-    private WorkTypeDef _workTypeDef;
+    private WorkTypeDef? _workTypeDef;
 
     /// <summary>
     ///     The name of the work type definition associated with this rule.
     /// </summary>
-    private string _workTypeDefName;
+    private string? _workTypeDefName;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="WorkTypeThingRule" /> class.
@@ -49,7 +49,7 @@ public class WorkTypeThingRule : IExposable
     ///     name.
     /// </summary>
     /// <param name="workTypeDefName">The name of the work type definition.</param>
-    public WorkTypeThingRule([CanBeNull] string workTypeDefName)
+    public WorkTypeThingRule(string? workTypeDefName)
     {
         _workTypeDefName = workTypeDefName;
     }
@@ -57,7 +57,6 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets all relevant <see cref="ThingDef" /> objects for evaluation.
     /// </summary>
-    [NotNull]
     private static IEnumerable<ThingDef> AllRelevantThings
     {
         get
@@ -76,7 +75,6 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the default rules for all work types defined in <see cref="WorkTypeStatMap.DefaultStatsMap" />.
     /// </summary>
-    [NotNull]
     public static IEnumerable<WorkTypeThingRule> DefaultRules
     {
         get
@@ -105,8 +103,7 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the label for this rule, using the short label of the work type if available.
     /// </summary>
-    [CanBeNull]
-    public string Label =>
+    public string? Label =>
         WorkTypeDef != null
             ? WorkTypeDef.labelShort.NullOrEmpty() ? WorkTypeDefName : WorkTypeDef.labelShort.CapitalizeFirst()
             : WorkTypeDefName;
@@ -114,7 +111,6 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the collection of <see cref="StatWeight" /> objects associated with this rule.
     /// </summary>
-    [NotNull]
     public IEnumerable<StatWeight> StatWeights
     {
         get
@@ -127,7 +123,7 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the <see cref="WorkTypeDef" /> associated with this rule.
     /// </summary>
-    private WorkTypeDef WorkTypeDef
+    private WorkTypeDef? WorkTypeDef
     {
         get
         {
@@ -139,8 +135,7 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Gets the name of the work type definition associated with this rule.
     /// </summary>
-    [CanBeNull]
-    public string WorkTypeDefName => _workTypeDefName;
+    public string? WorkTypeDefName => _workTypeDefName;
 
     /// <summary>
     ///     Exposes data for serialization.
@@ -155,7 +150,7 @@ public class WorkTypeThingRule : IExposable
     ///     Removes the <see cref="StatWeight" /> associated with the specified stat definition name from this rule.
     /// </summary>
     /// <param name="statDefName">The name of the stat definition to remove.</param>
-    public void DeleteStatWeight([NotNull] string statDefName)
+    public void DeleteStatWeight(string statDefName)
     {
         _ = _statWeights.Remove(statDefName);
     }
@@ -166,7 +161,6 @@ public class WorkTypeThingRule : IExposable
     /// <returns>
     ///     An enumerable list of <see cref="ThingDef" /> objects sorted descending by their calculated score.
     /// </returns>
-    [NotNull]
     public IEnumerable<ThingDef> GetGloballyAvailableItems()
     {
         var items = new List<ThingDef>();
@@ -183,7 +177,7 @@ public class WorkTypeThingRule : IExposable
     /// <param name="def">The <see cref="ThingDef" /> to score.</param>
     /// <returns>The calculated score.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public float GetThingDefScore([NotNull] ThingDef def)
+    public float GetThingDefScore(ThingDef def)
     {
         return def == null
             ? throw new ArgumentNullException(nameof(def))
@@ -199,7 +193,7 @@ public class WorkTypeThingRule : IExposable
     /// <param name="thing">The thing to score.</param>
     /// <returns>The calculated score.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="thing" /> is null.</exception>
-    public float GetThingScore([NotNull] Thing thing)
+    public float GetThingScore(Thing thing)
     {
         return thing == null
             ? throw new ArgumentNullException(nameof(thing))
@@ -237,7 +231,7 @@ public class WorkTypeThingRule : IExposable
     ///     protection status remains unchanged.
     /// </param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="statDef" /> is <see langword="null" />.</exception>
-    public void SetStatWeight([NotNull] StatDef statDef, float weight, bool? isProtected = null)
+    public void SetStatWeight(StatDef statDef, float weight, bool? isProtected = null)
     {
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
         if (!_statWeights.TryGetValue(statDef.defName, out var statWeight))

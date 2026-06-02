@@ -22,7 +22,7 @@ public static class TextHelper
     /// <param name="sb">The <see cref="StringBuilder" /> to append to.</param>
     /// <param name="indentationLevel">The indentation level (number of indents).</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="sb" /> is <c>null</c>.</exception>
-    private static void AppendIndentation([NotNull] this StringBuilder sb, int indentationLevel)
+    private static void AppendIndentation(this StringBuilder sb, int indentationLevel)
     {
         if (sb == null) throw new ArgumentNullException(nameof(sb));
         if (indentationLevel <= 0) return;
@@ -38,7 +38,7 @@ public static class TextHelper
     /// <exception cref="ArgumentNullException">
     ///     Thrown if <paramref name="sb" /> is <c>null</c> or <paramref name="text" /> is <c>null</c> or empty.
     /// </exception>
-    public static void AppendIndented([NotNull] this StringBuilder sb, [NotNull] string text, int indentationLevel)
+    public static void AppendIndented(this StringBuilder sb, string text, int indentationLevel)
     {
         if (sb == null) throw new ArgumentNullException(nameof(sb));
         if (text.NullOrEmpty()) throw new ArgumentNullException(nameof(text));
@@ -56,7 +56,7 @@ public static class TextHelper
     /// <exception cref="ArgumentNullException">
     ///     Thrown if <paramref name="sb" /> is <c>null</c> or <paramref name="text" /> is <c>null</c> or empty.
     /// </exception>
-    public static void AppendLineIndented([NotNull] this StringBuilder sb, [NotNull] string text, int indentationLevel)
+    public static void AppendLineIndented(this StringBuilder sb, string text, int indentationLevel)
     {
         if (sb == null) throw new ArgumentNullException(nameof(sb));
         if (text.NullOrEmpty()) throw new ArgumentNullException(nameof(text));

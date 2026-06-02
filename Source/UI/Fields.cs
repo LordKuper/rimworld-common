@@ -18,7 +18,7 @@ public static partial class Fields
     /// <param name="rect">The rectangle in which to draw the action buttons.</param>
     /// <param name="actionButtons">A collection of <see cref="IconButton" />s to display.</param>
     /// <param name="remRect">Outputs the remaining rectangle after the buttons are drawn.</param>
-    private static void DoFieldActionButtons(Rect rect, [CanBeNull] IReadOnlyCollection<IconButton> actionButtons,
+    private static void DoFieldActionButtons(Rect rect, IReadOnlyCollection<IconButton>? actionButtons,
         out Rect remRect)
     {
         if (actionButtons == null || actionButtons.Count == 0)
@@ -41,7 +41,7 @@ public static partial class Fields
     /// </summary>
     /// <param name="rect">The rectangle in which to draw the label.</param>
     /// <param name="label">The text to display as the label.</param>
-    private static void DoFieldLabel(Rect rect, [NotNull] string label)
+    private static void DoFieldLabel(Rect rect, string label)
     {
         if (string.IsNullOrWhiteSpace(label)) throw new ArgumentNullException(nameof(label));
         var font = Text.Font;
@@ -60,7 +60,7 @@ public static partial class Fields
     /// <param name="label">The text to display as the label.</param>
     /// <param name="iconRect">The rectangle in which to draw the icon.</param>
     /// <param name="icon">The icon texture to draw, or null for none.</param>
-    private static void DoFieldLabel(Rect labelRect, [NotNull] string label, Rect iconRect, [CanBeNull] Texture icon)
+    private static void DoFieldLabel(Rect labelRect, string label, Rect iconRect, Texture? icon)
     {
         if (string.IsNullOrWhiteSpace(label)) throw new ArgumentNullException(nameof(label));
         if (icon != null) DoFieldLabelIcon(iconRect, icon);
@@ -73,7 +73,7 @@ public static partial class Fields
     /// <param name="rect">The rectangle in which to draw the icon.</param>
     /// <param name="icon">The icon texture to draw.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="icon" /> is null or <paramref name="rect" /> is zero.</exception>
-    private static void DoFieldLabelIcon(Rect rect, [NotNull] Texture icon)
+    private static void DoFieldLabelIcon(Rect rect, Texture icon)
     {
         if (icon == null) throw new ArgumentNullException(nameof(icon));
         if (rect == Rect.zero)
@@ -92,8 +92,7 @@ public static partial class Fields
     /// <param name="icon">The icon to display next to the label, or null for none.</param>
     /// <param name="remRect">The remaining rectangle after the field label and buttons are rendered.</param>
     private static void DoFieldLabelWithButtons(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label, [CanBeNull] string tooltip,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? tooltip, Texture? icon, out Rect remRect)
     {
         if (string.IsNullOrWhiteSpace(label)) throw new ArgumentNullException(nameof(label));
         GetLabeledFieldRects(rect, 0.5f, indentationLevel, icon != null, out var labelRect, out remRect,

@@ -24,7 +24,7 @@ public static class DefHelper
     ///     The capitalized label if available, otherwise the short label if available, otherwise the <c>defName</c>.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    private static string GetLabel([NotNull] this WorkTypeDef def)
+    private static string GetLabel(this WorkTypeDef def)
     {
         if (def == null) throw new ArgumentNullException(nameof(def), "Def cannot be null.");
         return !string.IsNullOrWhiteSpace(def.LabelCap) ? def.LabelCap :
@@ -40,8 +40,7 @@ public static class DefHelper
     ///     for any other def, the capitalized label if available, otherwise the <c>defName</c>.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    [NotNull]
-    public static string GetLabel([NotNull] this Def def)
+    public static string GetLabel(this Def def)
     {
         if (def == null) throw new ArgumentNullException(nameof(def), "Def cannot be null.");
         if (LabelCache.TryGetValue(def.defName, out var label)) return label;

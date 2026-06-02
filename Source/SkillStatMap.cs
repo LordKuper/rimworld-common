@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
 using RimWorld;
 using Verse;
 
@@ -14,7 +13,7 @@ internal static class SkillStatMap
     /// <summary>
     ///     Internal storage for the skill-stat mapping.
     /// </summary>
-    private static Dictionary<SkillDef, HashSet<StatDef>> _map;
+    private static Dictionary<SkillDef, HashSet<StatDef>>? _map;
 
     /// <summary>
     ///     Gets the mapping between <see cref="SkillDef" /> and the set of <see cref="StatDef" />s
@@ -23,8 +22,7 @@ internal static class SkillStatMap
     /// <remarks>
     ///     The mapping is built on first access if it has not already been initialized.
     /// </remarks>
-    [CanBeNull]
-    internal static Dictionary<SkillDef, HashSet<StatDef>> Map
+    internal static Dictionary<SkillDef, HashSet<StatDef>>? Map
     {
         get
         {

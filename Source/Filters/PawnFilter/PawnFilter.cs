@@ -24,17 +24,17 @@ public class PawnFilter : IExposable
     /// <summary>
     ///     Defines the set of allowed primary weapon types for pawns.
     /// </summary>
-    [NotNull] public HashSet<PawnPrimaryWeaponType> AllowedPawnPrimaryWeaponTypes = [];
+    public HashSet<PawnPrimaryWeaponType> AllowedPawnPrimaryWeaponTypes = [];
 
     /// <summary>
     ///     The set of allowed pawn types for filtering.
     /// </summary>
-    [NotNull] public HashSet<PawnType> AllowedPawnTypes = [];
+    public HashSet<PawnType> AllowedPawnTypes = [];
 
     /// <summary>
     ///     The set of allowed work passions for filtering.
     /// </summary>
-    [NotNull] public HashSet<Passion> AllowedWorkPassions = [];
+    public HashSet<Passion> AllowedWorkPassions = [];
 
     /// <summary>
     ///     Whether to filter pawns by their capacities.
@@ -89,27 +89,27 @@ public class PawnFilter : IExposable
     /// <summary>
     ///     The set of forbidden pawn types for filtering.
     /// </summary>
-    [NotNull] public HashSet<PawnType> ForbiddenPawnTypes = [];
+    public HashSet<PawnType> ForbiddenPawnTypes = [];
 
     /// <summary>
     ///     The list of pawn capacity limits for filtering.
     /// </summary>
-    [NotNull] public List<PawnCapacityLimit> PawnCapacityLimits = [];
+    public List<PawnCapacityLimit> PawnCapacityLimits = [];
 
     /// <summary>
     ///     The list of pawn skill limits for filtering.
     /// </summary>
-    [NotNull] public List<PawnSkillLimit> PawnSkillLimits = [];
+    public List<PawnSkillLimit> PawnSkillLimits = [];
 
     /// <summary>
     ///     The list of stat limits for filtering pawns.
     /// </summary>
-    [NotNull] public List<StatLimit> PawnStatLimits = [];
+    public List<StatLimit> PawnStatLimits = [];
 
     /// <summary>
     ///     The list of pawn trait limits for filtering. Each limit indicates whether its trait is required or forbidden.
     /// </summary>
-    [NotNull] public List<PawnTraitLimit> PawnTraitLimits = [];
+    public List<PawnTraitLimit> PawnTraitLimits = [];
 
     /// <summary>
     ///     Indicates whether the control is in tri-state mode.
@@ -120,7 +120,7 @@ public class PawnFilter : IExposable
     ///     The dictionary of work capacity limits for filtering.
     ///     The key is the work capacity name, and the value indicates if the capacity is required (true) or forbidden (false).
     /// </summary>
-    [NotNull] public Dictionary<WorkTags, bool> WorkCapacityLimits = [];
+    public Dictionary<WorkTags, bool> WorkCapacityLimits = [];
 
     /// <summary>
     ///     Exposes the filter data for saving and loading.
@@ -168,7 +168,7 @@ public class PawnFilter : IExposable
     /// <exception cref="ArgumentNullException">
     ///     Thrown if either <paramref name="main" /> or <paramref name="fallback" /> is <c>null</c>.
     /// </exception>
-    public static PawnFilter Combine([NotNull] PawnFilter main, [NotNull] PawnFilter fallback)
+    public static PawnFilter Combine(PawnFilter main, PawnFilter fallback)
     {
         if (main == null) throw new ArgumentNullException(nameof(main));
         if (fallback == null) throw new ArgumentNullException(nameof(fallback));
@@ -282,7 +282,6 @@ public class PawnFilter : IExposable
     ///     changes to the copy do not affect the original instance, and vice versa.
     /// </remarks>
     /// <returns>A new <see cref="PawnFilter" /> instance with the same configuration and state as the current instance.</returns>
-    [NotNull]
     public PawnFilter Copy()
     {
         return new PawnFilter
@@ -351,8 +350,7 @@ public class PawnFilter : IExposable
     /// <param name="maps">The maps to search for pawns.</param>
     /// <param name="workType">The work type to filter by passion, or null to ignore passion filtering.</param>
     /// <returns>A set of filtered pawns.</returns>
-    [NotNull]
-    public HashSet<Pawn> GetFilteredPawns([NotNull] IEnumerable<Map> maps, [CanBeNull] WorkTypeDef workType)
+    public HashSet<Pawn> GetFilteredPawns(IEnumerable<Map> maps, WorkTypeDef? workType)
     {
         if (maps == null) throw new ArgumentNullException(nameof(maps));
         var pawns = new HashSet<Pawn>();
@@ -383,7 +381,6 @@ public class PawnFilter : IExposable
     ///     non-negative integer.
     /// </param>
     /// <returns>A string containing the formatted summary of the pawn filter configuration.</returns>
-    [NotNull]
     public string GetSummary(int indentationLevel)
     {
         var stringBuilder = new StringBuilder();
@@ -512,7 +509,7 @@ public class PawnFilter : IExposable
     ///     otherwise, <see langword="false" />.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawn" /> is <see langword="null" />.</exception>
-    public bool SatisfiesFilter([NotNull] Pawn pawn, [CanBeNull] WorkTypeDef workType)
+    public bool SatisfiesFilter(Pawn pawn, WorkTypeDef? workType)
     {
         if (pawn == null) throw new ArgumentNullException(nameof(pawn));
         if (FilterPawnTypes == true)

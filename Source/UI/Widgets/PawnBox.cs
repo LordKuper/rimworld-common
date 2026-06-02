@@ -40,7 +40,7 @@ public static class PawnBox
     /// <param name="scrollPosition">Reference to the current scroll position.</param>
     /// <param name="pawns">The list of pawns to display.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawns" /> is null.</exception>
-    public static void DoPawnBox(Rect rect, ref Vector2 scrollPosition, [NotNull] IReadOnlyList<Pawn> pawns)
+    public static void DoPawnBox(Rect rect, ref Vector2 scrollPosition, IReadOnlyList<Pawn> pawns)
     {
         if (pawns == null) throw new ArgumentNullException(nameof(pawns));
         var font = Text.Font;

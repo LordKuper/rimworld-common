@@ -38,15 +38,12 @@ public static class MeleeWeaponStats
     /// <summary>
     ///     Gets the collection of custom stat definition names.
     /// </summary>
-    [NotNull]
     private static IEnumerable<string> StatDefNames =>
         Enum.GetValues(typeof(MeleeWeaponStat)).OfType<MeleeWeaponStat>().Select(GetStatDefName);
 
     /// <summary>
     ///     Gets the collection of custom stat definitions.
     /// </summary>
-    [NotNull]
-    [ItemNotNull]
     public static IEnumerable<StatDef> StatDefs => StatDefList;
 
     /// <summary>
@@ -54,7 +51,6 @@ public static class MeleeWeaponStats
     /// </summary>
     /// <param name="stat">The custom melee weapon stat.</param>
     /// <returns>The stat definition name.</returns>
-    [NotNull]
     public static string GetStatDefName(MeleeWeaponStat stat)
     {
         return $"{StatHelper.CustomStatPrefix}_{Category}_{stat}";
@@ -65,8 +61,7 @@ public static class MeleeWeaponStats
     /// </summary>
     /// <param name="defName">The stat definition name.</param>
     /// <returns>The stat name if the definition name matches the custom stat pattern; otherwise, <c>null</c>.</returns>
-    [CanBeNull]
-    public static string GetStatName([NotNull] string defName)
+    public static string? GetStatName(string defName)
     {
         const string categoryPrefix = $"{StatHelper.CustomStatPrefix}_{Category}_";
         return defName.StartsWith(categoryPrefix, StringComparison.OrdinalIgnoreCase)
@@ -79,7 +74,7 @@ public static class MeleeWeaponStats
     /// </summary>
     /// <param name="defName">The stat definition name.</param>
     /// <returns><c>true</c> if the definition name is a custom stat; otherwise, <c>false</c>.</returns>
-    public static bool IsCustomStat([NotNull] string defName)
+    public static bool IsCustomStat(string defName)
     {
         return StatDefNames.Contains(defName);
     }

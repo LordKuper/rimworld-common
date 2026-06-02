@@ -17,8 +17,8 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     internal const int LimitMaxCap = 20;
     internal const int LimitMinCap = 0;
     internal const int ValueStep = 1;
-    private string _maxValueBuffer;
-    private string _minValueBuffer;
+    private string? _maxValueBuffer;
+    private string? _minValueBuffer;
 
     /// <summary>
     ///     The allowed skill level range, clamped between <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
@@ -34,7 +34,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class for the skill with the specified def name.
     /// </summary>
     /// <param name="skillDefName">The def name of the <see cref="SkillDef" /> to limit.</param>
-    public PawnSkillLimit([NotNull] string skillDefName) : base(skillDefName) { }
+    public PawnSkillLimit(string skillDefName) : base(skillDefName) { }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class for the skill with the specified def name
@@ -43,7 +43,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     /// <param name="skillDefName">The def name of the <see cref="SkillDef" /> to limit.</param>
     /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
     /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
-    public PawnSkillLimit([NotNull] string skillDefName, float? minValue, float? maxValue) : this(skillDefName)
+    public PawnSkillLimit(string skillDefName, float? minValue, float? maxValue) : this(skillDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -55,7 +55,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     /// </summary>
     /// <param name="def">The skill definition to limit.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public PawnSkillLimit([NotNull] SkillDef def) : base(GetDefName(def)) { }
+    public PawnSkillLimit(SkillDef def) : base(GetDefName(def)) { }
 
     /// <summary>
     ///     Gets or sets the upper bound of the allowed skill level, or <c>null</c> when no upper bound is set
@@ -82,7 +82,6 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     ///     Gets or sets the UI text-input buffer for the upper bound. Parses valid numeric input into
     ///     <see cref="MaxValue" /> and otherwise retains the raw text.
     /// </summary>
-    [NotNull]
     public string MaxValueBuffer
     {
         get => string.IsNullOrEmpty(_maxValueBuffer)
@@ -128,7 +127,6 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     ///     Gets or sets the UI text-input buffer for the lower bound. Parses valid numeric input into
     ///     <see cref="MinValue" /> and otherwise retains the raw text.
     /// </summary>
-    [NotNull]
     public string MinValueBuffer
     {
         get => string.IsNullOrEmpty(_minValueBuffer)
@@ -152,14 +150,12 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     /// <summary>
     ///     Gets the resolved <see cref="SkillDef" /> for this limit, or <c>null</c> if it could not be resolved.
     /// </summary>
-    [CanBeNull]
-    public SkillDef SkillDef => Def;
+    public SkillDef? SkillDef => Def;
 
     /// <summary>
     ///     Gets the def name of the skill this limit targets, or <c>null</c> if none is set.
     /// </summary>
-    [CanBeNull]
-    public string SkillDefName => DefName;
+    public string? SkillDefName => DefName;
 
     /// <summary>
     ///     Serializes the limit's state (def name and value range) for saving and loading.

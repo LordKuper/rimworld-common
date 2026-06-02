@@ -23,7 +23,7 @@ public static class PawnHelper
     /// </summary>
     /// <param name="pawn">The pawn whose health state is to be determined.</param>
     /// <returns>The <see cref="PawnHealthState" /> of the pawn.</returns>
-    public static PawnHealthState GetPawnHealthState([NotNull] Pawn pawn)
+    public static PawnHealthState GetPawnHealthState(Pawn pawn)
     {
         if (pawn.Dead)
             return PawnHealthState.Dead;
@@ -45,7 +45,7 @@ public static class PawnHelper
     /// </summary>
     /// <param name="pawn">The pawn whose type is to be determined.</param>
     /// <returns>The <see cref="PawnType" /> of the pawn.</returns>
-    public static PawnType GetPawnType([NotNull] Pawn pawn)
+    public static PawnType GetPawnType(Pawn pawn)
     {
         if (pawn.IsFreeNonSlaveColonist) return PawnType.Colonist;
         if (pawn.IsSlaveOfColony) return PawnType.Slave;
@@ -72,7 +72,7 @@ public static class PawnHelper
     ///     if the weapon type cannot be determined.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawn" /> is <see langword="null" />.</exception>
-    public static PawnPrimaryWeaponType GetPrimaryWeaponType([NotNull] Pawn pawn)
+    public static PawnPrimaryWeaponType GetPrimaryWeaponType(Pawn pawn)
     {
         if (pawn == null) throw new ArgumentNullException(nameof(pawn));
         var weapon = pawn.equipment?.Primary;
@@ -89,7 +89,7 @@ public static class PawnHelper
     /// <param name="pawn">The pawn whose work passion is to be determined.</param>
     /// <param name="workType">The work type to check for passion.</param>
     /// <returns>The highest <see cref="Passion" /> for the given work type, or <see cref="Passion.None" /> if unavailable.</returns>
-    public static Passion GetWorkPassion([NotNull] Pawn pawn, [NotNull] WorkTypeDef workType)
+    public static Passion GetWorkPassion(Pawn pawn, WorkTypeDef workType)
     {
         if (pawn == null) throw new ArgumentNullException(nameof(pawn));
         if (workType == null) throw new ArgumentNullException(nameof(workType));

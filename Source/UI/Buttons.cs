@@ -35,8 +35,8 @@ public static class Buttons
     /// <param name="tooltip">The tooltip text to display when hovering over the button. Can be null.</param>
     /// <param name="isEnabled">Indicates whether the button is enabled and interactive. Default is true.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="action" /> is null.</exception>
-    public static void DoActionButton(Rect rect, [CanBeNull] string label, [NotNull] Action action,
-        [CanBeNull] string tooltip = null, bool isEnabled = true)
+    public static void DoActionButton(Rect rect, string? label, Action action, string? tooltip = null,
+        bool isEnabled = true)
     {
         if (action == null) throw new ArgumentNullException(nameof(action));
         var font = Text.Font;
@@ -55,7 +55,7 @@ public static class Buttons
     /// <param name="remRect">The remaining rectangle after the row is drawn.</param>
     /// <returns>The height of the button row.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="actionButtons" /> is null.</exception>
-    public static float DoActionButtonGrid(Rect rect, [NotNull] ActionButton[] actionButtons, out Rect remRect)
+    public static float DoActionButtonGrid(Rect rect, ActionButton[] actionButtons, out Rect remRect)
     {
         if (actionButtons == null) throw new ArgumentNullException(nameof(actionButtons));
         if (actionButtons.Length == 0)
@@ -114,9 +114,8 @@ public static class Buttons
     ///         name="disabledIcon" />
     ///     is <see langword="null" />.
     /// </exception>
-    public static void DoIconButtonToggle(Rect rect, [NotNull] Func<bool> getter, [NotNull] Action<bool> setter,
-        [CanBeNull] string enabledTooltip, [NotNull] Texture2D enabledIcon, [CanBeNull] string disabledTooltip,
-        [NotNull] Texture2D disabledIcon)
+    public static void DoIconButtonToggle(Rect rect, Func<bool> getter, Action<bool> setter, string? enabledTooltip,
+        Texture2D enabledIcon, string? disabledTooltip, Texture2D disabledIcon)
     {
         if (getter == null) throw new ArgumentNullException(nameof(getter));
         if (setter == null) throw new ArgumentNullException(nameof(setter));
@@ -148,8 +147,8 @@ public static class Buttons
     /// <param name="enabledIcon">The icon to display when the button is in the enabled state.</param>
     /// <param name="disabledTooltip">The tooltip text to display when the button is in the disabled state.</param>
     /// <param name="disabledIcon">The icon to display when the button is in the disabled state.</param>
-    public static void DoIconButtonToggle(Rect rect, ref bool value, [CanBeNull] string enabledTooltip,
-        [NotNull] Texture2D enabledIcon, [CanBeNull] string disabledTooltip, [NotNull] Texture2D disabledIcon)
+    public static void DoIconButtonToggle(Rect rect, ref bool value, string? enabledTooltip, Texture2D enabledIcon,
+        string? disabledTooltip, Texture2D disabledIcon)
     {
         if (enabledIcon == null) throw new ArgumentNullException(nameof(enabledIcon));
         if (disabledIcon == null) throw new ArgumentNullException(nameof(disabledIcon));

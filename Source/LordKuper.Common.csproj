@@ -5,6 +5,7 @@
     <RootNamespace>LordKuper.Common</RootNamespace>
     <AssemblyName>LordKuper.Common</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <Nullable>annotations</Nullable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>..\1.6\Assemblies\</OutputPath>

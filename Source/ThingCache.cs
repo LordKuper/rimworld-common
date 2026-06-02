@@ -20,7 +20,7 @@ public class ThingCache
     /// <summary>
     ///     Stores cached stat values for the associated <see cref="Thing" />.
     /// </summary>
-    [NotNull] protected readonly Dictionary<StatDef, float> StatValues = new();
+    protected readonly Dictionary<StatDef, float> StatValues = new();
 
     /// <summary>
     ///     The last time the cache was updated.
@@ -33,7 +33,7 @@ public class ThingCache
     /// <param name="thing">The <see cref="Thing" /> to cache stat values for.</param>
     /// <param name="updateTimer">The interval in hours between cache updates.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="thing" /> is null.</exception>
-    public ThingCache([NotNull] Thing thing, float updateTimer)
+    public ThingCache(Thing thing, float updateTimer)
     {
         Thing = thing ?? throw new ArgumentNullException(nameof(thing));
         _updateTimer = updateTimer;
@@ -42,7 +42,6 @@ public class ThingCache
     /// <summary>
     ///     Gets the <see cref="Thing" /> associated with this cache.
     /// </summary>
-    [NotNull]
     public Thing Thing { get; }
 
     /// <summary>

@@ -73,8 +73,8 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnCapacitiesSection(Rect rect, [NotNull] PawnFilter pawnFilter, int inputId,
-        ref bool filterChanged, out Rect remRect)
+    private static float DoPawnCapacitiesSection(Rect rect, PawnFilter pawnFilter, int inputId, ref bool filterChanged,
+        out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -198,8 +198,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">The remaining rectangular area after the filter UI is drawn.</param>
     /// <returns>The total vertical space used by the filter UI, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    public static float DoPawnFilter(Rect rect, [NotNull] PawnFilter pawnFilter, PawnFilterSections sections,
-        int? pawnSkillInputId, int? pawnStatInputId, int? pawnCapacityInputId, [CanBeNull] Action filterChangedAction,
+    public static float DoPawnFilter(Rect rect, PawnFilter pawnFilter, PawnFilterSections sections,
+        int? pawnSkillInputId, int? pawnStatInputId, int? pawnCapacityInputId, Action? filterChangedAction,
         out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
@@ -301,7 +301,7 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The vertical space (in pixels) consumed by the section within the provided <paramref name="rect" />.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnHealthStatesSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
+    private static float DoPawnHealthStatesSection(Rect rect, PawnFilter pawnFilter, ref bool filterChanged,
         out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
@@ -382,8 +382,8 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnPrimaryWeaponTypesSection(Rect rect, [NotNull] PawnFilter pawnFilter,
-        ref bool filterChanged, out Rect remRect)
+    private static float DoPawnPrimaryWeaponTypesSection(Rect rect, PawnFilter pawnFilter, ref bool filterChanged,
+        out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -455,8 +455,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">The remaining portion of the <paramref name="rect" /> after the section is rendered.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnSkillsSection(Rect rect, [NotNull] PawnFilter pawnFilter, int inputId,
-        ref bool filterChanged, out Rect remRect)
+    private static float DoPawnSkillsSection(Rect rect, PawnFilter pawnFilter, int inputId, ref bool filterChanged,
+        out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -563,8 +563,8 @@ public static class PawnFilterWidget
     /// <param name="remRect">An output parameter that returns the remaining rectangle space after the section is rendered.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnStatsSection(Rect rect, [NotNull] PawnFilter pawnFilter, int inputId,
-        ref bool filterChanged, out Rect remRect)
+    private static float DoPawnStatsSection(Rect rect, PawnFilter pawnFilter, int inputId, ref bool filterChanged,
+        out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -694,8 +694,7 @@ public static class PawnFilterWidget
     /// <param name="remRect">Outputs the remaining rectangle area after the section is drawn.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnTraitsSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoPawnTraitsSection(Rect rect, PawnFilter pawnFilter, ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -802,8 +801,7 @@ public static class PawnFilterWidget
     /// <param name="remRect">Outputs the remaining portion of the <paramref name="rect" /> that was not used by the section.</param>
     /// <returns>The vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoPawnTypesSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
-        out Rect remRect)
+    private static float DoPawnTypesSection(Rect rect, PawnFilter pawnFilter, ref bool filterChanged, out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
         var y = 0f;
@@ -876,7 +874,7 @@ public static class PawnFilterWidget
     /// <param name="remRect">Outputs the remaining rectangular area after rendering the section.</param>
     /// <returns>The total height of the rendered section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoWorkCapacitiesSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
+    private static float DoWorkCapacitiesSection(Rect rect, PawnFilter pawnFilter, ref bool filterChanged,
         out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));
@@ -982,7 +980,7 @@ public static class PawnFilterWidget
     /// </param>
     /// <returns>The total vertical space consumed by the section, in pixels.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="pawnFilter" /> is <see langword="null" />.</exception>
-    private static float DoWorkPassionsSection(Rect rect, [NotNull] PawnFilter pawnFilter, ref bool filterChanged,
+    private static float DoWorkPassionsSection(Rect rect, PawnFilter pawnFilter, ref bool filterChanged,
         out Rect remRect)
     {
         if (pawnFilter == null) throw new ArgumentNullException(nameof(pawnFilter));

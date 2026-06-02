@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
@@ -26,8 +25,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after rendering the field row.</param>
     /// <returns>The height of the rendered checkbox row.</returns>
     public static float DoLabeledCheckbox(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, ref bool value, [CanBeNull] string label,
-        [CanBeNull] string labelTooltip, [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, ref bool value, string? label, string? labelTooltip,
+        Texture? icon, out Rect remRect)
     {
         if (indentationLevel < 0)
             throw new ArgumentOutOfRangeException(nameof(indentationLevel), "Indentation level must be non-negative.");
@@ -69,8 +68,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after rendering the field row.</param>
     /// <returns>The height of the rendered checkbox row.</returns>
     public static float DoLabeledCheckbox(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, ref bool? value, [CanBeNull] string label,
-        [CanBeNull] string labelTooltip, [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, ref bool? value, string? label, string? labelTooltip,
+        Texture? icon, out Rect remRect)
     {
         if (indentationLevel < 0)
             throw new ArgumentOutOfRangeException(nameof(indentationLevel), "Indentation level must be non-negative.");

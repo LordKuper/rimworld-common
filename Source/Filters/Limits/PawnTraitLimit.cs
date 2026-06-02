@@ -28,7 +28,7 @@ public class PawnTraitLimit : DefCache<TraitDef>, IExposable
     /// </summary>
     /// <param name="def">The trait definition to limit.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public PawnTraitLimit([NotNull] TraitDef def) : base(GetDefName(def))
+    public PawnTraitLimit(TraitDef def) : base(GetDefName(def))
     {
         Limit = true;
     }

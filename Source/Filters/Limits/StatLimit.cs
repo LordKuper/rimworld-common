@@ -17,8 +17,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
     private const float DefaultLimitCap = 1000f;
     private const float PercentStatCap = 5f;
     private bool _isConfigured;
-    private string _maxValueBuffer;
-    private string _minValueBuffer;
+    private string? _maxValueBuffer;
+    private string? _minValueBuffer;
 
     /// <summary>
     ///     The allowed value range for the stat, clamped between <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
@@ -49,7 +49,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
     ///     Initializes a new instance of the <see cref="StatLimit" /> class for the stat with the specified def name.
     /// </summary>
     /// <param name="statDefName">The def name of the <see cref="StatDef" /> to limit.</param>
-    public StatLimit([NotNull] string statDefName) : base(statDefName) { }
+    public StatLimit(string statDefName) : base(statDefName) { }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatLimit" /> class for the stat with the specified def name and
@@ -58,7 +58,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
     /// <param name="statDefName">The def name of the <see cref="StatDef" /> to limit.</param>
     /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
     /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
-    public StatLimit([NotNull] string statDefName, float? minValue, float? maxValue) : this(statDefName)
+    public StatLimit(string statDefName, float? minValue, float? maxValue) : this(statDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -70,7 +70,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
     /// </summary>
     /// <param name="def">The stat definition to limit.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public StatLimit([NotNull] StatDef def) : base(GetDefName(def))
+    public StatLimit(StatDef def) : base(GetDefName(def))
     {
         Configure(def);
     }
@@ -108,7 +108,6 @@ public class StatLimit : DefCache<StatDef>, IExposable
     ///     Gets or sets the UI text-input buffer for the upper bound. Parses valid numeric input into
     ///     <see cref="MaxValue" /> and otherwise retains the raw text.
     /// </summary>
-    [NotNull]
     public string MaxValueBuffer
     {
         get
@@ -167,7 +166,6 @@ public class StatLimit : DefCache<StatDef>, IExposable
     ///     Gets or sets the UI text-input buffer for the lower bound. Parses valid numeric input into
     ///     <see cref="MinValue" /> and otherwise retains the raw text.
     /// </summary>
-    [NotNull]
     public string MinValueBuffer
     {
         get
@@ -196,14 +194,12 @@ public class StatLimit : DefCache<StatDef>, IExposable
     /// <summary>
     ///     Gets the resolved <see cref="StatDef" /> for this limit, or <c>null</c> if it could not be resolved.
     /// </summary>
-    [CanBeNull]
-    public StatDef StatDef => Def;
+    public StatDef? StatDef => Def;
 
     /// <summary>
     ///     Gets the def name of the stat this limit targets, or <c>null</c> if none is set.
     /// </summary>
-    [CanBeNull]
-    public string StatDefName => DefName;
+    public string? StatDefName => DefName;
 
     internal float ValueStep
     {
@@ -241,7 +237,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
         }
     }
 
-    private void Configure([CanBeNull] StatDef def)
+    private void Configure(StatDef? def)
     {
         if (def == null)
         {

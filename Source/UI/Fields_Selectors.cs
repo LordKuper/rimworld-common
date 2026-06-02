@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
@@ -34,10 +33,9 @@ public static partial class Fields
     /// <param name="remRect">Returns the remaining rectangle after drawing the field.</param>
     /// <returns>The height of the selector row.</returns>
     public static float DoLabeledSelector<T>(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, T value, [NotNull] IReadOnlyCollection<T> options,
-        [NotNull] Func<T, string> getLabelAction, [CanBeNull] Func<T, string> getTooltipAction,
-        [NotNull] Action<T> selectAction, [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, T value,
+        IReadOnlyCollection<T> options, Func<T, string> getLabelAction, Func<T, string>? getTooltipAction,
+        Action<T> selectAction, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SelectorRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -59,9 +57,8 @@ public static partial class Fields
     ///     Thrown if <paramref name="options" /> or <paramref name="getLabelAction" /> or <paramref name="selectAction" /> is
     ///     null.
     /// </exception>
-    private static void DoSelector<T>(Rect rect, T value, [NotNull] IReadOnlyCollection<T> options,
-        [NotNull] Func<T, string> getLabelAction, [CanBeNull] Func<T, string> getTooltipAction,
-        [NotNull] Action<T> selectAction)
+    private static void DoSelector<T>(Rect rect, T value, IReadOnlyCollection<T> options,
+        Func<T, string> getLabelAction, Func<T, string>? getTooltipAction, Action<T> selectAction)
     {
         if (options == null) throw new ArgumentNullException(nameof(options));
         if (getLabelAction == null) throw new ArgumentNullException(nameof(getLabelAction));

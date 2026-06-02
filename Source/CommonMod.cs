@@ -22,7 +22,7 @@ public class CommonMod : Mod
     ///     Initializes a new instance of the <see cref="CommonMod" /> class and logs the initialization message.
     /// </summary>
     /// <param name="content">The mod content pack.</param>
-    public CommonMod([NotNull] ModContentPack content) : base(content)
+    public CommonMod(ModContentPack content) : base(content)
     {
         Logger.LogMessage($"Initializing (v.{Assembly.GetExecutingAssembly().GetName().Version})...");
         Harmony harmony = new(ModId);

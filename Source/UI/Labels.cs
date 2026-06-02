@@ -26,7 +26,7 @@ public static class Labels
     /// <param name="rect">The rectangle in which to draw the label.</param>
     /// <param name="label">The text to display.</param>
     /// <param name="anchor">The text alignment.</param>
-    public static void DoLabel(Rect rect, [CanBeNull] string label, TextAnchor anchor)
+    public static void DoLabel(Rect rect, string? label, TextAnchor anchor)
     {
         var font = Text.Font;
         var textAnchor = Text.Anchor;
@@ -43,7 +43,7 @@ public static class Labels
     /// <param name="text">The text.</param>
     /// <param name="font">The font to use for measurement.</param>
     /// <returns>The width in pixels.</returns>
-    internal static float GetTextWidth([NotNull] string text, GameFont font)
+    internal static float GetTextWidth(string text, GameFont font)
     {
         var prevFont = Text.Font;
         Text.Font = font;

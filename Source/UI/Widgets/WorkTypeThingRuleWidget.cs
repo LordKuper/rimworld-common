@@ -26,7 +26,7 @@ public static class WorkTypeThingRuleWidget
     /// <param name="things">The list of <see cref="ThingDef" /> objects to display.</param>
     /// <param name="selectedRule">The currently selected <see cref="WorkTypeThingRule" />.</param>
     private static void DoBottomPart(Rect rect, Action refreshAction, ref Vector2 thingIconBoxScrollPosition,
-        IReadOnlyList<ThingDef> things, [CanBeNull] WorkTypeThingRule selectedRule)
+        IReadOnlyList<ThingDef> things, WorkTypeThingRule? selectedRule)
     {
         if (selectedRule == null) return;
         var headerRect = Sections.GetSectionHeaderRect(rect, out var remRect);
@@ -61,8 +61,8 @@ public static class WorkTypeThingRuleWidget
     /// <param name="addAction">Action to add a stat weight.</param>
     /// <param name="deleteAction">Action to delete a stat weight by stat definition name.</param>
     /// <returns>The total height of the section drawn.</returns>
-    private static float DoRuleStatWeights(Rect rect, IEnumerable<StatDef> stats,
-        [NotNull] IEnumerable<StatWeight> statWeights, Action<StatDef> addAction, Action<string> deleteAction)
+    private static float DoRuleStatWeights(Rect rect, IEnumerable<StatDef> stats, IEnumerable<StatWeight> statWeights,
+        Action<StatDef> addAction, Action<string> deleteAction)
     {
         var y = 0f;
         var headerRect = Sections.GetSectionHeaderRect(rect, out var remRect);
@@ -100,8 +100,8 @@ public static class WorkTypeThingRuleWidget
     /// <param name="selectedRule">The currently selected rule.</param>
     /// <param name="updateThingsAction">Action to invoke when things need updating.</param>
     /// <param name="contentHeight">Reference to the content height to update.</param>
-    private static void DoScrollablePart(Rect rect, [CanBeNull] WorkTypeThingRule selectedRule,
-        Action updateThingsAction, ref float contentHeight)
+    private static void DoScrollablePart(Rect rect, WorkTypeThingRule? selectedRule, Action updateThingsAction,
+        ref float contentHeight)
     {
         var y = 0f;
         if (selectedRule == null)
@@ -127,8 +127,8 @@ public static class WorkTypeThingRuleWidget
     /// <param name="rules">The available rules to select from.</param>
     /// <param name="selectedRule">The currently selected rule.</param>
     /// <param name="selectRuleAction">Action to invoke when a rule is selected.</param>
-    private static void DoTopPart(Rect rect, IEnumerable<WorkTypeThingRule> rules,
-        [CanBeNull] WorkTypeThingRule selectedRule, Action<WorkTypeThingRule> selectRuleAction)
+    private static void DoTopPart(Rect rect, IEnumerable<WorkTypeThingRule> rules, WorkTypeThingRule? selectedRule,
+        Action<WorkTypeThingRule> selectRuleAction)
     {
         if (Verse.Widgets.ButtonText(rect, selectedRule == null ? Strings.Actions.Select : selectedRule.Label))
             Find.WindowStack.Add(new FloatMenu(rules.Where(r => r != selectedRule).Select(r =>
@@ -167,10 +167,9 @@ public static class WorkTypeThingRuleWidget
     ///     The list of <see cref="ThingDef" /> objects to display in the thing icon box section.
     /// </param>
     public static void DoWidgetTab(Rect rect, ref float scrollableContentHeight, ref Vector2 scrollPosition,
-        int thingIconBoxRowCount, [NotNull] IReadOnlyCollection<WorkTypeThingRule> workTypeRules,
-        [CanBeNull] WorkTypeThingRule selectedWorkTypeRule, [NotNull] Action<WorkTypeThingRule> selectRuleAction,
-        [NotNull] Action updateThingsAction, ref Vector2 thingIconBoxScrollPosition,
-        [NotNull] IReadOnlyList<ThingDef> things)
+        int thingIconBoxRowCount, IReadOnlyCollection<WorkTypeThingRule> workTypeRules,
+        WorkTypeThingRule? selectedWorkTypeRule, Action<WorkTypeThingRule> selectRuleAction, Action updateThingsAction,
+        ref Vector2 thingIconBoxScrollPosition, IReadOnlyList<ThingDef> things)
     {
         var contentHeight = scrollableContentHeight;
         var thingScrollPosition = thingIconBoxScrollPosition;
@@ -209,8 +208,7 @@ public static class WorkTypeThingRuleWidget
     /// <param name="def">The <see cref="ThingDef" /> to get the tooltip for.</param>
     /// <param name="rule">The selected <see cref="WorkTypeThingRule" />.</param>
     /// <returns>The tooltip string describing the thing's stats.</returns>
-    [NotNull]
-    private static string GetWorkTypeDefTooltip([NotNull] ThingDef def, WorkTypeThingRule rule)
+    private static string GetWorkTypeDefTooltip(ThingDef def, WorkTypeThingRule rule)
     {
         var stringBuilder = new StringBuilder();
         _ = stringBuilder.AppendLine(def.LabelCap);

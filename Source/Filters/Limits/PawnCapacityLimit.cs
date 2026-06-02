@@ -17,8 +17,8 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     internal const float LimitMaxCap = 5f;
     internal const float LimitMinCap = 0f;
     internal const ToStringStyle ValueStyle = ToStringStyle.PercentZero;
-    private string _maxValueBuffer;
-    private string _minValueBuffer;
+    private string? _maxValueBuffer;
+    private string? _minValueBuffer;
 
     /// <summary>
     ///     The allowed value range for the capacity, clamped between <see cref="LimitMinCap" /> and
@@ -36,7 +36,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     ///     def name.
     /// </summary>
     /// <param name="pawnCapacityDefName">The def name of the <see cref="PawnCapacityDef" /> to limit.</param>
-    public PawnCapacityLimit([NotNull] string pawnCapacityDefName) : base(pawnCapacityDefName) { }
+    public PawnCapacityLimit(string pawnCapacityDefName) : base(pawnCapacityDefName) { }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class for the capacity with the specified
@@ -45,8 +45,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// <param name="pawnCapacityDefName">The def name of the <see cref="PawnCapacityDef" /> to limit.</param>
     /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
     /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
-    public PawnCapacityLimit([NotNull] string pawnCapacityDefName, float? minValue, float? maxValue) : this(
-        pawnCapacityDefName)
+    public PawnCapacityLimit(string pawnCapacityDefName, float? minValue, float? maxValue) : this(pawnCapacityDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -58,7 +57,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// </summary>
     /// <param name="def">The capacity definition to limit.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public PawnCapacityLimit([NotNull] PawnCapacityDef def) : base(GetDefName(def)) { }
+    public PawnCapacityLimit(PawnCapacityDef def) : base(GetDefName(def)) { }
 
     /// <summary>
     ///     Gets or sets the upper bound of the allowed range, or <c>null</c> when no upper bound is set
@@ -85,7 +84,6 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     ///     Gets or sets the UI text-input buffer for the upper bound. Parses valid numeric input into
     ///     <see cref="MaxValue" /> and otherwise retains the raw text.
     /// </summary>
-    [NotNull]
     public string MaxValueBuffer
     {
         get => string.IsNullOrEmpty(_maxValueBuffer)
@@ -131,7 +129,6 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     ///     Gets or sets the UI text-input buffer for the lower bound. Parses valid numeric input into
     ///     <see cref="MinValue" /> and otherwise retains the raw text.
     /// </summary>
-    [NotNull]
     public string MinValueBuffer
     {
         get => string.IsNullOrEmpty(_minValueBuffer)
@@ -155,14 +152,12 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// <summary>
     ///     Gets the resolved <see cref="PawnCapacityDef" /> for this limit, or <c>null</c> if it could not be resolved.
     /// </summary>
-    [CanBeNull]
-    public PawnCapacityDef PawnCapacityDef => Def;
+    public PawnCapacityDef? PawnCapacityDef => Def;
 
     /// <summary>
     ///     Gets the def name of the capacity this limit targets, or <c>null</c> if none is set.
     /// </summary>
-    [CanBeNull]
-    public string PawnCapacityDefName => DefName;
+    public string? PawnCapacityDefName => DefName;
 
     internal float ValueStep
     {

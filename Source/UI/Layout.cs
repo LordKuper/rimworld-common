@@ -189,7 +189,6 @@ public static class Layout
         return rowRect;
     }
 
-    [NotNull]
     internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap, float rowHeight, float rowGap,
         int cellCount, out float gridHeight, out Rect remRect)
     {

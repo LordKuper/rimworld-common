@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using JetBrains.Annotations;
 
 namespace LordKuper.Common.Helpers;
 
@@ -23,7 +22,6 @@ public static class EnumHelper
     ///     An enumeration value representing the combination of flags that are defined in the enumeration but are not set
     ///     in the specified <paramref name="value" />.
     /// </returns>
-    [NotNull]
     public static T AbsentFlags<T>(T value) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
@@ -51,7 +49,6 @@ public static class EnumHelper
     ///     An <see cref="IEnumerable{T}" /> containing the unique flags set in <paramref name="value" /> that are not present
     ///     in <paramref name="excludedFlags" />.
     /// </returns>
-    [ItemNotNull]
     public static IEnumerable<T> GetUniqueFlags<T>(T value, T excludedFlags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
@@ -78,7 +75,6 @@ public static class EnumHelper
     ///     An <see cref="IEnumerable{T}" /> containing the flags of type <typeparamref name="T" /> that are set in the
     ///     specified <paramref name="value" />. The collection will be empty if no flags are set.
     /// </returns>
-    [ItemNotNull]
     public static IEnumerable<T> GetUniqueFlags<T>(T value) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);

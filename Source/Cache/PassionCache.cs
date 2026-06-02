@@ -19,23 +19,16 @@ namespace LordKuper.Common.Cache;
 /// <param name="learnRateFactor">The learning rate factor associated with the passion.</param>
 /// <param name="forgetRateFactor">The forget rate factor associated with the passion.</param>
 [PublicAPI]
-public class PassionCache(
-    Passion passion,
-    [NotNull] string defName,
-    [NotNull] string label,
-    float learnRateFactor,
-    float forgetRateFactor)
+public class PassionCache(Passion passion, string defName, string label, float learnRateFactor, float forgetRateFactor)
 {
     /// <summary>
     ///     Gets the definition name of the passion.
     /// </summary>
-    [NotNull]
     public string DefName { get; } = defName;
 
     /// <summary>
     ///     Gets the description for the passion, including label, learning rate, and forget rate.
     /// </summary>
-    [NotNull]
     public string Description { get; } = new StringBuilder().AppendLine(label).AppendLine()
         .AppendLine(string.Format(Strings.Passions.LearnRateFactorDescription, learnRateFactor))
         .AppendLine(string.Format(Strings.Passions.ForgetRateFactorDescription, forgetRateFactor)).ToString();
@@ -48,13 +41,11 @@ public class PassionCache(
     /// <summary>
     ///     Gets the icon representing the passion. The icon is cached after the first retrieval.
     /// </summary>
-    [NotNull]
     public Texture2D Icon => field ? field : field = PassionHelper.GetPassionIcon(Passion);
 
     /// <summary>
     ///     Gets the display label for the passion.
     /// </summary>
-    [NotNull]
     public string Label { get; } = label;
 
     /// <summary>

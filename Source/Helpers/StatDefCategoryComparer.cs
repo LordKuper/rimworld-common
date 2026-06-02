@@ -19,7 +19,7 @@ internal class StatDefCategoryComparer : IComparer<StatDef>
     ///     zero if they are equal;
     ///     greater than zero if <paramref name="x" /> is greater than <paramref name="y" />.
     /// </returns>
-    public int Compare(StatDef x, StatDef y)
+    public int Compare(StatDef? x, StatDef? y)
     {
         if (ReferenceEquals(x, y)) return 0;
         if (x is null) return -1;

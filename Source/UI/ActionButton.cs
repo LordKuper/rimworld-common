@@ -27,7 +27,7 @@ public struct ActionButton
     /// <summary>
     ///     Gets the tooltip to display for the button.
     /// </summary>
-    internal string Tooltip { get; }
+    internal string? Tooltip { get; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="ActionButton" /> struct.
@@ -39,8 +39,7 @@ public struct ActionButton
     /// <exception cref="ArgumentNullException">
     ///     Thrown if <paramref name="label" /> is null or empty, or if <paramref name="action" /> is null.
     /// </exception>
-    public ActionButton([NotNull] string label, [NotNull] Action action, [CanBeNull] string tooltip = null,
-        bool isEnabled = true)
+    public ActionButton(string label, Action action, string? tooltip = null, bool isEnabled = true)
     {
         if (string.IsNullOrEmpty(label)) throw new ArgumentNullException(nameof(label));
         if (action == null) throw new ArgumentNullException(nameof(action));

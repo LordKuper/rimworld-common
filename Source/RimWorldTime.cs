@@ -67,7 +67,7 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     ///     Less than zero if this is earlier, zero if equal, greater than zero if later.
     /// </returns>
     /// <exception cref="ArgumentException">Thrown if object is not a <see cref="RimWorldTime" />.</exception>
-    public int CompareTo([CanBeNull] object obj)
+    public int CompareTo(object? obj)
     {
         if (obj is null) return 1;
         return obj is RimWorldTime other
@@ -122,7 +122,7 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// </summary>
     /// <param name="obj">The object to compare.</param>
     /// <returns>True if equal, otherwise false.</returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is RimWorldTime other && Equals(other);
     }
@@ -183,7 +183,7 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// </summary>
     /// <param name="map">The map to get time from.</param>
     /// <returns>The current <see cref="RimWorldTime" /> for the map.</returns>
-    public static RimWorldTime GetMapTime([CanBeNull] Map map)
+    public static RimWorldTime GetMapTime(Map? map)
     {
         return map == null
             ? new RimWorldTime(0, 0, 0)

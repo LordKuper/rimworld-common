@@ -17,7 +17,7 @@ public static class Logger
     /// <param name="message">The base message.</param>
     /// <param name="exception">The exception to append.</param>
     /// <returns>The combined message.</returns>
-    private static string AppendExceptionMessage(string message, [CanBeNull] Exception exception)
+    private static string AppendExceptionMessage(string message, Exception? exception)
     {
         return exception != null ? $"{message}{Environment.NewLine}{exception}" : message;
     }
@@ -28,8 +28,7 @@ public static class Logger
     /// <param name="modId">The mod identifier.</param>
     /// <param name="message">The error message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    public static void LogError([NotNull] string modId, [NotNull] string message,
-        [CanBeNull] Exception exception = null)
+    public static void LogError(string modId, string message, Exception? exception = null)
     {
         Log.Error($"{modId}: {AppendExceptionMessage(message, exception)}");
     }
@@ -39,7 +38,7 @@ public static class Logger
     /// </summary>
     /// <param name="message">The error message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    internal static void LogError([NotNull] string message, [CanBeNull] Exception exception = null)
+    internal static void LogError(string message, Exception? exception = null)
     {
         LogError(CommonMod.ModId, message, exception);
     }
@@ -49,7 +48,7 @@ public static class Logger
     /// </summary>
     /// <param name="modId">The mod identifier.</param>
     /// <param name="message">The message to log.</param>
-    public static void LogMessage([NotNull] string modId, [NotNull] string message)
+    public static void LogMessage(string modId, string message)
     {
         Log.Message($"{modId}: {message}");
     }
@@ -58,7 +57,7 @@ public static class Logger
     ///     Logs a message using the default mod ID.
     /// </summary>
     /// <param name="message">The message to log.</param>
-    internal static void LogMessage([NotNull] string message)
+    internal static void LogMessage(string message)
     {
         LogMessage(CommonMod.ModId, message);
     }
@@ -69,8 +68,7 @@ public static class Logger
     /// <param name="modId">The mod identifier.</param>
     /// <param name="message">The warning message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    public static void LogWarning([NotNull] string modId, [NotNull] string message,
-        [CanBeNull] Exception exception = null)
+    public static void LogWarning(string modId, string message, Exception? exception = null)
     {
         Log.Warning($"{modId}: {AppendExceptionMessage(message, exception)}");
     }
@@ -80,7 +78,7 @@ public static class Logger
     /// </summary>
     /// <param name="message">The warning message.</param>
     /// <param name="exception">The exception to log (optional).</param>
-    internal static void LogWarning([NotNull] string message, [CanBeNull] Exception exception = null)
+    internal static void LogWarning(string message, Exception? exception = null)
     {
         LogWarning(CommonMod.ModId, message, exception);
     }

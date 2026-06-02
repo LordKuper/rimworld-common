@@ -36,8 +36,8 @@ public static class ThingIconBox
     /// <param name="things">A read-only list of <see cref="Thing" /> objects to display in the grid.</param>
     /// <param name="rightClickAction">An action to execute when a <see cref="Thing" /> is right-clicked.</param>
     /// <param name="tooltipGetter">A function that provides a tooltip string for a given <see cref="Thing" />.</param>
-    public static void DoThingBox(Rect rect, ref Vector2 scrollPosition, [NotNull] IReadOnlyList<Thing> things,
-        [CanBeNull] Action<Thing> rightClickAction, [CanBeNull] Func<Thing, string> tooltipGetter)
+    public static void DoThingBox(Rect rect, ref Vector2 scrollPosition, IReadOnlyList<Thing> things,
+        Action<Thing>? rightClickAction, Func<Thing, string>? tooltipGetter)
     {
         if (things == null) throw new ArgumentNullException(nameof(things));
         var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + Layout.ElementGapTiny * 2;
@@ -91,8 +91,8 @@ public static class ThingIconBox
     ///     A function that provides a tooltip string for a given <see cref="ThingDef" />.  The tooltip is displayed when
     ///     the user hovers over an icon.
     /// </param>
-    public static void DoThingDefBox(Rect rect, ref Vector2 scrollPosition, [NotNull] IReadOnlyList<ThingDef> things,
-        [CanBeNull] Action<ThingDef> rightClickAction, [CanBeNull] Func<ThingDef, string> tooltipGetter)
+    public static void DoThingDefBox(Rect rect, ref Vector2 scrollPosition, IReadOnlyList<ThingDef> things,
+        Action<ThingDef>? rightClickAction, Func<ThingDef, string>? tooltipGetter)
     {
         if (things == null) throw new ArgumentNullException(nameof(things));
         var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + Layout.ElementGapTiny * 2;

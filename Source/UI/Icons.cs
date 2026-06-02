@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
@@ -22,7 +21,7 @@ internal static class Icons
     /// <param name="icon">The texture to draw as the icon.</param>
     /// <param name="tooltip">An optional tooltip to display when hovering over the icon.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="icon" /> is null.</exception>
-    internal static void DoIcon(Rect rect, [NotNull] Texture2D icon, [CanBeNull] string tooltip = null)
+    internal static void DoIcon(Rect rect, Texture2D icon, string? tooltip = null)
     {
         if (icon == null) throw new ArgumentNullException(nameof(icon));
         Verse.Widgets.DrawTextureFitted(rect, icon, 1f);

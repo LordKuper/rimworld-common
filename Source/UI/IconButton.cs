@@ -13,7 +13,7 @@ public struct IconButton
     /// <summary>
     ///     Gets the icon to display on the button.
     /// </summary>
-    internal Texture2D Icon { get; }
+    internal Texture2D? Icon { get; }
 
     /// <summary>
     ///     Gets the action to execute when the button is clicked.
@@ -28,7 +28,7 @@ public struct IconButton
     /// <summary>
     ///     Gets the tooltip to display for the button.
     /// </summary>
-    internal string Tooltip { get; }
+    internal string? Tooltip { get; }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="IconButton" /> struct.
@@ -37,8 +37,7 @@ public struct IconButton
     /// <param name="action">The action to execute when the button is clicked.</param>
     /// <param name="tooltip">The tooltip to display for the button.</param>
     /// <param name="isEnabled">Whether the button is enabled.</param>
-    public IconButton([CanBeNull] Texture2D icon, [NotNull] Action action, [CanBeNull] string tooltip = null,
-        bool isEnabled = true)
+    public IconButton(Texture2D? icon, Action action, string? tooltip = null, bool isEnabled = true)
     {
         Icon = icon;
         Action = action ?? throw new ArgumentNullException(nameof(action));

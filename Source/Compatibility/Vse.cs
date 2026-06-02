@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
-using JetBrains.Annotations;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -17,18 +16,17 @@ public static class Vse
     /// <summary>
     ///     Delegate type for retrieving all <see cref="Passion" /> values from VSE.
     /// </summary>
-    [NotNull]
     public delegate IEnumerable<Passion> GetPassionsDelegate();
 
     /// <summary>
     ///     FieldInfo for the 'forgetRateFactor' field in VSE's PassionDef.
     /// </summary>
-    private static FieldInfo _forgetRateFactorField;
+    private static FieldInfo? _forgetRateFactorField;
 
     /// <summary>
     ///     PropertyInfo for the 'Icon' property in VSE's PassionDef.
     /// </summary>
-    private static PropertyInfo _iconProperty;
+    private static PropertyInfo? _iconProperty;
 
     /// <summary>
     ///     Indicates whether the compatibility has been initialized.
@@ -38,17 +36,17 @@ public static class Vse
     /// <summary>
     ///     FieldInfo for the 'learnRateFactor' field in VSE's PassionDef.
     /// </summary>
-    private static FieldInfo _learnRateFactorField;
+    private static FieldInfo? _learnRateFactorField;
 
     /// <summary>
     ///     Delegate for converting a <see cref="Passion" /> to its corresponding <see cref="Def" /> in VSE.
     /// </summary>
-    private static PassionToDefDelegate _passionToDef;
+    private static PassionToDefDelegate? _passionToDef;
 
     /// <summary>
     ///     Delegate for retrieving all available passions from VSE.
     /// </summary>
-    [CanBeNull] public static GetPassionsDelegate GetPassions;
+    public static GetPassionsDelegate? GetPassions;
 
     /// <summary>
     ///     Cache for mapping <see cref="Passion" /> to their corresponding VSE passion definitions.
@@ -66,7 +64,6 @@ public static class Vse
     /// <param name="passion">The passion to convert.</param>
     /// <returns>The corresponding <see cref="Def" />.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the conversion fails or the result is not a Def.</exception>
-    [NotNull]
     private static Def GetDef(Passion passion)
     {
         var passionDef = GetPassionDef(passion);
@@ -80,7 +77,6 @@ public static class Vse
     /// </summary>
     /// <param name="passion">The passion to query.</param>
     /// <returns>The defName string.</returns>
-    [NotNull]
     public static string GetDefName(Passion passion)
     {
         return GetDef(passion).defName;
@@ -108,7 +104,6 @@ public static class Vse
     /// <param name="passion">The passion to query.</param>
     /// <returns>The icon as a <see cref="Texture2D" />.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the property is not initialized or not a Texture2D.</exception>
-    [NotNull]
     public static Texture2D GetIcon(Passion passion)
     {
         var passionDef = GetPassionDef(passion);
@@ -124,7 +119,6 @@ public static class Vse
     /// </summary>
     /// <param name="passion">The passion to query.</param>
     /// <returns>The label string.</returns>
-    [NotNull]
     public static string GetLabel(Passion passion)
     {
         var def = GetDef(passion);
@@ -222,5 +216,5 @@ public static class Vse
     /// </summary>
     /// <param name="passion">The passion to convert.</param>
     /// <returns>The corresponding <see cref="Def" />.</returns>
-    private delegate object PassionToDefDelegate(Passion passion);
+    private delegate object? PassionToDefDelegate(Passion passion);
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
 using LordKuper.Common.Helpers;
 using RimWorld;
 using Verse;
@@ -23,7 +22,7 @@ internal static class StatRanges
     /// <param name="stat">The stat definition to normalize.</param>
     /// <param name="value">The value to normalize.</param>
     /// <returns>The normalized value in the range [0, 1].</returns>
-    internal static float NormalizeStatValue([NotNull] StatDef stat, float value)
+    internal static float NormalizeStatValue(StatDef stat, float value)
     {
         UpdateStatRange(stat, value);
         return MathHelper.NormalizeValue(value, Ranges[stat]);
@@ -34,7 +33,7 @@ internal static class StatRanges
     /// </summary>
     /// <param name="stat">The stat definition to update.</param>
     /// <param name="value">The value to consider for range expansion.</param>
-    private static void UpdateStatRange([NotNull] StatDef stat, float value)
+    private static void UpdateStatRange(StatDef stat, float value)
     {
         if (!Ranges.TryGetValue(stat, out var range)) Ranges[stat] = new FloatRange(value, value);
         if (range.min > value)

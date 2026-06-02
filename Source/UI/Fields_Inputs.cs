@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
@@ -45,9 +44,8 @@ public static partial class Fields
     ///     Renders a labeled float range input row with optional icon and action buttons.
     /// </summary>
     public static float DoLabeledFloatRangeInputs(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref string minBuffer, ref string maxBuffer, float minValue, float maxValue,
-        ToStringStyle style, [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref string minBuffer,
+        ref string maxBuffer, float minValue, float maxValue, ToStringStyle style, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, InputRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -59,9 +57,8 @@ public static partial class Fields
     ///     Renders a labeled text input row with optional icon and action buttons.
     /// </summary>
     public static float DoLabeledTextInput(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref string value, [CanBeNull] Regex validRegex, int maxLength,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref string value,
+        Regex? validRegex, int maxLength, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, InputRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -72,7 +69,7 @@ public static partial class Fields
     /// <summary>
     ///     Renders a text input field.
     /// </summary>
-    private static void DoTextInput(Rect rect, ref string value, [CanBeNull] Regex validRegex, int maxLength)
+    private static void DoTextInput(Rect rect, ref string value, Regex? validRegex, int maxLength)
     {
         value = validRegex == null
             ? Verse.Widgets.TextField(rect, value, maxLength)

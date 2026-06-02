@@ -49,7 +49,7 @@ public static class Checkboxes
     /// <param name="rect">The rectangle in which to draw the checkbox.</param>
     /// <param name="value">A reference to the boolean value to update.</param>
     /// <param name="tooltip">An optional tooltip to display when hovering over the checkbox.</param>
-    public static void DoCheckbox(Rect rect, ref bool value, [CanBeNull] string tooltip = null)
+    public static void DoCheckbox(Rect rect, ref bool value, string? tooltip = null)
     {
         var size = GetCheckboxSize(rect);
         var checkBoxRect = Layout.GetCenteredRect(rect, size, size);
@@ -65,7 +65,7 @@ public static class Checkboxes
     /// <param name="rect">The rectangle in which to draw the checkbox.</param>
     /// <param name="value">A reference to the nullable boolean value to update.</param>
     /// <param name="tooltip">An optional tooltip to display when hovering over the checkbox.</param>
-    public static void DoCheckbox(Rect rect, ref bool? value, [CanBeNull] string tooltip = null)
+    public static void DoCheckbox(Rect rect, ref bool? value, string? tooltip = null)
     {
         var size = GetCheckboxSize(rect);
         var checkBoxRect = Layout.GetCenteredRect(rect, size, size);

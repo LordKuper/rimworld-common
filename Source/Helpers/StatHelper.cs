@@ -22,72 +22,72 @@ public static class StatHelper
     /// <summary>
     ///     Stores all melee weapon stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _allMeleeWeaponStatDefs;
+    private static SortedSet<StatDef> _allMeleeWeaponStatDefs = [];
 
     /// <summary>
     ///     Stores all ranged weapon stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _allRangedWeaponStatDefs;
+    private static SortedSet<StatDef> _allRangedWeaponStatDefs = [];
 
     /// <summary>
     ///     Stores all stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _allStatDefs;
+    private static SortedSet<StatDef> _allStatDefs = [];
 
     /// <summary>
     ///     Stores all tool stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _allToolStatDefs;
+    private static SortedSet<StatDef> _allToolStatDefs = [];
 
     /// <summary>
     ///     Stores apparel category names.
     /// </summary>
-    private static HashSet<string> _apparelCategories;
+    private static HashSet<string> _apparelCategories = [];
 
     /// <summary>
     ///     Stores custom stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _customStatsDefs;
+    private static SortedSet<StatDef> _customStatsDefs = [];
 
     /// <summary>
     ///     Stores default apparel stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _defaultApparelStatDefs;
+    private static SortedSet<StatDef> _defaultApparelStatDefs = [];
 
     /// <summary>
     ///     Stores default pawn stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _defaultPawnStatDefs;
+    private static SortedSet<StatDef> _defaultPawnStatDefs = [];
 
     /// <summary>
     ///     Stores default weapon stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _defaultWeaponStatDefs;
+    private static SortedSet<StatDef> _defaultWeaponStatDefs = [];
 
     /// <summary>
     ///     Stores default work stat definitions.
     /// </summary>
-    private static SortedSet<StatDef> _defaultWorkStatDefs;
+    private static SortedSet<StatDef> _defaultWorkStatDefs = [];
 
     /// <summary>
     ///     Stores pawn category names.
     /// </summary>
-    private static HashSet<string> _pawnCategories;
+    private static HashSet<string> _pawnCategories = [];
 
     /// <summary>
     ///     Stores all stat definitions indexed by defName (lowercase) for O(1) lookup.
     /// </summary>
-    private static Dictionary<string, StatDef> _statDefsByName;
+    private static Dictionary<string, StatDef> _statDefsByName = new();
 
     /// <summary>
     ///     Stores weapon category names.
     /// </summary>
-    private static HashSet<string> _weaponCategories;
+    private static HashSet<string> _weaponCategories = [];
 
     /// <summary>
     ///     Stores work category names.
     /// </summary>
-    private static HashSet<string> _workCategories;
+    private static HashSet<string> _workCategories = [];
 
     /// <summary>
     ///     Provides a comparer for sorting StatDefs by category and label.
@@ -118,8 +118,7 @@ public static class StatHelper
     /// </summary>
     /// <param name="defName">The defName of the stat to find.</param>
     /// <returns>The matching <see cref="StatDef" /> if found; otherwise, <c>null</c>.</returns>
-    [CanBeNull]
-    internal static StatDef GetStatDef([CanBeNull] string defName)
+    internal static StatDef? GetStatDef(string? defName)
     {
         if (string.IsNullOrEmpty(defName)) return null;
         _statDefsByName.TryGetValue(defName.ToLowerInvariant(), out var result);
@@ -131,7 +130,6 @@ public static class StatHelper
     /// </summary>
     /// <param name="category">The stat category.</param>
     /// <returns>A read-only collection of <see cref="StatDef" /> for the specified category.</returns>
-    [NotNull]
     public static IReadOnlyCollection<StatDef> GetStatsByCategory(StatCategory category)
     {
         if (Stats.TryGetValue(category, out var stats)) return stats;
@@ -158,7 +156,7 @@ public static class StatHelper
     /// <param name="thing">The thing to evaluate.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The stat value for the specified thing.</returns>
-    public static float GetStatValue([NotNull] Thing thing, [NotNull] StatDef statDef)
+    public static float GetStatValue(Thing thing, StatDef statDef)
     {
         if (thing == null) throw new ArgumentNullException(nameof(thing));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
@@ -188,7 +186,7 @@ public static class StatHelper
     /// <param name="def">The thing definition to evaluate.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The stat value for the specified thing definition.</returns>
-    private static float GetStatValue([NotNull] ThingDef def, [NotNull] StatDef statDef)
+    private static float GetStatValue(ThingDef def, StatDef statDef)
     {
         if (def == null) throw new ArgumentNullException(nameof(def));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
@@ -227,7 +225,7 @@ public static class StatHelper
     /// <param name="def">The thing definition.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The deviation from the default base value.</returns>
-    public static float GetStatValueDeviation([NotNull] ThingDef def, [NotNull] StatDef statDef)
+    public static float GetStatValueDeviation(ThingDef def, StatDef statDef)
     {
         if (def == null) throw new ArgumentNullException(nameof(def));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
@@ -240,7 +238,7 @@ public static class StatHelper
     /// <param name="thing">The thing.</param>
     /// <param name="statDef">The stat definition.</param>
     /// <returns>The deviation from the default base value.</returns>
-    public static float GetStatValueDeviation([NotNull] Thing thing, [NotNull] StatDef statDef)
+    public static float GetStatValueDeviation(Thing thing, StatDef statDef)
     {
         if (thing == null) throw new ArgumentNullException(nameof(thing));
         if (statDef == null) throw new ArgumentNullException(nameof(statDef));
@@ -327,8 +325,7 @@ public static class StatHelper
     {
         var allDefs = DefDatabase<StatDef>.AllDefsListForReading;
         var allStatDefsSet = new HashSet<StatDef>(allDefs);
-        if (_customStatsDefs != null)
-            allStatDefsSet.UnionWith(_customStatsDefs);
+        allStatDefsSet.UnionWith(_customStatsDefs);
         _allStatDefs = new SortedSet<StatDef>(allStatDefsSet, Comparer);
         _statDefsByName = allStatDefsSet.ToDictionary(d => d.defName.ToLowerInvariant());
         var meleeSet = new HashSet<StatDef>(MeleeWeaponStats.StatDefs);

@@ -17,12 +17,12 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// <summary>
     ///     The cached <see cref="Def" /> instance.
     /// </summary>
-    [CanBeNull] private T _def;
+    private T? _def;
 
     /// <summary>
     ///     The name of the <see cref="Def" /> to cache.
     /// </summary>
-    [CanBeNull] private string _defName;
+    private string? _defName;
 
     /// <summary>
     ///     Indicates whether the cache has been initialized.
@@ -38,7 +38,7 @@ public abstract class DefCache<T> : IExposable where T : Def
     ///     Initializes a new instance of <see cref="DefCache{T}" /> with the specified def name.
     /// </summary>
     /// <param name="defName">The name of the def to cache.</param>
-    protected DefCache([CanBeNull] string defName)
+    protected DefCache(string? defName)
     {
         _defName = defName;
     }
@@ -46,8 +46,7 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// <summary>
     ///     Gets the cached <see cref="Def" /> instance, initializing it if necessary.
     /// </summary>
-    [CanBeNull]
-    public T Def
+    public T? Def
     {
         get
         {
@@ -59,14 +58,12 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// <summary>
     ///     Gets the name of the cached <see cref="Def" />.
     /// </summary>
-    [CanBeNull]
-    public string DefName => _defName;
+    public string? DefName => _defName;
 
     /// <summary>
     ///     Gets the label for the cached <see cref="Def" />, or the def name if not found.
     /// </summary>
-    [CanBeNull]
-    public virtual string Label => field ??= Def == null ? _defName : Def.GetLabel();
+    public virtual string? Label => field ??= Def == null ? _defName : Def.GetLabel();
 
     /// <summary>
     ///     Serializes the def name for saving/loading.
@@ -82,8 +79,7 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// <param name="def">The def whose name to return.</param>
     /// <returns>The def name.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is <see langword="null" />.</exception>
-    [NotNull]
-    protected static string GetDefName([NotNull] T def)
+    protected static string GetDefName(T def)
     {
         return def == null ? throw new ArgumentNullException(nameof(def)) : def.defName;
     }

@@ -18,7 +18,7 @@ public static class PassionHelper
     /// <summary>
     ///     Backing field for the cached list of <see cref="PassionCache" /> entries.
     /// </summary>
-    private static List<PassionCache> _cachedPassions;
+    private static List<PassionCache>? _cachedPassions;
 
     /// <summary>
     ///     Indicates whether the passion cache has been initialized.
@@ -34,7 +34,6 @@ public static class PassionHelper
     /// <summary>
     ///     Gets an ordered, cached list of all <see cref="PassionCache" /> entries.
     /// </summary>
-    [NotNull]
     public static IReadOnlyList<PassionCache> Passions
     {
         get
@@ -52,8 +51,7 @@ public static class PassionHelper
     /// <returns>
     ///     The <see cref="PassionCache" /> entry if found; otherwise, <c>null</c>.
     /// </returns>
-    [CanBeNull]
-    public static PassionCache GetPassionCache(Passion passion)
+    public static PassionCache? GetPassionCache(Passion passion)
     {
         Initialize();
         PassionCache.TryGetValue(passion, out var passionCache);
@@ -70,8 +68,7 @@ public static class PassionHelper
     ///     The <see cref="PassionCache" /> entry if found; otherwise, <c>null</c>.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="defName" /> is null or empty.</exception>
-    [CanBeNull]
-    public static PassionCache GetPassionCache([NotNull] string defName)
+    public static PassionCache? GetPassionCache(string defName)
     {
         Initialize();
         return string.IsNullOrEmpty(defName)
@@ -89,7 +86,6 @@ public static class PassionHelper
     /// <exception cref="ArgumentOutOfRangeException">
     ///     Thrown if the specified <paramref name="passion" /> is not recognized.
     /// </exception>
-    [NotNull]
     internal static Texture2D GetPassionIcon(Passion passion)
     {
         if (Vse.VanillaSkillsExpandedActive) return Vse.GetIcon(passion);

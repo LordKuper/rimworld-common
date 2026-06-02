@@ -18,8 +18,8 @@ public class StatWeight : IExposable
 
     private bool _isInitialized;
     private bool _isProtected;
-    private StatDef _statDef;
-    private string _statDefName;
+    private StatDef? _statDef;
+    private string? _statDefName;
 
     /// <summary>
     ///     The weight assigned to the stat.
@@ -32,7 +32,7 @@ public class StatWeight : IExposable
     /// </summary>
     /// <param name="statDef">The stat definition.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight([NotNull] StatDef statDef, bool isProtected) : this(statDef.defName, isProtected)
+    internal StatWeight(StatDef statDef, bool isProtected) : this(statDef.defName, isProtected)
     {
         _statDef = statDef;
         _isInitialized = true;
@@ -45,7 +45,7 @@ public class StatWeight : IExposable
     /// <param name="statDef">The stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight([NotNull] StatDef statDef, float weight, bool isProtected) : this(statDef, isProtected)
+    internal StatWeight(StatDef statDef, float weight, bool isProtected) : this(statDef, isProtected)
     {
         Weight = weight;
     }
@@ -60,7 +60,7 @@ public class StatWeight : IExposable
     /// </summary>
     /// <param name="statDefName">The name of the stat definition.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    private StatWeight(string statDefName, bool isProtected)
+    private StatWeight(string? statDefName, bool isProtected)
     {
         _statDefName = statDefName;
         _isProtected = isProtected;
@@ -73,7 +73,7 @@ public class StatWeight : IExposable
     /// <param name="statDefName">The name of the stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    public StatWeight([CanBeNull] string statDefName, float weight, bool isProtected) : this(statDefName, isProtected)
+    public StatWeight(string? statDefName, float weight, bool isProtected) : this(statDefName, isProtected)
     {
         Weight = weight;
     }
@@ -90,8 +90,7 @@ public class StatWeight : IExposable
     /// <summary>
     ///     Gets the <see cref="StatDef" /> associated with this instance.
     /// </summary>
-    [CanBeNull]
-    public StatDef StatDef
+    public StatDef? StatDef
     {
         get
         {
@@ -103,8 +102,7 @@ public class StatWeight : IExposable
     /// <summary>
     ///     Gets the name of the stat definition.
     /// </summary>
-    [CanBeNull]
-    public string StatDefName => _statDefName;
+    public string? StatDefName => _statDefName;
 
     /// <summary>
     ///     Serializes and deserializes the data for this instance.

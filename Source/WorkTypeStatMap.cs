@@ -18,13 +18,13 @@ public class WorkTypeStatMap
     ///     Stores a mapping from <see cref="WorkTypeDef" /> to a set of <see cref="StatDef" />s that are used for
     ///     auto-switching.
     /// </summary>
-    private static Dictionary<WorkTypeDef, HashSet<StatDef>> _autoSwitchStatsMap;
+    private static Dictionary<WorkTypeDef, HashSet<StatDef>>? _autoSwitchStatsMap;
 
     /// <summary>
     ///     Stores a mapping from <see cref="WorkTypeDef" /> to a dictionary of <see cref="StatDef" /> and their associated
     ///     <see cref="StatWeight" />.
     /// </summary>
-    private static Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>> _defaultStatsMap;
+    private static Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>? _defaultStatsMap;
 
     /// <summary>
     ///     Default stat weights for specific work types, keyed by work type defName and stat defName.
@@ -50,8 +50,7 @@ public class WorkTypeStatMap
     ///     Gets a mapping from <see cref="WorkTypeDef" /> to a set of <see cref="StatDef" />s used for auto-switching.
     ///     The map is built on first access if not already initialized.
     /// </summary>
-    [CanBeNull]
-    public static Dictionary<WorkTypeDef, HashSet<StatDef>> AutoSwitchStatsMap
+    public static Dictionary<WorkTypeDef, HashSet<StatDef>>? AutoSwitchStatsMap
     {
         get
         {
@@ -65,8 +64,7 @@ public class WorkTypeStatMap
     ///     <see cref="StatWeight" />.
     ///     The map is built on first access if not already initialized.
     /// </summary>
-    [CanBeNull]
-    internal static Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>> DefaultStatsMap
+    internal static Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>? DefaultStatsMap
     {
         get
         {

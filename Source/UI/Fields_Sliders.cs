@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
 
@@ -105,9 +104,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledFloatRangeSlider(Rect rect, int inputId, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref FloatRange value, float minValue, float maxValue, float step,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref FloatRange value,
+        float minValue, float maxValue, float step, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -131,9 +129,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledFloatSlider(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref float value, float minValue, float maxValue, float step,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref float value,
+        float minValue, float maxValue, float step, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -157,9 +154,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledFrequencySlider(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref float value, float minValue, float maxValue, bool roundToInt,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref float value,
+        float minValue, float maxValue, bool roundToInt, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -184,9 +180,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledIntegerRangeSlider(Rect rect, int inputId, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref IntRange value, int minValue, int maxValue, int step,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref IntRange value,
+        int minValue, int maxValue, int step, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -210,9 +205,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledIntegerSlider(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref int value, int minValue, int maxValue, int step, [CanBeNull] Texture icon,
-        out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref int value, int minValue,
+        int maxValue, int step, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -238,9 +232,8 @@ public static partial class Fields
     /// <param name="style">The style to use for displaying the value.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledPercentRangeSlider(Rect rect, int inputId, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref FloatRange value, float minValue, float maxValue, float step,
-        ToStringStyle style, [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref FloatRange value,
+        float minValue, float maxValue, float step, ToStringStyle style, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
@@ -264,9 +257,8 @@ public static partial class Fields
     /// <param name="remRect">The remaining rectangle after drawing the field.</param>
     /// <returns>The height of the row used for the field.</returns>
     public static float DoLabeledPercentSlider(Rect rect, int indentationLevel,
-        [CanBeNull] IReadOnlyCollection<IconButton> actionButtons, [NotNull] string label,
-        [CanBeNull] string labelTooltip, ref float value, float minValue, float maxValue, float step,
-        [CanBeNull] Texture icon, out Rect remRect)
+        IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, ref float value,
+        float minValue, float maxValue, float step, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SliderRowHeight, out remRect);
         DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
