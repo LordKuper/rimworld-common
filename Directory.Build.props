@@ -1,0 +1,11 @@
+<Project>
+  <!-- Repo-root build governance SSoT (ADR-0003).
+       Inherited automatically by Tests (nearest file; no child Directory.Build.props there).
+       Source/Directory.Build.props imports this explicitly via GetPathOfFileAbove. -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>9999</WarningLevel>
+    <Nullable>enable</Nullable>
+    <!-- LangVersion intentionally not pinned; stays 'latest' per ADR-0003 / IMP-03 won't-do. -->
+  </PropertyGroup>
+</Project>

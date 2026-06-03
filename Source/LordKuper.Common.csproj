@@ -5,7 +5,8 @@
     <RootNamespace>LordKuper.Common</RootNamespace>
     <AssemblyName>LordKuper.Common</AssemblyName>
     <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
+    <!-- Nullable, TreatWarningsAsErrors, and WarningLevel are governed by the repo-root
+         Directory.Build.props (ADR-0003); do not re-declare them here. -->
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <OutputPath>..\1.6\Assemblies\</OutputPath>
@@ -19,16 +20,6 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>portable</DebugType>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <WarningLevel>9999</WarningLevel>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <WarningLevel>9999</WarningLevel>
   </PropertyGroup>
 
   <ItemGroup>

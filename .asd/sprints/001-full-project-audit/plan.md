@@ -52,18 +52,23 @@ Two audit improvements are **won't-do** and are not realized by any task: IMP-03
 
 ### Task 1: Solution-wide build governance (ADR-0003)
 <!-- Owner: backend-dev. Deps: Task 0 (compile-green gate). ACs: 2, 3, 4, 23. -->
-- [ ] Add a repo-root `Directory.Build.props` setting `TreatWarningsAsErrors=true`, `WarningLevel=9999`, `Nullable=enable`, inherited by both Source and Tests
-- [ ] Make the root props **explicitly import** the existing `Source/Directory.Build.props` via `GetPathOfFileAbove` (correct MSBuild precedence; no silent override of Source settings)
-- [ ] Replace the hardcoded RimWorld build path with **fail-fast**: error if `RIMWORLD_DIR` / `RimWorldDir` is unset (no machine-specific default)
-- [ ] Clean stale / mixed-target build intermediates (`v4.8`, `net8.0`) so only declared `net472` remains; confirm a clean rebuild
-- [ ] Verify `supportedVersions` still lists `1.5` + `1.6` (1.5 stays the frozen archive) (AC-23)
+- [x] Add a repo-root `Directory.Build.props` setting `TreatWarningsAsErrors=true`, `WarningLevel=9999`, `Nullable=enable`, inherited by both Source and Tests
+- [x] Make the root props **explicitly import** the existing `Source/Directory.Build.props` via `GetPathOfFileAbove` (correct MSBuild precedence; no silent override of Source settings)
+- [x] Replace the hardcoded RimWorld build path with **fail-fast**: error if `RIMWORLD_DIR` / `RimWorldDir` is unset (no machine-specific default)
+- [x] Clean stale / mixed-target build intermediates (`v4.8`, `net8.0`) so only declared `net472` remains; confirm a clean rebuild
+- [x] Verify `supportedVersions` still lists `1.5` + `1.6` (1.5 stays the frozen archive) (AC-23)
 - [ ] Run `jb-cleanup` then `build`: solution rebuilds warning-clean
 
 ### Task 2: Verify-close legacy packages/ (IMP-01)
 <!-- Owner: backend-dev. Deps: none. AC: 1. -->
-- [ ] Confirm no `Source/packages/` folder (Harmony 2.3.6 / MSTest) exists in the tree
-- [ ] Confirm nothing in the solution references it
-- [ ] Record the closure in the sprint trail (verification note)
+- [x] Confirm no `Source/packages/` folder (Harmony 2.3.6 / MSTest) exists in the tree
+- [x] Confirm nothing in the solution references it
+- [x] Record the closure in the sprint trail (verification note)
+<!-- Verification note (2026-06-03): `Source/packages/` does not exist on disk (Test-Path returned False).
+     No csproj, sln, props, or targets file references 'packages/', 'Harmony 2.3.6', or 'MSTest'.
+     Source/LordKuper.Common.csproj uses PackageReference: Lib.Harmony 2.4.2 (compile-only, ExcludeAssets=runtime).
+     Tests/LordKuper.Common.Tests.csproj uses PackageReference: xunit, coverlet, Microsoft.NET.Test.Sdk.
+     IMP-01 is closed: the legacy packages/ folder was never migrated into this repo. -->
 
 ### Task 3: IDefProvider isolation seam (ADR-0001)
 <!-- Owner: backend-dev. Deps: Task 1. Gates Tasks 8-11. ACs: 13, 24, 25, 26. -->

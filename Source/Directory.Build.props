@@ -1,7 +1,22 @@
 <Project>
-	<PropertyGroup>
-		<RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
-		<RimWorldDir Condition="'$(RimWorldDir)' == ''">d:\Games\SteamLibrary\steamapps\common\RimWorld</RimWorldDir>
-		<RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
-	</PropertyGroup>
+  <!-- Explicitly import the repo-root Directory.Build.props so its governance props
+       (TreatWarningsAsErrors, WarningLevel, Nullable) are inherited here.
+       MSBuild auto-imports only the NEAREST Directory.Build.props; without this import
+       the Source subdirectory file would shadow the root and silently reopen the
+       governance gap for the Source project. (ADR-0003) -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
+
+  <PropertyGroup>
+    <!-- Resolve RimWorld install dir: prefer env-var RIMWORLD_DIR, then MSBuild property RimWorldDir.
+         The hardcoded machine-specific fallback has been removed (ADR-0003 / AC-2):
+         if neither variable resolves to an existing directory the build fails fast below. -->
+    <RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
+    <RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
+  </PropertyGroup>
+
+  <!-- Fail fast if RimWorld path is unresolved or does not exist on disk (AC-2). -->
+  <Target Name="CheckRimWorldDir" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(RimWorldDir)' == '' OR !Exists('$(RimWorldManagedDir)')"
+           Text="Set RIMWORLD_DIR (or RimWorldDir) to your RimWorld install path; '$(RimWorldManagedDir)' does not exist." />
+  </Target>
 </Project>
