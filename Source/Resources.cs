@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using JetBrains.Annotations;
 using UnityEngine;
 using Verse;
@@ -100,24 +101,15 @@ public static class Resources
         /// </summary>
         internal static class PawnFilter
         {
-            private static string? _filterPawnCapacitiesTooltip;
-            private static string? _filterPawnCapacitiesTriStateTooltip;
-            private static string? _filterPawnHealthStatesTooltip;
-            private static string? _filterPawnHealthStatesTriStateTooltip;
-            private static string? _filterPawnPrimaryWeaponTypesTooltip;
-            private static string? _filterPawnPrimaryWeaponTypesTriStateTooltip;
-            private static string? _filterPawnSkillsTooltip;
-            private static string? _filterPawnSkillsTriStateTooltip;
-            private static string? _filterPawnStatsTooltip;
-            private static string? _filterPawnStatsTriStateTooltip;
-            private static string? _filterPawnTraitsTooltip;
-            private static string? _filterPawnTraitsTriStateTooltip;
-            private static string? _filterPawnTypesTooltip;
-            private static string? _filterPawnTypesTriStateTooltip;
-            private static string? _filterWorkCapacitiesTooltip;
-            private static string? _filterWorkCapacitiesTriStateTooltip;
-            private static string? _filterWorkPassionsTooltip;
-            private static string? _filterWorkPassionsTriStateTooltip;
+            /// <summary>
+            ///     Cache for two-state (on/off) filter tooltips, keyed by filter category name.
+            /// </summary>
+            private static readonly Dictionary<string, string> TooltipCache = new();
+
+            /// <summary>
+            ///     Cache for tri-state (on/off/partial) filter tooltips, keyed by filter category name.
+            /// </summary>
+            private static readonly Dictionary<string, string> TriStateTooltipCache = new();
 
             /// <summary>
             ///     Gets the localized label for allowed pawn health states.
@@ -348,19 +340,29 @@ public static class Resources
                 $"{CommonMod.ModId}.{nameof(PawnFilter)}.{nameof(WorkCapacityLimitsTooltip)}".Translate();
 
             /// <summary>
-            ///     Appends a tooltip message indicating an undefined filter state to the specified tooltip text.
+            ///     Builds and caches the tooltip string for a filter category, optionally appending the
+            ///     partial/undefined tri-state line.
             /// </summary>
-            /// <param name="tooltip">
-            ///     The existing tooltip text to which the undefined filter message will be appended. Cannot be <see langword="null" />
-            ///     .
-            /// </param>
-            /// <returns>
-            ///     A new string that combines the original tooltip text with the undefined filter state message, separated by a
-            ///     newline.
-            /// </returns>
-            private static string AppendUndefinedFilterTooltip(string tooltip)
+            /// <param name="key">Unique key identifying the filter category (used for caching).</param>
+            /// <param name="onTooltip">Localized description for the "On" state.</param>
+            /// <param name="offTooltip">Localized description for the "Off" state.</param>
+            /// <param name="triState">If <see langword="true" />, appends the partial/undefined state line.</param>
+            /// <returns>The cached tooltip string for the requested state.</returns>
+            private static string GetFilterTooltip(string key, string onTooltip, string offTooltip, bool triState)
             {
-                return $"{tooltip}{Environment.NewLine}{MultiCheckboxStates.Partial}: {UndefinedFilterTooltip}";
+                if (!TooltipCache.TryGetValue(key, out var baseTooltip))
+                {
+                    baseTooltip = string.Concat(MultiCheckboxStates.On, ": ", onTooltip,
+                        Environment.NewLine, MultiCheckboxStates.Off, ": ", offTooltip);
+                    TooltipCache[key] = baseTooltip;
+                }
+                if (!triState) return baseTooltip;
+                if (!TriStateTooltipCache.TryGetValue(key, out var triStateTooltip))
+                {
+                    triStateTooltip = $"{baseTooltip}{Environment.NewLine}{MultiCheckboxStates.Partial}: {UndefinedFilterTooltip}";
+                    TriStateTooltipCache[key] = triStateTooltip;
+                }
+                return triStateTooltip;
             }
 
             /// <summary>
@@ -368,179 +370,81 @@ public static class Resources
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for pawn capacities filter.</returns>
-            public static string GetFilterPawnCapacitiesTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnCapacitiesTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnCapacitiesOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnCapacitiesOffTooltip);
-                if (_filterPawnCapacitiesTriStateTooltip != null)
-                    return _filterPawnCapacitiesTriStateTooltip;
-                var baseTooltip = GetFilterPawnCapacitiesTooltip(false);
-                _filterPawnCapacitiesTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnCapacitiesTriStateTooltip;
-            }
+            public static string GetFilterPawnCapacitiesTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnCapacitiesOnTooltip),
+                    FilterPawnCapacitiesOnTooltip, FilterPawnCapacitiesOffTooltip, triState);
 
             /// <summary>
             ///     Gets the tooltip for pawn health states filter, optionally including the tri-state description.
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for pawn health states filter.</returns>
-            public static string GetFilterPawnHealthStatesTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnHealthStatesTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnHealthStatesOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnHealthStatesOffTooltip);
-                if (_filterPawnHealthStatesTriStateTooltip != null)
-                    return _filterPawnHealthStatesTriStateTooltip;
-                var baseTooltip = GetFilterPawnHealthStatesTooltip(false);
-                _filterPawnHealthStatesTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnHealthStatesTriStateTooltip;
-            }
+            public static string GetFilterPawnHealthStatesTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnHealthStatesOnTooltip),
+                    FilterPawnHealthStatesOnTooltip, FilterPawnHealthStatesOffTooltip, triState);
 
             /// <summary>
-            ///     Generates a tooltip describing the filter states for pawn primary weapon types.
+            ///     Gets the tooltip for pawn primary weapon types filter, optionally including the tri-state description.
             /// </summary>
-            /// <param name="triState">
-            ///     A value indicating whether the tooltip should include a tri-state description. If
-            ///     <see
-            ///         langword="true" />
-            ///     , the tooltip includes an additional "undefined" state. If <see langword="false" />, the
-            ///     tooltip describes only the "on" and "off" states.
-            /// </param>
-            /// <returns>
-            ///     A string containing the tooltip text for the filter states. The tooltip includes descriptions for the
-            ///     "on" and "off" states, and optionally the "undefined" state if <paramref name="triState" /> is
-            ///     <see
-            ///         langword="true" />
-            ///     .
-            /// </returns>
-            public static string GetFilterPawnPrimaryWeaponTypesTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnPrimaryWeaponTypesTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnPrimaryWeaponTypesOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnPrimaryWeaponTypesOffTooltip);
-                if (_filterPawnPrimaryWeaponTypesTriStateTooltip != null)
-                    return _filterPawnPrimaryWeaponTypesTriStateTooltip;
-                var baseTooltip = GetFilterPawnPrimaryWeaponTypesTooltip(false);
-                _filterPawnPrimaryWeaponTypesTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnPrimaryWeaponTypesTriStateTooltip;
-            }
+            /// <param name="triState">If true, includes the partial state description.</param>
+            /// <returns>The tooltip string for pawn primary weapon types filter.</returns>
+            public static string GetFilterPawnPrimaryWeaponTypesTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnPrimaryWeaponTypesOnTooltip),
+                    FilterPawnPrimaryWeaponTypesOnTooltip, FilterPawnPrimaryWeaponTypesOffTooltip, triState);
 
             /// <summary>
             ///     Gets the tooltip for pawn skills filter, optionally including the tri-state description.
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for pawn skills filter.</returns>
-            public static string GetFilterPawnSkillsTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnSkillsTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnSkillsOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnSkillsOffTooltip);
-                if (_filterPawnSkillsTriStateTooltip != null)
-                    return _filterPawnSkillsTriStateTooltip;
-                var baseTooltip = GetFilterPawnSkillsTooltip(false);
-                _filterPawnSkillsTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnSkillsTriStateTooltip;
-            }
+            public static string GetFilterPawnSkillsTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnSkillsOnTooltip),
+                    FilterPawnSkillsOnTooltip, FilterPawnSkillsOffTooltip, triState);
 
             /// <summary>
             ///     Gets the tooltip for pawn stats filter, optionally including the tri-state description.
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for pawn stats filter.</returns>
-            public static string GetFilterPawnStatsTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnStatsTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnStatsOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnStatsOffTooltip);
-                if (_filterPawnStatsTriStateTooltip != null) return _filterPawnStatsTriStateTooltip;
-                var baseTooltip = GetFilterPawnStatsTooltip(false);
-                _filterPawnStatsTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnStatsTriStateTooltip;
-            }
+            public static string GetFilterPawnStatsTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnStatsOnTooltip),
+                    FilterPawnStatsOnTooltip, FilterPawnStatsOffTooltip, triState);
 
             /// <summary>
             ///     Gets the tooltip for pawn traits filter, optionally including the tri-state description.
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for pawn traits filter.</returns>
-            public static string GetFilterPawnTraitsTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnTraitsTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnTraitsOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnTraitsOffTooltip);
-                if (_filterPawnTraitsTriStateTooltip != null)
-                    return _filterPawnTraitsTriStateTooltip;
-                var baseTooltip = GetFilterPawnTraitsTooltip(false);
-                _filterPawnTraitsTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnTraitsTriStateTooltip;
-            }
+            public static string GetFilterPawnTraitsTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnTraitsOnTooltip),
+                    FilterPawnTraitsOnTooltip, FilterPawnTraitsOffTooltip, triState);
 
             /// <summary>
-            ///     Generates a tooltip string describing the filter states for pawn types.
+            ///     Gets the tooltip for pawn types filter, optionally including the tri-state description.
             /// </summary>
-            /// <param name="triState">
-            ///     A value indicating whether the filter supports a tri-state mode. If <see langword="true" />, the tooltip
-            ///     includes descriptions for "On", "Off", and "Partial" states. If <see langword="false" />, the tooltip
-            ///     includes descriptions for only "On" and "Off" states.
-            /// </param>
-            /// <returns>
-            ///     A string containing the tooltip text for the filter states. The string includes state names and their
-            ///     corresponding descriptions, separated by new lines.
-            /// </returns>
-            public static string GetFilterPawnTypesTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterPawnTypesTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterPawnTypesOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterPawnTypesOffTooltip);
-                if (_filterPawnTypesTriStateTooltip != null) return _filterPawnTypesTriStateTooltip;
-                var baseTooltip = GetFilterPawnTypesTooltip(false);
-                _filterPawnTypesTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterPawnTypesTriStateTooltip;
-            }
+            /// <param name="triState">If true, includes the partial state description.</param>
+            /// <returns>The tooltip string for pawn types filter.</returns>
+            public static string GetFilterPawnTypesTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterPawnTypesOnTooltip),
+                    FilterPawnTypesOnTooltip, FilterPawnTypesOffTooltip, triState);
 
             /// <summary>
             ///     Gets the tooltip for work capacities filter, optionally including the tri-state description.
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for work capacities filter.</returns>
-            public static string GetFilterWorkCapacitiesTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterWorkCapacitiesTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterWorkCapacitiesOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterWorkCapacitiesOffTooltip);
-                if (_filterWorkCapacitiesTriStateTooltip != null)
-                    return _filterWorkCapacitiesTriStateTooltip;
-                var baseTooltip = GetFilterWorkCapacitiesTooltip(false);
-                _filterWorkCapacitiesTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterWorkCapacitiesTriStateTooltip;
-            }
+            public static string GetFilterWorkCapacitiesTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterWorkCapacitiesOnTooltip),
+                    FilterWorkCapacitiesOnTooltip, FilterWorkCapacitiesOffTooltip, triState);
 
             /// <summary>
             ///     Gets the tooltip for work passions filter, optionally including the tri-state description.
             /// </summary>
             /// <param name="triState">If true, includes the partial state description.</param>
             /// <returns>The tooltip string for work passions filter.</returns>
-            public static string GetFilterWorkPassionsTooltip(bool triState)
-            {
-                if (!triState)
-                    return _filterWorkPassionsTooltip ??= string.Concat(MultiCheckboxStates.On, ": ",
-                        FilterWorkPassionsOnTooltip, Environment.NewLine, MultiCheckboxStates.Off, ": ",
-                        FilterWorkPassionsOffTooltip);
-                if (_filterWorkPassionsTriStateTooltip != null)
-                    return _filterWorkPassionsTriStateTooltip;
-                var baseTooltip = GetFilterWorkPassionsTooltip(false);
-                _filterWorkPassionsTriStateTooltip = AppendUndefinedFilterTooltip(baseTooltip);
-                return _filterWorkPassionsTriStateTooltip;
-            }
+            public static string GetFilterWorkPassionsTooltip(bool triState) =>
+                GetFilterTooltip(nameof(FilterWorkPassionsOnTooltip),
+                    FilterWorkPassionsOnTooltip, FilterWorkPassionsOffTooltip, triState);
         }
 
         /// <summary>
