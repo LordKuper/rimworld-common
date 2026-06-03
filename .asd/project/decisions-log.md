@@ -85,6 +85,18 @@ Append-only. Never edited or removed. New entries appended below.
 - **Rationale**: One dependency spine — build governance first, then the isolation seam that unblocks both core-logic improvements and the full test build-out, then the climb to the ≥80% coverage floor — minimizes rework and keeps the breaking-API surface traceable end-to-end under `backward_compat=none`.
 - **Affected docs**: .asd/sprints/001-full-project-audit/plan.md, .asd/sprints/001-full-project-audit/state.json
 
+## 2026-06-04 — Impl-review iter 01: CONCERNS → impl fix
+
+- **Decision**: Impl-review iteration 01 returned mixed verdicts — quality=CONCERNS, simplification=CONCERNS, documentation=CONCERNS, external=CONCERNS; implementation/testing/performance=APPROVE; ui=N/A (no UI / no ux-spec). Findings routed back to impl fix mode: (1) **test isolation** — `StaticStateFixture` was not giving per-test isolation, fixed by introducing `StaticStateTestBase` for per-class/per-test static-cache save-restore; (2) **triplicate assembly-resolver / dead code** — three copies of the assembly resolver consolidated to one; (3) **ADR-0003 build-props drift + duplication** — root `Directory.Build.props` consolidation with child props reduced to thin import wrappers, duplication removed; (4) **`SkillStatMap` `KeyNotFound` risk** — added a `TryGetValue` guard. ADR-0003/ADR-0002 wording corrected.
+- **Rationale**: Reviewers caught real correctness/maintainability gaps (non-isolated static state across tests, duplicated resolver and build-props logic, an unguarded dictionary lookup) that warranted a fix round before DoD.
+- **Affected docs**: Source/**, Tests/**, design/architecture/adr/adr-0002*.html, design/architecture/adr/adr-0003*.html, .asd/sprints/001-full-project-audit/state.json
+
+## 2026-06-04 — Impl-review iter 02: APPROVE — DoD met
+
+- **Decision**: Impl-review iteration 02 — all reviewers APPROVE (quality, implementation, testing, simplification, performance, documentation, external; ui=N/A). Iter-01 fixes verified resolved (per-test static isolation via `StaticStateTestBase`, single assembly resolver, consolidated build props, `SkillStatMap` `TryGetValue` guard, ADR wording). Independently verified final state: build 0/0, 142 tests pass / 3 skip / 0 fail, AltCover coverage 38.06%, jb-inspect SARIF=0. impl-review DoD met.
+- **Rationale**: All review findings closed and the verification gate is green; the sprint's code+tests meet the Definition of Done for the impl-review phase.
+- **Affected docs**: Source/**, Tests/**, .asd/sprints/001-full-project-audit/state.json
+
 ## 2026-06-04 — Impl complete — audit fixes landed; AC-21 accepted at 38.2%
 
 - **Decision**: Implemented Tasks 0-13. T0 resolved 33 nullable-flow errors under `Nullable=enable`. T1 hoisted build governance to a repo-root `Directory.Build.props` (TreatWarningsAsErrors/WarningLevel 9999/Nullable=enable inherited by Source+Tests via explicit `GetPathOfFileAbove` import) + RimWorld-path fail-fast. T2 verified no legacy `packages/`. T3 added the `IDefProvider` isolation seam (`IDefProvider` + `DefProvider.Current` + `VerseDefProvider`; static-ctor→`Rebuild()`; `InternalsVisibleTo` Tests). T4 logs unresolved `StatDef` in `WorkTypeStatMap`. T5 documented `StatRanges` adaptive order-dependence. T6 collapsed Resources tooltip duplication. T7 split `PawnFilter.Combine`. T8-11 built the test harness (`FakeDefProvider`, `StaticStateFixture`, AltCover measurement) + 142 passing tests; coverage 38.2% testable-core (UI + game-bound excluded). T12 verified IMP-10 doc reconciliation (done in design-promote). T13 verification gate: jb-cleanup + build 0/0 + jb-inspect SARIF 0 + tests green. Also fixed a real `RimWorldTime` hour-format bug (`F.1` -> `F1`) found by tests.
