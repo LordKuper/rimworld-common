@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (StatRanges adaptive normalization contract)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), ux-spec.html (ux), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="">
+  <meta name="status" content="approved">
+  <meta name="updated" content="2026-06-03">
+  <meta name="responsibility" content="single architecture decision (StatRanges adaptive normalization contract)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0002 · StatRanges adaptive normalization</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "\2298 "; color: var(--warn); }
+
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">approved</span>
+        </div>
+        <h1>ADR-0002 · StatRanges adaptive normalization</h1>
+        <div class="stats">
+          <span class="chip">approved</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-03</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0002">
+          <div class="meta">
+            <span class="status-chip status-accepted">approved</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0002</span>
+          </div>
+
+          <h2 id="context">Context</h2>
+          <p>
+            <code>StatRanges.NormalizeStatValue</code> normalizes a stat value against a running
+            min/max range maintained per <code>StatDef</code> in the static
+            <code>StatRanges.Ranges</code> cache. Because the range adapts as values are observed, the
+            normalized score for a given item depends on the <em>set and order</em> of items scored so
+            far in the current process. This propagates into
+            <code>WorkTypeThingRule.GetThingScore</code> and
+            <code>WorkTypeThingRule.GetThingDefScore</code>. The audit flagged this as a
+            reproducibility/observation-order concern: identical inputs can yield different scores
+            depending on history. A decision was needed on whether to make normalization deterministic
+            or to keep — and formally bless — the adaptive behavior.
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Keep the running min/max adaptive normalization (option b). Do <em>not</em> make it
+            deterministic. Instead, document the observation-order dependence as the intended contract.
+          </p>
+          <p>
+            <strong>User-approved deviation from a named project rule.</strong> Keeping the order- and
+            history-dependent scoring is an explicit, user-approved exception to the
+            <a href="../../../.asd/project/custom-design-rules.md"><code>.asd/project/custom-design-rules.md</code></a>
+            &middot; <em>Determinism</em> rule (&ldquo;same inputs &rarr; same outputs; no time- or
+            order-dependent behavior in core logic unless explicitly required&rdquo;) and to
+            code-style &sect;11. The deviation is recorded here against that named rule: the
+            order-dependence is the <em>explicitly required</em> behavior for this stat normalization,
+            and is made discoverable via XML docs rather than removed.
+          </p>
+          <ul>
+            <li>
+              <code>StatRanges.NormalizeStatValue</code> continues to mutate the per-<code>StatDef</code>
+              <code>Ranges</code> cache as values are observed. No behavioral change.
+            </li>
+            <li>
+              Add explicit XML doc comments to the affected public members
+              (<code>StatRanges.NormalizeStatValue</code>,
+              <code>WorkTypeThingRule.GetThingScore</code>,
+              <code>WorkTypeThingRule.GetThingDefScore</code>) stating that the returned scores are
+              <strong>adaptive</strong> and depend on the set and order of items scored within the
+              current process. This makes the order-dependence a documented, intentional contract rather
+              than a latent surprise.
+            </li>
+            <li>
+              No reproducibility test is required: the adaptive behavior <em>is</em> the documented
+              contract, so there is nothing deterministic to assert.
+            </li>
+          </ul>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Zero behavioral change — existing mods relying on current scoring behavior are unaffected.</li>
+                <li>The order-dependence becomes explicit and discoverable in the public API docs.</li>
+                <li>Avoids the risk and churn of redesigning normalization for determinism.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li>Scores remain non-reproducible across differing observation histories; consumers must understand the documented adaptive contract.</li>
+                <li>The static <code>StatRanges.Ranges</code> cache stays — process-global mutable state that <strong>must</strong> be saved/restored by <a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>'s <code>StaticStateFixture</code> for tests to remain isolated. This cross-cutting obligation is the cost of keeping the cache.</li>
+                <li><strong>Behavioral/API note:</strong> only XML documentation changes; no signature or runtime-behavior change to any public member.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Option (a): deterministic normalization</strong> — making <code>NormalizeStatValue</code> order-independent (e.g. precomputed or fixed ranges) — <strong>explicitly rejected by the user</strong> in favor of preserving existing runtime behavior. Determinism would have changed observable scores for current consumers and was judged not worth the behavioral break.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-9</strong> — documents the observation-order dependence on the affected public members' XML docs (<code>StatRanges.NormalizeStatValue</code>, <code>WorkTypeThingRule.GetThingScore</code>, <code>GetThingDefScore</code>), with the adaptive behavior retained by design (no behavioral change).</li>
+            <li><strong>AC-16</strong> — formally requires the retained adaptive <code>StatRanges.Ranges</code> cache to be in ADR-0001's snapshot/restore set, so order-independence (AC-19) holds despite the documented order-dependent scoring.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/001-full-project-audit/design/prd.html"><code>.asd/sprints/001-full-project-audit/design/prd.html</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>: mandates that the retained <code>StatRanges.Ranges</code> cache be snapshot/restored by the test fixture.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-03 | sprint </footer>
+    </div>
+  </div>
+</body>
+</html>

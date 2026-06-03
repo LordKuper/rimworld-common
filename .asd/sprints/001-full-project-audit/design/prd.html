@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: product requirements (sprint draft full scope, or persistent per-subsystem feature set)
+  excludes: ui mockups, design decisions, code, ux flows
+  delegates_to: ux-spec.html (ui + flows), adr.html (decisions)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="PRD">
+  <meta name="subsystem" content="sprint">
+  <meta name="sprint-id" content="001-full-project-audit">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-03">
+  <meta name="responsibility" content="product requirements (sprint draft full scope, or persistent per-subsystem feature set)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>PRD — Sprint 001 · full-project-audit</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    ol.goal-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    ol.goal-grid li { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; }
+    ol.goal-grid .num { flex: 0 0 auto; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+    ol.goal-grid p { margin: 0; }
+
+    details.role-group { border: 1px solid var(--border); border-radius: 6px; margin: 8px 0; background: var(--card-bg); }
+    details.role-group > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+    details.role-group > summary .count { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
+    details.role-group ul.stories { margin: 0; padding: 4px 16px 12px 28px; }
+    ul.stories li { margin: 4px 0; }
+    ul.stories b { color: var(--accent); font-weight: 600; }
+
+    table.ac-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+    .chip.prio-must   { background: var(--chip-must-bg);   color: var(--chip-must-fg); border-color: var(--chip-must-fg); }
+    .chip.prio-should { background: var(--chip-should-bg); color: var(--chip-should-fg); border-color: var(--chip-should-fg); }
+    .chip.prio-may    { background: var(--chip-may-bg);    color: var(--chip-may-fg); border-color: var(--chip-may-fg); }
+
+    ul.non-goals { margin: 0; padding-left: 22px; }
+    ul.non-goals li::marker { content: "⊘  "; color: var(--warn); }
+
+    /* definition-list pattern: Purpose / Entry / Exit / Notes */
+    dl.def-list { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 8px 0; }
+    dl.def-list dt { font-weight: 600; color: var(--muted); }
+    dl.def-list dd { margin: 0; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#goals">Goals</a></li>
+        <li><a href="#user-stories">User stories</a></li>
+        <li><a href="#acceptance-criteria">Acceptance criteria</a></li>
+        <li><a href="#traceability">IMP traceability</a></li>
+        <li><a href="#adr-decisions">Architectural decisions for ADR</a></li>
+        <li><a href="#non-goals">Non-goals</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>PRD</span>
+          <span>sprint</span>
+          <span class="status-draft">draft</span>
+        </div>
+        <h1>PRD — Sprint 001 · full-project-audit</h1>
+        <div class="stats">
+          <span class="chip">4 goals</span>
+          <span class="chip">8 stories</span>
+          <span class="chip">27 AC</span>
+          <span class="chip">8 non-goals</span>
+          <span class="chip">updated 2026-06-03</span>
+        </div>
+      </header>
+      <main>
+
+<section id="problem" class="hero">
+  <h2>Problem</h2>
+  <p class="lede">
+    <code>LordKuper.Common</code> is a brownfield RimWorld utility library consumed by other mods, but a full-project
+    audit (sprint 001, shape B) found it drifting from the project's own <code>.asd/rules/*</code> workflow rules and
+    the three custom rule files. Twelve concrete improvement opportunities (IMP-01 … IMP-12) were triaged:
+    stale build scaffolding, a silent null-<code>StatDef</code> resolution in <code>WorkTypeStatMap</code>, order-dependent
+    scoring with no determinism contract, a Tests project outside zero-warnings/nullability governance, design-doc
+    drift versus <code>About.xml</code>, and a near-total absence of automated test coverage against the code-style
+    §17 80% floor. The ADR phase (2026-06-03) closed several items by decision: the audit's data-driven FAIL on the
+    <code>WorkTypeStatMap</code> default weights is <b>reclassified as NOT a violation</b> (IMP-07 reduced to a warning log — see the <a href="#imp-07-rationale">IMP-07 reframing rationale</a>); the <code>StatRanges</code>
+    order-dependence is kept adaptive and documented (IMP-08 option b); the <code>LangVersion</code> pin is dropped
+    (IMP-03 won't-do, <code>latest</code> retained); and 1.5 localization parity stays won't-do (1.5 is a frozen
+    archive, IMP-09). This sprint converts the remaining findings into a verifiable, traceable requirement set so the
+    library is brought into rule compliance, made safe to extend, and trustworthy for the mods that depend on it —
+    without regressing public behavior beyond intentional, enumerated API changes.
+  </p>
+</section>
+
+<section id="goals">
+  <h2>Goals</h2>
+  <ol class="goal-grid">
+    <li><span class="num">G1</span><p><b>Rule compliance &amp; clean build.</b> Bring the codebase into compliance with the custom coding/design rules — zero-warnings and <code>Nullable=enable</code> governance extended to the Tests project, machine-specific RimWorld-path fallback removed with fail-fast, and stale build scaffolding cleaned — so a clean rebuild is provably warning-free and reproducible. (<code>LangVersion=latest</code> is retained by decision; the SDK-drift risk is accepted, see <a href="#adr-decisions">Risks</a>.)</p></li>
+    <li><span class="num">G2</span><p><b>Observable &amp; deterministic core.</b> Make the <code>WorkTypeStatMap</code> seed-default weights observable on null <code>StatDef</code> resolution (warning log instead of silent no-op; the weights stay in code as overridable seed defaults by design — see the <a href="#imp-07-rationale">IMP-07 reframing rationale</a>), and resolve the adaptive <code>StatRanges</code> order-dependence per the recorded ADR decision (kept adaptive, documented), so stat scoring is rule-compliant and its determinism characteristics are explicit to consumers.</p></li>
+    <li><span class="num">G3</span><p><b>Maintainability &amp; SSoT.</b> Collapse heavy DRY violations (tooltip fields, <code>PawnFilter.Combine</code>), and reconcile design docs (<code>stack.html</code>/<code>concept.html</code>) to the authoritative <code>About.xml</code> so each fact has a single source of truth.</p></li>
+    <li><span class="num">G4</span><p><b>Test coverage to the 80% floor.</b> Introduce a RimWorld-context isolation seam with order-independent static-state save/restore, and build comprehensive tests across the stateful subsystems sufficient to reach the code-style §17 floor of ≥ 80% Coverlet-measured line coverage on the Source assembly.</p></li>
+  </ol>
+</section>
+
+<section id="user-stories">
+  <h2>User stories</h2>
+
+  <details class="role-group" open>
+    <summary>Maintainer <span class="count">5</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a maintainer, <b>I want</b> a clean, reproducible warning-free build across both Source and Tests projects, <b>so that</b> I can trust <code>TreatWarningsAsErrors</code> as a real quality gate rather than a flag that only covers half the solution.</li>
+      <li><b>as</b> a maintainer, <b>I want</b> a missing/renamed vanilla <code>StatDef</code> referenced by the <code>WorkTypeStatMap</code> seed-default weights to fail visibly (warning log) rather than silently no-opping, <b>so that</b> a vanilla stat removal surfaces in the log instead of degrading scoring silently (the seed-default weights stay in code by design — see the <a href="#imp-07-rationale">IMP-07 reframing rationale</a>).</li>
+      <li><b>as</b> a maintainer, <b>I want</b> the <code>StatRanges</code> normalization behavior resolved and recorded in an ADR, <b>so that</b> the determinism contract of scoring is an explicit, reviewed decision rather than incidental code behavior.</li>
+      <li><b>as</b> a maintainer, <b>I want</b> a RimWorld-context isolation seam and order-independent static-state save/restore in the test harness, <b>so that</b> the stateful subsystems become testable and the suite stays reliable regardless of test execution order.</li>
+      <li><b>as</b> a maintainer, <b>I want</b> design docs reconciled to the authoritative <code>About.xml</code>, <b>so that</b> supported versions, dependencies, and soft integrations have one source of truth and cannot drift.</li>
+    </ul>
+  </details>
+
+  <details class="role-group" open>
+    <summary>Consuming-mod developer <span class="count">3</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a consuming-mod developer, <b>I want</b> the observation-order dependence of <code>StatRanges</code>/<code>WorkTypeThingRule</code> scoring documented on the public members' XML docs, <b>so that</b> I know a given <code>Thing</code>'s score depends on the set of observations seen so far before I depend on it.</li>
+      <li><b>as</b> a consuming-mod developer, <b>I want</b> any breaking public-API change to be intentional and enumerated in the PR, <b>so that</b> I can update my mod deliberately against a clean API instead of being surprised by silent surface changes.</li>
+      <li><b>as</b> a consuming-mod developer, <b>I want</b> the library covered by a real test suite at the 80% floor, <b>so that</b> I can upgrade the dependency with confidence that core stat, filter, time, and cache behavior is regression-guarded.</li>
+    </ul>
+  </details>
+</section>
+
+<section id="acceptance-criteria">
+  <h2>Acceptance criteria</h2>
+  <p>Each criterion is one testable assertion. Clusters group criteria by the improvement opportunity they trace to; the <a href="#traceability">IMP traceability</a> table maps every one of the 12 IMPs to its resolving criteria. Numbering is sequential AC-1 … AC-27.</p>
+
+  <h3>Cluster A — Clean build &amp; governance (IMP-01, IMP-02, IMP-06, IMP-12)</h3>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-1"><td><a href="#AC-1">AC-1</a></td><td>The absence of any legacy <code>Source/packages/</code> folder (Harmony 2.3.6 / MSTest) is confirmed, nothing references it, and the closure is recorded.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-2"><td><a href="#AC-2">AC-2</a></td><td>The build no longer ties to one machine, per <a href="#adr-decisions">ADR-0003</a>: the machine-specific hardcoded default RimWorld path in <code>Source/Directory.Build.props</code> is removed <em>and</em> the build fails fast with a clear message when neither <code>RIMWORLD_DIR</code> (env) nor <code>RimWorldDir</code> (property) resolves to an existing directory. Both conditions must hold; the supported override is documented.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-3"><td><a href="#AC-3">AC-3</a></td><td>The Tests project is brought under zero-warnings + <code>Nullable=enable</code> governance (via a root or <code>Tests/</code>-scoped <code>Directory.Build.props</code>, or a repo-root one), so test code is held to the same policy as Source.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-4"><td><a href="#AC-4">AC-4</a></td><td>Stale / mixed-target build intermediates (<code>v4.8</code>, <code>net8.0</code> alongside the declared <code>net472</code>) are cleaned and a clean rebuild is confirmed, so warning and coverage runs are not misled by drift.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-5"><td><a href="#AC-5">AC-5</a></td><td>A clean rebuild of the full solution completes with zero warnings under <code>TreatWarningsAsErrors</code> + <code>WarningLevel 9999</code> for both Source and Tests.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cluster B — DRY &amp; simplification (IMP-04, IMP-05)</h3>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-6"><td><a href="#AC-6">AC-6</a></td><td>The 18 near-identical cached tri-state tooltip fields and <code>GetFilter*Tooltip</code> methods in <code>Resources.cs</code> are collapsed into a single parameterized helper/lookup with no change to the rendered tooltip strings.</td><td><span class="chip area">simplify</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-7"><td><a href="#AC-7">AC-7</a></td><td><code>PawnFilter.Combine</code> is split into per-section helpers so no single function requires a paragraph to explain, with combine behavior unchanged (verified by tests in Cluster F).</td><td><span class="chip area">simplify</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="imp-07-rationale">Cluster C — WorkTypeStatMap null-stat observability (IMP-07, reframed)</h3>
+  <p class="callout"><b>Reframed per <a href="#adr-decisions">ADR-0001</a> phase (2026-06-03) — canonical rationale.</b> The audit's data-driven FAIL on the <code>WorkTypeStatMap</code> default weights is <b>reclassified as NOT a violation</b>: those weights are intentional <em>seed defaults</em> that consuming mods override via their own persisted settings (<code>IExposable</code> <code>StatWeight</code>/<code>WorkTypeThingRule</code>), not a hardcoded balance/tuning table. Moving them to a Def/config surface is therefore a <a href="#non-goals">non-goal</a>; only the silent-null-resolution gap is remediated (AC-8). <em>This paragraph and the matching non-goal are the single source of this reframing rationale; other mentions back-reference here.</em></p>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-8"><td><a href="#AC-8">AC-8</a></td><td><code>WorkTypeStatMap</code> logs via <code>Logger.LogWarning</code> (with worktype + stat context) when a referenced <code>StatDef</code> resolves null through <code>GetNamedSilentFail</code>, instead of a silent no-op; the default weights remain in code as overridable seed defaults by design.</td><td><span class="chip area">core</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cluster D — Determinism contract (IMP-08, resolved to option b)</h3>
+  <p class="callout"><b>Resolved per <a href="#adr-decisions">ADR-0002</a> (2026-06-03) — option (b).</b> The adaptive running-min/max behavior is <b>kept</b>; the observation-order dependence is documented rather than removed. The static <code>Ranges</code> cache is therefore retained and is save/restored by the test fixtures (cross-ref <a href="#AC-16">AC-16</a>, IMP-11).</p>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-9"><td><a href="#AC-9">AC-9</a></td><td>The observation-order dependence of the adaptive <code>StatRanges</code> running-min/max behavior is documented on the affected public members' XML docs — <code>StatRanges.NormalizeStatValue</code>, <code>WorkTypeThingRule.GetThingScore</code>, and <code>GetThingDefScore</code> — stating that a <code>Thing</code>'s score depends on the set of observations seen so far. The adaptive behavior itself is retained by design.</td><td><span class="chip area">docs</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cluster E — Docs reconciliation &amp; SSoT (IMP-10)</h3>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-10"><td><a href="#AC-10">AC-10</a></td><td>The <code>loadAfter</code>/soft-dependency on <code>vanillaexpanded.skills</code> (modelled in <code>Compatibility/Vse.cs</code>) is reflected in <code>stack.html</code> and/or <code>concept.html</code> as an integration fact, reconciling those docs to <code>About.xml</code>.</td><td><span class="chip area">docs</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-11"><td><a href="#AC-11">AC-11</a></td><td>The README one-liner and <code>concept.html</code> vision, and <code>About.xml</code> <code>supportedVersions</code>/dependencies versus <code>stack.html</code>/<code>concept.html</code>, are made consistent — each fact has a single source of truth, with the others linking rather than copying.</td><td><span class="chip area">docs</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-12"><td><a href="#AC-12">AC-12</a></td><td>All persistent <code>design/</code> edits required by AC-10 and AC-11 are executed through the design pipeline / doc-owning step, not authored ad hoc against persistent <code>design/</code>.</td><td><span class="chip area">docs</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cluster F — Test coverage to the 80% floor (IMP-11)</h3>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-13"><td><a href="#AC-13">AC-13</a></td><td>An isolation seam (per <a href="#adr-decisions">ADR-0001</a>) abstracts the live RimWorld <code>DefDatabase</code>/game context behind a substitutable boundary, so stateful subsystems resolve their <code>Def</code> dependencies through the seam rather than a running game.</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-14"><td><a href="#AC-14">AC-14</a></td><td>A static save/restore fixture is wired into the harness via xUnit <code>IDisposable</code>/<code>IClassFixture</code>/<code>[Collection]</code>, providing the per-test capture/restore mechanism (the specific state captured is enumerated in AC-15/AC-16).</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-15"><td><a href="#AC-15">AC-15</a></td><td>The AC-14 fixture captures and restores the mutable static state of <code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>, <code>StatRanges</code>, <code>PassionHelper</code>, and the caches around each test (the snapshot/restore seam; StatRanges-specific inclusion is AC-16).</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-16"><td><a href="#AC-16">AC-16</a></td><td>That snapshot set explicitly includes the adaptive <code>StatRanges</code> static <code>Ranges</code> cache (retained under <a href="#adr-decisions">ADR-0002</a>), so its running-min/max state cannot leak across tests and order-independence (AC-19) holds despite the documented order-dependent scoring.</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-17"><td><a href="#AC-17">AC-17</a></td><td>First core tests cover the pure paths of <code>RimWorldTime</code>, <code>MathHelper</code>, and <code>PawnFilter</code> (extending the existing <code>EnumHelper</code> tests).</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-18"><td><a href="#AC-18">AC-18</a></td><td>The isolation-seam approach is recorded in <a href="#adr-decisions">ADR-0001</a> before broad test build-out, so the seam is a reviewed decision.</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-19"><td><a href="#AC-19">AC-19</a></td><td>The test suite passes order-independently — the same result is produced regardless of test execution order (no inter-test state leakage).</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-20"><td><a href="#AC-20">AC-20</a></td><td>Comprehensive tests exist across the stateful subsystems — <code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>, <code>StatRanges</code>, <code>PassionHelper</code>, the caches (<code>TimedCache</code>/<code>ThingCache</code>/<code>DefCache</code>/<code>PassionCache</code>), <code>PawnFilter</code>, <code>WorkTypeThingRule</code>, <code>RimWorldTime</code>, and the <code>Helpers</code> — sufficient to meet the coverage floor.</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-21"><td><a href="#AC-21">AC-21</a></td><td>Coverlet-measured line coverage of the Source assembly is ≥ 80%.</td><td><span class="chip area">test</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Cluster G — Mod identity, compatibility &amp; API surface (cross-cutting)</h3>
+  <table class="ac-table">
+    <thead><tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr id="AC-22"><td><a href="#AC-22">AC-22</a></td><td><code>About.xml</code> remains the single source of truth for mod identity, supported versions, and dependencies; design docs reconcile <em>to</em> it (cross-reference to AC-10/AC-11).</td><td><span class="chip area">docs</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-23"><td><a href="#AC-23">AC-23</a></td><td><code>supportedVersions</code> remains <code>1.5</code> + <code>1.6</code>: RimWorld 1.5 stays listed and supported as the frozen archive (see <a href="#non-goals">Non-goals</a>), and is not removed from the supported set.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-24"><td><a href="#AC-24">AC-24</a></td><td>The static-init paths that walk the <code>DefDatabase</code> (<code>StatHelper</code>, <code>WorkTypeStatMap</code>, custom-stat type-init) emit clear <code>Logger</code> context on failure, consistent with Fail-Fast-on-Load.</td><td><span class="chip area">core</span></td><td><span class="chip prio-should">should</span></td></tr>
+      <tr id="AC-25"><td><a href="#AC-25">AC-25</a></td><td>No <code>[SuppressMessage]</code>/<code>#pragma warning</code> suppressions are introduced; intentional public surface is signalled only via the <code>[PublicAPI]</code> route, preserving the existing suppression-policy compliance.</td><td><span class="chip area">core</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-26"><td><a href="#AC-26">AC-26</a></td><td>Any breaking public-API change made while satisfying the above (<code>backward_compat=none</code>) is intentional and explicitly enumerated in the PR description, optimizing for a clean API over source compatibility.</td><td><span class="chip area">core</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-27"><td><a href="#AC-27">AC-27</a></td><td>No acceptance criterion in this PRD requires any modification to the RimWorld 1.5 archive (code, localization, or content); 1.5 is touched only insofar as it remains listed in <code>supportedVersions</code> per AC-23.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="traceability">
+  <h2>IMP traceability</h2>
+  <p>Every one of the 12 approved improvement opportunities maps to a resolving criterion (or to an explicit won't-do decision). The cross-cutting governance criteria that do not originate from a numbered IMP are carried under a dedicated <em>cross-cutting (sprint scope)</em> origin so that <b>no AC is invented without a traceable origin</b>. The <a href="#ac-origin">AC → origin</a> view below confirms every AC-1 … AC-27 maps to an IMP and, where design-bearing, to an ADR.</p>
+  <table>
+    <thead><tr><th>IMP / origin</th><th>Summary</th><th>Resolved by</th></tr></thead>
+    <tbody>
+      <tr><td>IMP-01</td><td>Confirm legacy <code>packages/</code> absent &amp; record closure</td><td>AC-1</td></tr>
+      <tr><td>IMP-02</td><td>Remove machine-specific RimWorld path fallback</td><td>AC-2</td></tr>
+      <tr><td>IMP-03</td><td>Pin <code>LangVersion</code></td><td><b>WON'T-DO</b> — user decision 2026-06-03; <code>LangVersion=latest</code> retained, SDK-drift risk accepted.</td></tr>
+      <tr><td>IMP-04</td><td>Collapse tri-state tooltip DRY</td><td>AC-6</td></tr>
+      <tr><td>IMP-05</td><td>Split <code>PawnFilter.Combine</code></td><td>AC-7</td></tr>
+      <tr><td>IMP-06</td><td>Tests project under zero-warnings/nullable governance</td><td>AC-3</td></tr>
+      <tr><td>IMP-07</td><td>WorkTypeStatMap balance table — <b>reframed</b> (logging-only)</td><td>AC-8 — reframed per the <a href="#imp-07-rationale">IMP-07 reframing rationale</a> (canonical); only the silent-null gap is logged, Def/config migration is a <a href="#non-goals">non-goal</a>.</td></tr>
+      <tr><td>IMP-08</td><td>Resolve / document <code>StatRanges</code> determinism</td><td>AC-9 — <b>option (b)</b> (user decision 2026-06-03): adaptive behavior kept, order-dependence documented in XML docs; static <code>Ranges</code> cache retained and save/restored by fixtures (AC-16).</td></tr>
+      <tr><td>IMP-09</td><td>1.5↔1.6 localization parity</td><td><b>WON'T-DO</b> — RimWorld 1.5 is a frozen archive (user decision 2026-06-03); see <a href="#non-goals">Non-goals</a>. The won't-do is anchored by AC-23 (1.5 stays listed) and AC-27 (1.5 unmodified).</td></tr>
+      <tr><td>IMP-10</td><td>Reconcile design docs to <code>About.xml</code></td><td>AC-10, AC-11, AC-12, AC-22</td></tr>
+      <tr><td>IMP-11</td><td>Test coverage to the 80% floor</td><td>AC-13, AC-14, AC-15, AC-16, AC-17, AC-18, AC-19, AC-20, AC-21</td></tr>
+      <tr><td>IMP-12</td><td>Clean stale build intermediates</td><td>AC-4 (with AC-5 confirming clean rebuild)</td></tr>
+      <tr><td><b>Cross-cutting</b> (sprint scope)</td><td>Mod-identity / fail-fast-on-load / suppression-policy / clean-API governance that applies across IMPs rather than resolving one</td><td>AC-24 (Fail-Fast-on-Load logging), AC-25 (suppression policy), AC-26 (enumerated breaking-API changes). AC-22/AC-23/AC-27 also restate cross-cutting guarantees but trace primarily to IMP-10 / IMP-09 above.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="ac-origin">AC → origin view</h3>
+  <p>The inverse mapping: every acceptance criterion to its originating IMP and, where the criterion is design-bearing, its governing ADR. This view and the IMP table above are kept consistent.</p>
+  <table>
+    <thead><tr><th>AC</th><th>IMP origin</th><th>ADR (if design-bearing)</th></tr></thead>
+    <tbody>
+      <tr><td>AC-1</td><td>IMP-01</td><td>—</td></tr>
+      <tr><td>AC-2</td><td>IMP-02</td><td>ADR-0003</td></tr>
+      <tr><td>AC-3</td><td>IMP-06</td><td>ADR-0003</td></tr>
+      <tr><td>AC-4</td><td>IMP-12</td><td>—</td></tr>
+      <tr><td>AC-5</td><td>IMP-12</td><td>ADR-0003</td></tr>
+      <tr><td>AC-6</td><td>IMP-04</td><td>—</td></tr>
+      <tr><td>AC-7</td><td>IMP-05</td><td>—</td></tr>
+      <tr><td>AC-8</td><td>IMP-07</td><td>—</td></tr>
+      <tr><td>AC-9</td><td>IMP-08</td><td>ADR-0002</td></tr>
+      <tr><td>AC-10</td><td>IMP-10</td><td>—</td></tr>
+      <tr><td>AC-11</td><td>IMP-10</td><td>—</td></tr>
+      <tr><td>AC-12</td><td>IMP-10</td><td>—</td></tr>
+      <tr><td>AC-13</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-14</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-15</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-16</td><td>IMP-11</td><td>ADR-0001, ADR-0002</td></tr>
+      <tr><td>AC-17</td><td>IMP-11</td><td>—</td></tr>
+      <tr><td>AC-18</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-19</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-20</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-21</td><td>IMP-11</td><td>ADR-0001</td></tr>
+      <tr><td>AC-22</td><td>IMP-10</td><td>—</td></tr>
+      <tr><td>AC-23</td><td>IMP-09 (won't-do anchor)</td><td>—</td></tr>
+      <tr><td>AC-24</td><td>Cross-cutting</td><td>ADR-0001 (seam surfaces the static-init paths)</td></tr>
+      <tr><td>AC-25</td><td>Cross-cutting</td><td>—</td></tr>
+      <tr><td>AC-26</td><td>Cross-cutting</td><td>—</td></tr>
+      <tr><td>AC-27</td><td>IMP-09 (won't-do anchor)</td><td>—</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="adr-decisions">
+  <h2>Architectural decisions for ADR</h2>
+  <p>These decisions were escalated to the ADR phase; the resolutions recorded on 2026-06-03 are reflected below. The PRD records the requirement; the ADR records the chosen option.</p>
+  <dl class="def-list">
+    <dt>ADR-0001 · RimWorld-context isolation seam</dt>
+    <dd>The abstraction/seam strategy for testing <code>DefDatabase</code>/game-context-bound code, and the static save/restore mechanism. Owns AC-13 (seam abstracts <code>DefDatabase</code>), AC-14 (save/restore fixture wired), AC-18 (seam recorded before build-out), and gates the AC-20/AC-21 build-out.</dd>
+    <dt>ADR-0002 · <code>StatRanges</code> adaptive determinism</dt>
+    <dd><b>RESOLVED — option (b) (2026-06-03).</b> The adaptive running-min/max behavior is kept; the observation-order dependence is documented on the affected public members' XML docs (AC-9). The static <code>Ranges</code> cache is retained and save/restored by the test fixtures (AC-16). No make-deterministic work and no reproducibility test are in scope.</dd>
+    <dt>ADR-0003 · Build governance</dt>
+    <dd>The build-time governance for the RimWorld path: the machine-specific default is removed and the build fails fast with a clear message when neither <code>RIMWORLD_DIR</code> nor <code>RimWorldDir</code> resolves to an existing directory (AC-2), alongside the Tests-project zero-warnings/nullable governance (AC-3) and clean-rebuild gate (AC-5).</dd>
+    <dt>Considered &amp; dropped · Work-type stat-weight Def/config schema</dt>
+    <dd><b>DROPPED — no live ADR record.</b> A data-driven Def/config surface for the <code>WorkTypeStatMap</code> weights was considered and dropped: the weights are intentional seed defaults, not hardcoded balance (see the <a href="#imp-07-rationale">IMP-07 reframing rationale</a>), so no schema is introduced and no ADR is opened. Provisional label ADR-A is retired.</dd>
+  </dl>
+
+  <h3>Risks &amp; notes</h3>
+  <ul>
+    <li><b>80% on RimWorld-context-bound code is a large effort</b> gated by the ADR-0001 isolation-seam decision (AC-18): much of the Source assembly requires the seam before it can be exercised, so the coverage floor (AC-21) cannot start in earnest until the seam lands.</li>
+    <li><b>SDK-drift risk accepted on <code>LangVersion=latest</code></b> (IMP-03 won't-do, user decision 2026-06-03): the language version is intentionally not pinned, so a future SDK bump could change semantics under warnings-as-errors. The clean-rebuild gate (AC-5) is expected to catch such drift at build time rather than a pin preventing it.</li>
+    <li><b>Doc edits route through the design pipeline</b> (AC-12): the BA does not author persistent <code>design/</code> directly; the doc-owning step executes IMP-10 edits.</li>
+    <li><b>backward_compat=none</b>: breaking public-API changes are permitted; any taken must be intentional and enumerated in the PR (AC-26), optimizing for a clean API over source compatibility.</li>
+  </ul>
+</section>
+
+<section id="non-goals" class="callout warn">
+  <h2>Non-goals</h2>
+  <ul class="non-goals">
+    <li><b>RimWorld 1.5 is a conserved archive</b> — its localization and content are intentionally frozen; no 1.5 parity, translation, or key sync is in scope. (1.5 remains listed in <code>supportedVersions</code> per AC-23, but is not modified — resolves IMP-09 as won't-do.)</li>
+    <li><b>Moving <code>WorkTypeStatMap</code> default weights to a Def/config surface is out of scope</b> — they are intentional seed defaults overridden by consumer-mod persisted settings (<code>IExposable</code> <code>StatWeight</code>/<code>WorkTypeThingRule</code>), not hardcoded balance. IMP-07 is reframed to the null-stat warning log (AC-8) only; no Def schema is introduced. (User decision 2026-06-03.)</li>
+    <li><b>No new feature scope.</b> This sprint is audit-remediation (shape B); no new product capability is introduced.</li>
+    <li><b>No UX flows, mockups, or visual design.</b> UI widgets are touched only as incidental to DRY/refactor ACs; their immediate-mode draw behavior is preserved, not redesigned.</li>
+    <li><b>No source-compatibility guarantee.</b> Under <code>backward_compat=none</code>, preserving the existing public API signatures is explicitly not a goal; clean API wins over source-compat.</li>
+    <li><b>No Steam Workshop / publishing changes</b> (<code>PublishedFileId.txt</code>, <code>Preview.png</code>, <code>About.xml</code> identity) beyond keeping design docs reconciled to <code>About.xml</code>.</li>
+    <li><b>No live RimWorld-runtime / integration testing.</b> Coverage is unit-level via the isolation seam; an in-game smoke test is not in scope for the AC-21 floor.</li>
+    <li><b>No reverse-engineering of new persistent design docs.</b> <code>concept.html</code>/<code>stack.html</code> already cover the brownfield prose; only reconciliation edits (Cluster E) are in scope, not net-new design documents.</li>
+  </ul>
+</section>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-03 | sprint 001-full-project-audit</footer>
+    </div>
+  </div>
+  <script>
+    // Scrollspy: highlight current section in TOC
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>

@@ -191,6 +191,29 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
     </tbody>
   </table>
   <p class="lede" style="font-size:0.95rem;">Unity module versions are resolved from the local RimWorld install at build time and are not pinned in source; they track whichever Unity build ships with the targeted RimWorld version.</p>
+
+  <h3 id="optional-integrations">Optional integrations</h3>
+  <table class="tech-table">
+    <thead><tr><th>Mod</th><th>packageId</th><th>Coupling</th><th>Integration point</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Vanilla Skills Expanded</strong> (VSE)</td>
+        <td class="ver">vanillaexpanded.skills</td>
+        <td><span class="chip area">optional soft-dependency</span></td>
+        <td>
+          <code>loadAfter</code> entry in <code>About/About.xml</code>; integration modeled in
+          <code>Source/Compatibility/Vse.cs</code>. <strong>Not</strong> a hard dependency — it is
+          <em>reflection-guarded</em> (Harmony <code>AccessTools</code> resolves the VSE
+          <code>PassionManager</code> / <code>PassionDef</code> members at runtime) and initialized
+          <em>all-or-nothing</em>: <code>Vse.Initialize()</code> first checks whether
+          <code>vanillaexpanded.skills</code> is in the running mod list and returns early when absent,
+          so the library functions fully without VSE installed. When VSE is present, the reflection
+          setup runs once inside a guarded <code>try/catch</code> that logs and disables the integration
+          on any binding failure rather than throwing into the host.
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
 <section id="runtime-infrastructure">
@@ -298,6 +321,7 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
     <li>Both RimWorld <strong>1.5 and 1.6</strong> are active supported targets via version-specific folders; per-version assemblies ship under version-named directories (<code>1.5/</code>, <code>1.6/</code>) and the build emits into the matching <code>&lt;version&gt;/Assemblies/</code>. New versions are onboarded by adding a folder, not by breaking existing ones.</li>
     <li>Warnings-as-errors at maximum warning level (<code>9999</code>) on Debug and Release — code must stay clean to compile.</li>
     <li>No NuGet runtime dependencies ship with the library: the only NuGet package (Harmony) is excluded from output, so the assembly carries no third-party runtime payload.</li>
+    <li><strong>Vanilla Skills Expanded</strong> (<code>vanillaexpanded.skills</code>) is an <em>optional soft-dependency</em> only: a <code>loadAfter</code> entry, reflection-guarded and all-or-nothing (see <a href="#optional-integrations">Optional integrations</a>). It is never required to load, build, or run the library; the only hard mod dependency remains Harmony.</li>
   </ul>
 </section>
 
