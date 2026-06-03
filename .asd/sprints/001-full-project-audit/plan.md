@@ -72,13 +72,16 @@ Two audit improvements are **won't-do** and are not realized by any task: IMP-03
 
 ### Task 3: IDefProvider isolation seam (ADR-0001)
 <!-- Owner: backend-dev. Deps: Task 1. Gates Tasks 8-11. ACs: 13, 24, 25, 26. -->
-- [ ] Introduce `IDefProvider` interface + `DefProvider.Current` accessor + `VerseDefProvider` (the live RimWorld `DefDatabase`-backed implementation)
-- [ ] Reroute `StatHelper`, `WorkTypeStatMap`, `SkillStatMap`, `WorkTypeThingRule`, `DefCache`, `StatWeight`, `PassionHelper` to resolve `Def` dependencies through the seam
-- [ ] Refactor static-constructor bodies into an internal `Rebuild()` so static caches can be rebuilt under test
-- [ ] Add `InternalsVisibleTo` for the Tests assembly
-- [ ] Emit clear `Logger` context on failure in the static-init paths that walk the `DefDatabase` (AC-24)
-- [ ] Ensure no `[SuppressMessage]` / `#pragma` suppressions are introduced; signal intentional public surface only via `[PublicAPI]` (AC-25)
-- [ ] Note any breaking public-API change introduced by the seam for the PR enumeration (AC-26)
+- [x] Introduce `IDefProvider` interface + `DefProvider.Current` accessor + `VerseDefProvider` (the live RimWorld `DefDatabase`-backed implementation)
+- [x] Reroute `StatHelper`, `WorkTypeStatMap`, `SkillStatMap`, `WorkTypeThingRule`, `DefCache`, `StatWeight`, `PassionHelper` to resolve `Def` dependencies through the seam
+- [x] Refactor static-constructor bodies into an internal `Rebuild()` so static caches can be rebuilt under test
+- [x] Add `InternalsVisibleTo` for the Tests assembly
+- [x] Emit clear `Logger` context on failure in the static-init paths that walk the `DefDatabase` (AC-24)
+- [x] Ensure no `[SuppressMessage]` / `#pragma` suppressions are introduced; signal intentional public surface only via `[PublicAPI]` (AC-25)
+- [x] Note any breaking public-API change introduced by the seam for the PR enumeration (AC-26)
+<!-- Task 3 complete (2026-06-03). Commits: de59b70 (IDefProvider+DefProvider+VerseDefProvider+InternalsVisibleTo), 25475cd (reroute+Rebuild+Logger).
+     Breaking-API note: DefProvider.Current is a new public mutable static (additive). No previously-public static was removed or signature-changed.
+     StatWeight and PassionHelper had no direct DefDatabase calls; SkillStatMap/WorkTypeThingRule/DefCache rerouted only. -->
 
 ### Task 4: WorkTypeStatMap null-stat logging (IMP-07)
 <!-- Owner: backend-dev. Deps: Task 3. AC: 8. -->
