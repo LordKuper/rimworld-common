@@ -174,8 +174,25 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Calculates a score for the specified <see cref="ThingDef" /> based on the stat weights of this rule.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+    ///         is <em>not stable</em> across differing call sequences or sessions. Internally this method
+    ///         delegates to <see cref="StatRanges.NormalizeStatValue" />, which maintains a running
+    ///         min/max per <see cref="StatDef" /> that expands as values are observed. A given
+    ///         <see cref="ThingDef" />'s normalized score therefore depends on the <em>set and order</em>
+    ///         of all items scored in the current process; identical inputs can yield different outputs
+    ///         if the observation history differs.
+    ///     </para>
+    ///     <para>
+    ///         This order-dependence is the explicitly documented, user-approved contract.
+    ///         See ADR-0002 for the rationale.
+    ///     </para>
+    /// </remarks>
     /// <param name="def">The <see cref="ThingDef" /> to score.</param>
-    /// <returns>The calculated score.</returns>
+    /// <returns>
+    ///     The calculated score. Not reproducible across differing observation histories.
+    /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
     public float GetThingDefScore(ThingDef def)
     {
@@ -191,8 +208,25 @@ public class WorkTypeThingRule : IExposable
     ///     Calculates a normalized [-1..1] score for the specified <see cref="Thing" /> based on the stat weights of this
     ///     rule.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+    ///         is <em>not stable</em> across differing call sequences or sessions. Internally this method
+    ///         delegates to <see cref="StatRanges.NormalizeStatValue" />, which maintains a running
+    ///         min/max per <see cref="StatDef" /> that expands as values are observed. A given
+    ///         <see cref="Thing" />'s normalized score therefore depends on the <em>set and order</em>
+    ///         of all items scored in the current process; identical inputs can yield different outputs
+    ///         if the observation history differs.
+    ///     </para>
+    ///     <para>
+    ///         This order-dependence is the explicitly documented, user-approved contract.
+    ///         See ADR-0002 for the rationale.
+    ///     </para>
+    /// </remarks>
     /// <param name="thing">The thing to score.</param>
-    /// <returns>The calculated score.</returns>
+    /// <returns>
+    ///     The calculated score. Not reproducible across differing observation histories.
+    /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="thing" /> is null.</exception>
     public float GetThingScore(Thing thing)
     {
