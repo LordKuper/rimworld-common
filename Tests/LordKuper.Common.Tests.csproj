@@ -4,13 +4,11 @@
     <TargetFramework>net472</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <!-- Nullable, TreatWarningsAsErrors, WarningLevel, and RimWorldManagedDir are governed by
+         the repo-root Directory.Build.props (ADR-0003); do not re-declare them here. -->
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-
-    <!-- Copy RimWorld managed assemblies to output for coverage instrumentation -->
-    <RimWorldManagedDir Condition="'$(RimWorldManagedDir)' == ''">$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
   </PropertyGroup>
 
   <ItemGroup>
