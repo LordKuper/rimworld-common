@@ -15,6 +15,13 @@ custom:
   jb-cleanup:       "jb cleanupcode Source\\LordKuper.Common.sln"
   jb-inspect:       "jb inspectcode Source\\LordKuper.Common.sln -o=\".\\TestResults\\jb-inspect.sarif\" --build"
 
+  # Coverage for LordKuper.Common via AltCover (altcover.global tool required; RIMWORLD_DIR must be set).
+  # Measures only the LordKuper.Common assembly, excluding UI + game-bound types (Resources, *WeaponStats,
+  # ToolStats, CommonMod, Compatibility.Vse, Logger, PawnHelper, PassionHelper) from the denominator —
+  # these require a live RimWorld game context and are not unit-testable without a full harness (AC-21, IMP-11).
+  # Prints "Visited Points N of M (P%)" — P is the line-coverage proxy tracked against the >=80% floor.
+  coverage:         "powershell -ExecutionPolicy Bypass -File scripts\\coverage.ps1"
+
   # @google/design.md tooling (Windows pattern; run from project root).
   # Run designmd-install once per session before first lint/diff/export.
   designmd-install: "npm install @google/design.md"
