@@ -74,7 +74,10 @@ internal static class SkillStatMap
             if (stat.skillNeedFactors != null)
                 foreach (var needFactor in stat.skillNeedFactors)
                 {
-                    var stats = _map[needFactor.skill];
+                    // Guard: SkillDef referenced by this stat may not be in AllDefsListForReading
+                    // (e.g. a mod-added SkillDef absent from the current provider). Skip rather than
+                    // throw KeyNotFoundException (quality finding #3, iter-01).
+                    if (!_map.TryGetValue(needFactor.skill, out var stats)) continue;
                     stats.Add(stat);
                     if (stat.statFactors == null) continue;
                     foreach (var f in stat.statFactors)
@@ -85,7 +88,8 @@ internal static class SkillStatMap
             if (stat.skillNeedOffsets != null)
                 foreach (var needOffset in stat.skillNeedOffsets)
                 {
-                    var stats = _map[needOffset.skill];
+                    // Guard: same defensive check as for skillNeedFactors above.
+                    if (!_map.TryGetValue(needOffset.skill, out var stats)) continue;
                     stats.Add(stat);
                     if (stat.statFactors == null) continue;
                     foreach (var f in stat.statFactors)
