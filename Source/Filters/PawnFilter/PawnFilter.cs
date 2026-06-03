@@ -172,106 +172,83 @@ public class PawnFilter : IExposable
     {
         if (main == null) throw new ArgumentNullException(nameof(main));
         if (fallback == null) throw new ArgumentNullException(nameof(fallback));
-        var combined = new PawnFilter
-        {
-            TriStateMode = false
-        };
-        if (main.FilterPawnTypes.HasValue)
-        {
-            combined.FilterPawnTypes = main.FilterPawnTypes;
-            combined.AllowedPawnTypes = [.. main.AllowedPawnTypes];
-            combined.ForbiddenPawnTypes = [.. main.ForbiddenPawnTypes];
-        }
-        else
-        {
-            combined.FilterPawnTypes = fallback.FilterPawnTypes;
-            combined.AllowedPawnTypes = [.. fallback.AllowedPawnTypes];
-            combined.ForbiddenPawnTypes = [.. fallback.ForbiddenPawnTypes];
-        }
-        if (main.FilterPawnHealthStates.HasValue)
-        {
-            combined.FilterPawnHealthStates = main.FilterPawnHealthStates;
-            combined.AllowedPawnHealthStates = main.AllowedPawnHealthStates;
-            combined.ForbiddenPawnHealthStates = main.ForbiddenPawnHealthStates;
-        }
-        else
-        {
-            combined.FilterPawnHealthStates = fallback.FilterPawnHealthStates;
-            combined.AllowedPawnHealthStates = fallback.AllowedPawnHealthStates;
-            combined.ForbiddenPawnHealthStates = fallback.ForbiddenPawnHealthStates;
-        }
-        if (main.FilterWorkPassions.HasValue)
-        {
-            combined.FilterWorkPassions = main.FilterWorkPassions;
-            combined.AllowedWorkPassions = [.. main.AllowedWorkPassions];
-        }
-        else
-        {
-            combined.FilterWorkPassions = fallback.FilterWorkPassions;
-            combined.AllowedWorkPassions = [.. fallback.AllowedWorkPassions];
-        }
-        if (main.FilterPawnTraits.HasValue)
-        {
-            combined.FilterPawnTraits = main.FilterPawnTraits;
-            combined.PawnTraitLimits = [.. main.PawnTraitLimits];
-        }
-        else
-        {
-            combined.FilterPawnTraits = fallback.FilterPawnTraits;
-            combined.PawnTraitLimits = [.. fallback.PawnTraitLimits];
-        }
-        if (main.FilterPawnCapacities.HasValue)
-        {
-            combined.FilterPawnCapacities = main.FilterPawnCapacities;
-            combined.PawnCapacityLimits = [.. main.PawnCapacityLimits];
-        }
-        else
-        {
-            combined.FilterPawnCapacities = fallback.FilterPawnCapacities;
-            combined.PawnCapacityLimits = [.. fallback.PawnCapacityLimits];
-        }
-        if (main.FilterWorkCapacities.HasValue)
-        {
-            combined.FilterWorkCapacities = main.FilterWorkCapacities;
-            combined.WorkCapacityLimits = new Dictionary<WorkTags, bool>(main.WorkCapacityLimits);
-        }
-        else
-        {
-            combined.FilterWorkCapacities = fallback.FilterWorkCapacities;
-            combined.WorkCapacityLimits = new Dictionary<WorkTags, bool>(fallback.WorkCapacityLimits);
-        }
-        if (main.FilterPawnSkills.HasValue)
-        {
-            combined.FilterPawnSkills = main.FilterPawnSkills;
-            combined.PawnSkillLimits = [.. main.PawnSkillLimits];
-        }
-        else
-        {
-            combined.FilterPawnSkills = fallback.FilterPawnSkills;
-            combined.PawnSkillLimits = [.. fallback.PawnSkillLimits];
-        }
-        if (main.FilterPawnStats.HasValue)
-        {
-            combined.FilterPawnStats = main.FilterPawnStats;
-            combined.PawnStatLimits = [.. main.PawnStatLimits];
-        }
-        else
-        {
-            combined.FilterPawnStats = fallback.FilterPawnStats;
-            combined.PawnStatLimits = [.. fallback.PawnStatLimits];
-        }
-        if (main.FilterPawnPrimaryWeaponTypes.HasValue)
-        {
-            combined.FilterPawnPrimaryWeaponTypes = main.FilterPawnPrimaryWeaponTypes;
-            combined.AllowedPawnPrimaryWeaponTypes = [.. main.AllowedPawnPrimaryWeaponTypes];
-        }
-        else
-        {
-            combined.FilterPawnPrimaryWeaponTypes = fallback.FilterPawnPrimaryWeaponTypes;
-            combined.AllowedPawnPrimaryWeaponTypes = [.. fallback.AllowedPawnPrimaryWeaponTypes];
-        }
+        var combined = new PawnFilter { TriStateMode = false };
+        CombinePawnTypes(combined, main, fallback);
+        CombinePawnHealthStates(combined, main, fallback);
+        CombineWorkPassions(combined, main, fallback);
+        CombinePawnTraits(combined, main, fallback);
+        CombinePawnCapacities(combined, main, fallback);
+        CombineWorkCapacities(combined, main, fallback);
+        CombinePawnSkills(combined, main, fallback);
+        CombinePawnStats(combined, main, fallback);
+        CombinePawnPrimaryWeaponTypes(combined, main, fallback);
         combined.Validate();
         return combined;
+    }
+
+    private static void CombinePawnTypes(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnTypes.HasValue ? main : fallback;
+        combined.FilterPawnTypes = source.FilterPawnTypes;
+        combined.AllowedPawnTypes = [.. source.AllowedPawnTypes];
+        combined.ForbiddenPawnTypes = [.. source.ForbiddenPawnTypes];
+    }
+
+    private static void CombinePawnHealthStates(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnHealthStates.HasValue ? main : fallback;
+        combined.FilterPawnHealthStates = source.FilterPawnHealthStates;
+        combined.AllowedPawnHealthStates = source.AllowedPawnHealthStates;
+        combined.ForbiddenPawnHealthStates = source.ForbiddenPawnHealthStates;
+    }
+
+    private static void CombineWorkPassions(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterWorkPassions.HasValue ? main : fallback;
+        combined.FilterWorkPassions = source.FilterWorkPassions;
+        combined.AllowedWorkPassions = [.. source.AllowedWorkPassions];
+    }
+
+    private static void CombinePawnTraits(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnTraits.HasValue ? main : fallback;
+        combined.FilterPawnTraits = source.FilterPawnTraits;
+        combined.PawnTraitLimits = [.. source.PawnTraitLimits];
+    }
+
+    private static void CombinePawnCapacities(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnCapacities.HasValue ? main : fallback;
+        combined.FilterPawnCapacities = source.FilterPawnCapacities;
+        combined.PawnCapacityLimits = [.. source.PawnCapacityLimits];
+    }
+
+    private static void CombineWorkCapacities(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterWorkCapacities.HasValue ? main : fallback;
+        combined.FilterWorkCapacities = source.FilterWorkCapacities;
+        combined.WorkCapacityLimits = new Dictionary<WorkTags, bool>(source.WorkCapacityLimits);
+    }
+
+    private static void CombinePawnSkills(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnSkills.HasValue ? main : fallback;
+        combined.FilterPawnSkills = source.FilterPawnSkills;
+        combined.PawnSkillLimits = [.. source.PawnSkillLimits];
+    }
+
+    private static void CombinePawnStats(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnStats.HasValue ? main : fallback;
+        combined.FilterPawnStats = source.FilterPawnStats;
+        combined.PawnStatLimits = [.. source.PawnStatLimits];
+    }
+
+    private static void CombinePawnPrimaryWeaponTypes(PawnFilter combined, PawnFilter main, PawnFilter fallback)
+    {
+        var source = main.FilterPawnPrimaryWeaponTypes.HasValue ? main : fallback;
+        combined.FilterPawnPrimaryWeaponTypes = source.FilterPawnPrimaryWeaponTypes;
+        combined.AllowedPawnPrimaryWeaponTypes = [.. source.AllowedPawnPrimaryWeaponTypes];
     }
 
     /// <summary>
