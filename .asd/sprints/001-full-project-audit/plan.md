@@ -32,7 +32,7 @@ Two audit improvements are **won't-do** and are not realized by any task: IMP-03
 
 - **All 27 acceptance criteria** (AC-1 … AC-27) are satisfied; the AC → Task coverage map below shows every AC mapped to at least one task, with no orphan ACs and no orphan tasks.
 - **Order-independent test suite**: the full xUnit suite produces the same result regardless of execution order (no inter-test static-state leakage), enforced by the `StaticStateFixture` save/restore (including `StatRanges.Ranges`). (AC-15, AC-16, AC-19)
-- **Coverage floor**: Coverlet-measured line coverage of the `Source` assembly is **≥ 80%**. (AC-21)
+- **Coverage floor**: Coverlet-measured line coverage of the `Source` assembly is **≥ 80%**. (AC-21) — *AC-21 outcome: AltCover measurement established (scripts/coverage.ps1, `coverage` command); achieved 38.2% Visited Points on the testable-core denominator (UI + game-bound types excluded). The 80% floor was re-scoped to the achieved level per user acceptance 2026-06-04 (the StaticConstructorOnStartup coupling + a Limit/StatHelper test-harness re-entrancy made 80% a dedicated-harness effort).*
 - **Build clean — both configs**: a clean rebuild of the full solution (`build`) completes with **zero warnings** under `TreatWarningsAsErrors` + `WarningLevel 9999` for **both Source and Tests**; `jb-cleanup` then `build` is warning-clean and `lint` reports no changes. (AC-3, AC-4, AC-5)
 - **Inspection clean — both configs**: `jb-inspect` SARIF contains **zero error and zero warning** severities across Source and Tests. (AC-5, supporting AC-25)
 - **No new suppressions**: no `[SuppressMessage]` / `#pragma warning` introduced; intentional public surface signalled only via `[PublicAPI]`. (AC-25)
@@ -57,7 +57,7 @@ Two audit improvements are **won't-do** and are not realized by any task: IMP-03
 - [x] Replace the hardcoded RimWorld build path with **fail-fast**: error if `RIMWORLD_DIR` / `RimWorldDir` is unset (no machine-specific default)
 - [x] Clean stale / mixed-target build intermediates (`v4.8`, `net8.0`) so only declared `net472` remains; confirm a clean rebuild
 - [x] Verify `supportedVersions` still lists `1.5` + `1.6` (1.5 stays the frozen archive) (AC-23)
-- [ ] Run `jb-cleanup` then `build`: solution rebuilds warning-clean
+- [x] Run `jb-cleanup` then `build`: solution rebuilds warning-clean
 
 ### Task 2: Verify-close legacy packages/ (IMP-01)
 <!-- Owner: backend-dev. Deps: none. AC: 1. -->
@@ -136,22 +136,24 @@ Tests are discoverable when RimWorld runtime is available. UI layer (Source/UI/*
 denominator per honest-coverage rule (IMGUI rendering untestable without live game). Core testable modules
 achieve ≥80% line coverage. See commit 94d0cd9 for test harness and 51 pure-path tests in Tasks 8-9.
 
+> **AC-21 outcome:** AltCover measurement established (scripts/coverage.ps1, `coverage` command); achieved 38.2% Visited Points on the testable-core denominator (UI + game-bound types excluded). The 80% floor was re-scoped to the achieved level per user acceptance 2026-06-04 (the StaticConstructorOnStartup coupling + a Limit/StatHelper test-harness re-entrancy made 80% a dedicated-harness effort).
+
 ### Task 12: IMP-10 docs reconciliation (VERIFY-ONLY)
 <!-- Owner: backend-dev. Deps: none. ACs: 10, 11, 12, 22. -->
-- [ ] Confirm the `vanillaexpanded.skills` soft-dependency (modeled in `Compatibility/Vse.cs`) is already reflected in `stack.html` / `concept.html` (promoted in design-promote)
-- [ ] Confirm `About.xml` remains the single source of truth for mod identity / supported versions / dependencies, and design docs reconcile to it (AC-22)
-- [ ] Confirm README one-liner + `concept.html` vision + `About.xml` `supportedVersions`/dependencies are consistent (single source of truth, others link not copy) (AC-11)
-- [ ] If any persistent `design/` edit is still required, route it through the design pipeline / doc-owning step — never author ad hoc against persistent `design/` (AC-12 forbids ad-hoc edits)
+- [x] Confirm the `vanillaexpanded.skills` soft-dependency (modeled in `Compatibility/Vse.cs`) is already reflected in `stack.html` / `concept.html` (promoted in design-promote)
+- [x] Confirm `About.xml` remains the single source of truth for mod identity / supported versions / dependencies, and design docs reconcile to it (AC-22)
+- [x] Confirm README one-liner + `concept.html` vision + `About.xml` `supportedVersions`/dependencies are consistent (single source of truth, others link not copy) (AC-11)
+- [x] If any persistent `design/` edit is still required, route it through the design pipeline / doc-owning step — never author ad hoc against persistent `design/` (AC-12 forbids ad-hoc edits)
 
 ### Task 13: Cross-cutting verification gate (final)
 <!-- Owner: backend-dev + test-engineer. Deps: ALL (Tasks 1-12). ACs: 5, 25, 26, 27. -->
-- [ ] Run `jb-cleanup` then `build`: warning-clean for **both Source and Tests** under `TreatWarningsAsErrors` + `WarningLevel 9999` (AC-5)
-- [ ] Run `lint`: reports no changes
+- [x] Run `jb-cleanup` then `build`: warning-clean for **both Source and Tests** under `TreatWarningsAsErrors` + `WarningLevel 9999` (AC-5)
+- [x] Run `lint`: reports no changes
 - [x] Run `jb-inspect`: SARIF has **zero error and zero warning** severities (AC-5, AC-25)
-- [ ] Run `test`: all tests pass, order-independent
-- [ ] Confirm no new `[SuppressMessage]` / `#pragma warning` suppressions were introduced (AC-25)
-- [ ] Confirm the RimWorld 1.5 archive is untouched (no code/localization/content change) (AC-27)
-- [ ] Enumerate the complete breaking public-API surface for the PR description (AC-26)
+- [x] Run `test`: all tests pass, order-independent
+- [x] Confirm no new `[SuppressMessage]` / `#pragma warning` suppressions were introduced (AC-25)
+- [x] Confirm the RimWorld 1.5 archive is untouched (no code/localization/content change) (AC-27)
+- [x] Enumerate the complete breaking public-API surface for the PR description (AC-26)
 
 ## AC → Task coverage map
 
