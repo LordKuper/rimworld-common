@@ -10,7 +10,8 @@ public class TimedCacheTests
     private class TestTimedCache : TimedCache
     {
         public TestTimedCache(float updateInterval, bool updateOnFirstAccess = false) : base(
-            updateInterval, updateOnFirstAccess) { }
+            updateInterval, updateOnFirstAccess)
+        { }
     }
 
     [Fact]

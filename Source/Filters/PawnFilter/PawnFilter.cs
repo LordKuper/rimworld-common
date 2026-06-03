@@ -271,8 +271,8 @@ public class PawnFilter : IExposable
         return new PawnFilter
         {
             AllowedPawnHealthStates = AllowedPawnHealthStates,
-            AllowedPawnTypes = [..AllowedPawnTypes],
-            AllowedWorkPassions = [..AllowedWorkPassions],
+            AllowedPawnTypes = [.. AllowedPawnTypes],
+            AllowedWorkPassions = [.. AllowedWorkPassions],
             FilterPawnCapacities = FilterPawnCapacities,
             FilterPawnHealthStates = FilterPawnHealthStates,
             FilterPawnSkills = FilterPawnSkills,
@@ -282,7 +282,7 @@ public class PawnFilter : IExposable
             FilterWorkCapacities = FilterWorkCapacities,
             FilterWorkPassions = FilterWorkPassions,
             ForbiddenPawnHealthStates = ForbiddenPawnHealthStates,
-            ForbiddenPawnTypes = [..ForbiddenPawnTypes],
+            ForbiddenPawnTypes = [.. ForbiddenPawnTypes],
             PawnCapacityLimits =
             [
                 // Where(l => l != null) filters nulls; ! asserts non-null to the compiler
@@ -329,7 +329,7 @@ public class PawnFilter : IExposable
             TriStateMode = TriStateMode,
             WorkCapacityLimits = new Dictionary<WorkTags, bool>(WorkCapacityLimits),
             FilterPawnPrimaryWeaponTypes = FilterPawnPrimaryWeaponTypes,
-            AllowedPawnPrimaryWeaponTypes = [..AllowedPawnPrimaryWeaponTypes]
+            AllowedPawnPrimaryWeaponTypes = [.. AllowedPawnPrimaryWeaponTypes]
         };
     }
 
