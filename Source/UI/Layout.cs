@@ -138,6 +138,33 @@ public static class Layout
     }
 
     /// <summary>
+    ///     Calculates and returns the centered row rectangle within the given rectangle, splitting the remaining space
+    ///     into top and bottom rectangles.
+    /// </summary>
+    /// <param name="rect">The source rectangle from which the centered row and remaining areas are calculated.</param>
+    /// <param name="rowHeight">The height of the centered row to extract. Must be a positive value.</param>
+    /// <param name="topRect">When this method returns, contains the rectangle representing the area above the centered row.</param>
+    /// <param name="bottomRect">When this method returns, contains the rectangle representing the area below the centered row.</param>
+    /// <returns>
+    ///     A <see cref="Rect" /> representing the centered row within the given rectangle. If the height of the source
+    ///     rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
+    ///     <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="Rect.zero" />.
+    /// </returns>
+    public static Rect GetCenterRowRect(Rect rect, float rowHeight, out Rect topRect,
+        out Rect bottomRect)
+    {
+        if (rect.height <= rowHeight)
+        {
+            topRect = bottomRect = Rect.zero;
+            return rect;
+        }
+        var offset = (rect.height - rowHeight) / 2f;
+        topRect = GetTopRowRect(rect, offset, out var remRect);
+        var rowRect = GetTopRowRect(remRect, rowHeight, out bottomRect);
+        return rowRect;
+    }
+
+    /// <summary>
     ///     Calculates a rectangle of the specified width and height, centered within the given rectangle.
     /// </summary>
     /// <param name="rect">The rectangle within which the new rectangle will be centered.</param>
@@ -163,34 +190,8 @@ public static class Layout
         return new Rect(rect.x + x, rect.y + y, width, height);
     }
 
-    /// <summary>
-    ///     Calculates and returns the centered row rectangle within the given rectangle, splitting the remaining space
-    ///     into top and bottom rectangles.
-    /// </summary>
-    /// <param name="rect">The source rectangle from which the centered row and remaining areas are calculated.</param>
-    /// <param name="rowHeight">The height of the centered row to extract. Must be a positive value.</param>
-    /// <param name="topRect">When this method returns, contains the rectangle representing the area above the centered row.</param>
-    /// <param name="bottomRect">When this method returns, contains the rectangle representing the area below the centered row.</param>
-    /// <returns>
-    ///     A <see cref="Rect" /> representing the centered row within the given rectangle. If the height of the source
-    ///     rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
-    ///     <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="Rect.zero" />.
-    /// </returns>
-    public static Rect GetCenterRowRect(Rect rect, float rowHeight, out Rect topRect, out Rect bottomRect)
-    {
-        if (rect.height <= rowHeight)
-        {
-            topRect = bottomRect = Rect.zero;
-            return rect;
-        }
-        var offset = (rect.height - rowHeight) / 2f;
-        topRect = GetTopRowRect(rect, offset, out var remRect);
-        var rowRect = GetTopRowRect(remRect, rowHeight, out bottomRect);
-        return rowRect;
-    }
-
-    internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap, float rowHeight, float rowGap,
-        int cellCount, out float gridHeight, out Rect remRect)
+    internal static Rect[] GetGridRects(Rect rect, float minColumnWidth, float columnGap,
+        float rowHeight, float rowGap, int cellCount, out float gridHeight, out Rect remRect)
     {
         var columnCount = Mathf.FloorToInt(rect.width / (minColumnWidth + columnGap));
         if (cellCount < columnCount)
@@ -205,8 +206,8 @@ public static class Layout
         {
             var row = i / columnCount;
             var column = i % columnCount;
-            rects[i] = new Rect(rect.x + column * (columnWidth + columnGap), rect.y + row * (rowHeight + rowGap),
-                columnWidth, rowHeight);
+            rects[i] = new Rect(rect.x + column * (columnWidth + columnGap),
+                rect.y + row * (rowHeight + rowGap), columnWidth, rowHeight);
         }
         return rects;
     }

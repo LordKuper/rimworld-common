@@ -13,14 +13,14 @@ namespace LordKuper.Common;
 public class ThingCache
 {
     /// <summary>
-    ///     The interval in hours between cache updates.
-    /// </summary>
-    private readonly float _updateTimer;
-
-    /// <summary>
     ///     Stores cached stat values for the associated <see cref="Thing" />.
     /// </summary>
     protected readonly Dictionary<StatDef, float> StatValues = new();
+
+    /// <summary>
+    ///     The interval in hours between cache updates.
+    /// </summary>
+    private readonly float _updateTimer;
 
     /// <summary>
     ///     The last time the cache was updated.

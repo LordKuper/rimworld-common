@@ -17,14 +17,15 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     internal const float LimitMaxCap = 5f;
     internal const float LimitMinCap = 0f;
     internal const ToStringStyle ValueStyle = ToStringStyle.PercentZero;
-    private string? _maxValueBuffer;
-    private string? _minValueBuffer;
 
     /// <summary>
     ///     The allowed value range for the capacity, clamped between <see cref="LimitMinCap" /> and
     ///     <see cref="LimitMaxCap" />.
     /// </summary>
     public FloatRange Limit = new(LimitMinCap, LimitMaxCap);
+
+    private string? _maxValueBuffer;
+    private string? _minValueBuffer;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class.
@@ -45,7 +46,8 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// <param name="pawnCapacityDefName">The def name of the <see cref="PawnCapacityDef" /> to limit.</param>
     /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
     /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
-    public PawnCapacityLimit(string pawnCapacityDefName, float? minValue, float? maxValue) : this(pawnCapacityDefName)
+    public PawnCapacityLimit(string pawnCapacityDefName, float? minValue, float? maxValue) : this(
+        pawnCapacityDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -66,7 +68,9 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// </summary>
     public float? MaxValue
     {
-        get => string.IsNullOrEmpty(_maxValueBuffer) && Mathf.Approximately(Limit.max, LimitMaxCap) ? null : Limit.max;
+        get => string.IsNullOrEmpty(_maxValueBuffer) && Mathf.Approximately(Limit.max, LimitMaxCap)
+            ? null
+            : Limit.max;
         set
         {
             if (!value.HasValue)
@@ -97,7 +101,8 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 MaxValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
                 MaxValue = parsed;
             else
                 _maxValueBuffer = value;
@@ -111,7 +116,9 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// </summary>
     public float? MinValue
     {
-        get => string.IsNullOrEmpty(_minValueBuffer) && Mathf.Approximately(Limit.min, LimitMinCap) ? null : Limit.min;
+        get => string.IsNullOrEmpty(_minValueBuffer) && Mathf.Approximately(Limit.min, LimitMinCap)
+            ? null
+            : Limit.min;
         set
         {
             if (!value.HasValue)
@@ -142,7 +149,8 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 MinValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
                 MinValue = parsed;
             else
                 _minValueBuffer = value;

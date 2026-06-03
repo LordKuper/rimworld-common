@@ -16,6 +16,28 @@ namespace LordKuper.Common;
 public class WorkTypeStatMap
 {
     /// <summary>
+    ///     Default stat weights for specific work types, keyed by work type defName and stat defName.
+    /// </summary>
+    private static readonly Dictionary<string, Dictionary<string, float>> DefaultWorkTypeStats =
+        new()
+        {
+            {
+                "Cooking", new Dictionary<string, float>
+                {
+                    { "FoodPoisonChance", 2f }, { "DrugCookingSpeed", 1f },
+                    { "ButcheryFleshSpeed", 1f },
+                    { "ButcheryFleshEfficiency", 1.5f }, { "CookSpeed", 1f }
+                }
+            },
+            { "Hunting", new Dictionary<string, float> { { "HuntingStealth", 2f } } },
+            {
+                "Doctor",
+                new Dictionary<string, float>
+                    { { "MedicalTendQualityOffset", 2f }, { "MedicalPotency", 2f } }
+            }
+        };
+
+    /// <summary>
     ///     Stores a mapping from <see cref="WorkTypeDef" /> to a set of <see cref="StatDef" />s that are used for
     ///     auto-switching.
     /// </summary>
@@ -26,26 +48,6 @@ public class WorkTypeStatMap
     ///     <see cref="StatWeight" />.
     /// </summary>
     private static Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>? _defaultStatsMap;
-
-    /// <summary>
-    ///     Default stat weights for specific work types, keyed by work type defName and stat defName.
-    /// </summary>
-    private static readonly Dictionary<string, Dictionary<string, float>> DefaultWorkTypeStats = new()
-    {
-        {
-            "Cooking", new Dictionary<string, float>
-            {
-                { "FoodPoisonChance", 2f }, { "DrugCookingSpeed", 1f },
-                { "ButcheryFleshSpeed", 1f },
-                { "ButcheryFleshEfficiency", 1.5f }, { "CookSpeed", 1f }
-            }
-        },
-        { "Hunting", new Dictionary<string, float> { { "HuntingStealth", 2f } } },
-        {
-            "Doctor",
-            new Dictionary<string, float> { { "MedicalTendQualityOffset", 2f }, { "MedicalPotency", 2f } }
-        }
-    };
 
     /// <summary>
     ///     Gets a mapping from <see cref="WorkTypeDef" /> to a set of <see cref="StatDef" />s used for auto-switching.
@@ -100,8 +102,9 @@ public class WorkTypeStatMap
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
-                            "failed to read WorkTypeDefs from DefProvider.", ex);
+            Logger.LogError(
+                $"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
+                "failed to read WorkTypeDefs from DefProvider.", ex);
             workTypes = [];
         }
         try
@@ -110,12 +113,14 @@ public class WorkTypeStatMap
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
-                            "failed to read RecipeDefs from DefProvider.", ex);
+            Logger.LogError(
+                $"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
+                "failed to read RecipeDefs from DefProvider.", ex);
             allRecipes = [];
         }
         var workTypeStatDefs = StatHelper.GetStatsByCategory(StatCategory.Work);
-        _defaultStatsMap = new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
+        _defaultStatsMap =
+            new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
         _autoSwitchStatsMap = new Dictionary<WorkTypeDef, HashSet<StatDef>>(workTypes.Count);
         foreach (var workType in workTypes)
         {
@@ -130,9 +135,8 @@ public class WorkTypeStatMap
                     if (statDef != null)
                         statWeights[statDef] = new StatWeight(statDef, kvp.Value, true);
                     else
-                        Logger.LogWarning(
-                            $"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
-                            $"StatDef '{kvp.Key}' referenced by work type '{workType.defName}' could not be resolved.");
+                        Logger.LogWarning($"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
+                                          $"StatDef '{kvp.Key}' referenced by work type '{workType.defName}' could not be resolved.");
                 }
             var skillStatMap = SkillStatMap.Map;
             var relevantSkills = workType.relevantSkills;

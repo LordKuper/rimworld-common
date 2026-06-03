@@ -34,11 +34,12 @@ public static partial class Fields
     /// <returns>The height of the selector row.</returns>
     public static float DoLabeledSelector<T>(Rect rect, int indentationLevel,
         IReadOnlyCollection<IconButton>? actionButtons, string label, string? labelTooltip, T value,
-        IReadOnlyCollection<T> options, Func<T, string> getLabelAction, Func<T, string>? getTooltipAction,
-        Action<T> selectAction, Texture? icon, out Rect remRect)
+        IReadOnlyCollection<T> options, Func<T, string> getLabelAction,
+        Func<T, string>? getTooltipAction, Action<T> selectAction, Texture? icon, out Rect remRect)
     {
         var rowRect = GetFieldRowRect(rect, SelectorRowHeight, out remRect);
-        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon, out var inputRect);
+        DoFieldLabelWithButtons(rowRect, indentationLevel, actionButtons, label, labelTooltip, icon,
+            out var inputRect);
         DoSelector(inputRect, value, options, getLabelAction, getTooltipAction, selectAction);
         return SelectorRowHeight;
     }
@@ -68,7 +69,8 @@ public static partial class Fields
         {
             optionList.Add(new FloatMenuOption(getLabelAction(o), () => { selectAction(o); }));
         }
-        Buttons.DoActionButton(rect, getLabelAction(value), () => { Find.WindowStack.Add(new FloatMenu(optionList)); },
+        Buttons.DoActionButton(rect, getLabelAction(value),
+            () => { Find.WindowStack.Add(new FloatMenu(optionList)); },
             getTooltipAction?.Invoke(value), optionList.Count > 0);
     }
 }

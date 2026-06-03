@@ -19,7 +19,12 @@ namespace LordKuper.Common.Cache;
 /// <param name="learnRateFactor">The learning rate factor associated with the passion.</param>
 /// <param name="forgetRateFactor">The forget rate factor associated with the passion.</param>
 [PublicAPI]
-public class PassionCache(Passion passion, string defName, string label, float learnRateFactor, float forgetRateFactor)
+public class PassionCache(
+    Passion passion,
+    string defName,
+    string label,
+    float learnRateFactor,
+    float forgetRateFactor)
 {
     /// <summary>
     ///     Gets the definition name of the passion.
@@ -31,7 +36,8 @@ public class PassionCache(Passion passion, string defName, string label, float l
     /// </summary>
     public string Description { get; } = new StringBuilder().AppendLine(label).AppendLine()
         .AppendLine(string.Format(Strings.Passions.LearnRateFactorDescription, learnRateFactor))
-        .AppendLine(string.Format(Strings.Passions.ForgetRateFactorDescription, forgetRateFactor)).ToString();
+        .AppendLine(string.Format(Strings.Passions.ForgetRateFactorDescription, forgetRateFactor))
+        .ToString();
 
     /// <summary>
     ///     Gets the forget rate factor associated with the passion.

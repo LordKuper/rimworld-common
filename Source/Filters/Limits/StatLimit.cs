@@ -16,9 +16,6 @@ public class StatLimit : DefCache<StatDef>, IExposable
 {
     private const float DefaultLimitCap = 1000f;
     private const float PercentStatCap = 5f;
-    private bool _isConfigured;
-    private string? _maxValueBuffer;
-    private string? _minValueBuffer;
 
     /// <summary>
     ///     The allowed value range for the stat, clamped between <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
@@ -39,6 +36,10 @@ public class StatLimit : DefCache<StatDef>, IExposable
     ///     The display style used to format the stat's values.
     /// </summary>
     public ToStringStyle ValueStyle;
+
+    private bool _isConfigured;
+    private string? _maxValueBuffer;
+    private string? _minValueBuffer;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatLimit" /> class.
@@ -85,7 +86,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
         get
         {
             EnsureConfigured();
-            return string.IsNullOrEmpty(_maxValueBuffer) && Mathf.Approximately(Limit.max, LimitMaxCap)
+            return string.IsNullOrEmpty(_maxValueBuffer) &&
+                   Mathf.Approximately(Limit.max, LimitMaxCap)
                 ? null
                 : Limit.max;
         }
@@ -126,7 +128,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 MaxValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var maxValue))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var maxValue))
                 MaxValue = maxValue;
             else
                 _maxValueBuffer = value;
@@ -143,7 +146,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
         get
         {
             EnsureConfigured();
-            return string.IsNullOrEmpty(_minValueBuffer) && Mathf.Approximately(Limit.min, LimitMinCap)
+            return string.IsNullOrEmpty(_minValueBuffer) &&
+                   Mathf.Approximately(Limit.min, LimitMinCap)
                 ? null
                 : Limit.min;
         }
@@ -184,7 +188,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 MinValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var minValue))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var minValue))
                 MinValue = minValue;
             else
                 _minValueBuffer = value;
@@ -231,7 +236,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
         Scribe_Values.Look(ref ValueStyle, nameof(ValueStyle));
         if (Scribe.mode != LoadSaveMode.Saving)
         {
-            _isConfigured = LimitMinCap != 0f || LimitMaxCap != 0f || Limit.min != 0f || Limit.max != 0f;
+            _isConfigured = LimitMinCap != 0f || LimitMaxCap != 0f || Limit.min != 0f ||
+                            Limit.max != 0f;
             MinValue = minValue;
             MaxValue = maxValue;
         }
@@ -248,7 +254,8 @@ public class StatLimit : DefCache<StatDef>, IExposable
         else
         {
             var style = def.toStringStyle;
-            if (style is ToStringStyle.PercentZero or ToStringStyle.PercentOne or ToStringStyle.PercentTwo)
+            if (style is ToStringStyle.PercentZero or ToStringStyle.PercentOne
+                or ToStringStyle.PercentTwo)
             {
                 LimitMinCap = Mathf.Max(-1 * PercentStatCap, def.minValue);
                 LimitMaxCap = Mathf.Min(PercentStatCap, def.maxValue);

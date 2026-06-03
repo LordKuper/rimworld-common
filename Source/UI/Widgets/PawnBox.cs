@@ -51,11 +51,12 @@ public static class PawnBox
         const float elementGapTiny = Layout.ElementGapTiny;
         var horizontalMargin = GUI.skin.verticalScrollbar.fixedWidth + elementGapTiny * 2;
         Verse.Widgets.DrawBoxSolidWithOutline(rect, BackgroundColor, OutlineColor);
-        var outRect = new Rect(rect.x + elementGapTiny, rect.y + elementGapTiny, rect.width - elementGapTiny * 1.5f,
-            rect.height - elementGapTiny * 2);
-        var gridRect = new Rect(outRect.x, outRect.y, rect.width - horizontalMargin, outRect.height);
-        var entryRects = Layout.GetGridRects(gridRect, EntryWidthMin, elementGapTiny, RowHeight, elementGapTiny,
-            pawns.Count, out var gridHeight, out _);
+        var outRect = new Rect(rect.x + elementGapTiny, rect.y + elementGapTiny,
+            rect.width - elementGapTiny * 1.5f, rect.height - elementGapTiny * 2);
+        var gridRect = new Rect(outRect.x, outRect.y, rect.width - horizontalMargin,
+            outRect.height);
+        var entryRects = Layout.GetGridRects(gridRect, EntryWidthMin, elementGapTiny, RowHeight,
+            elementGapTiny, pawns.Count, out var gridHeight, out _);
         var boxRect = new Rect(gridRect.x, gridRect.y, gridRect.width, gridHeight);
         Verse.Widgets.BeginScrollView(outRect, ref scrollPosition, boxRect);
         var evt = Event.current;
@@ -87,7 +88,8 @@ public static class PawnBox
     public static float GetPawnBoxHeight(int rowCount)
     {
         if (rowCount <= 0)
-            throw new ArgumentOutOfRangeException(nameof(rowCount), "Row count must be a positive number.");
+            throw new ArgumentOutOfRangeException(nameof(rowCount),
+                "Row count must be a positive number.");
         return rowCount * RowHeight + (rowCount + 1) * Layout.ElementGapTiny;
     }
 }

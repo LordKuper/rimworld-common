@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using RimWorld;
 using Verse;
 
 namespace LordKuper.Common;
@@ -19,16 +18,16 @@ namespace LordKuper.Common;
 public interface IDefProvider
 {
     /// <summary>
-    ///     Returns all defs of type <typeparamref name="T" /> as a list.
-    ///     Corresponds to <c>DefDatabase&lt;T&gt;.AllDefsListForReading</c>.
-    /// </summary>
-    IReadOnlyList<T> AllDefsListForReading<T>() where T : Def;
-
-    /// <summary>
     ///     Returns all defs of type <typeparamref name="T" /> as an enumerable.
     ///     Corresponds to <c>DefDatabase&lt;T&gt;.AllDefs</c>.
     /// </summary>
     IEnumerable<T> AllDefs<T>() where T : Def;
+
+    /// <summary>
+    ///     Returns all defs of type <typeparamref name="T" /> as a list.
+    ///     Corresponds to <c>DefDatabase&lt;T&gt;.AllDefsListForReading</c>.
+    /// </summary>
+    IReadOnlyList<T> AllDefsListForReading<T>() where T : Def;
 
     /// <summary>
     ///     Looks up a def by <paramref name="defName" />, returning <c>null</c> on miss.

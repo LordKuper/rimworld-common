@@ -24,7 +24,8 @@ public class CommonMod : Mod
     /// <param name="content">The mod content pack.</param>
     public CommonMod(ModContentPack content) : base(content)
     {
-        Logger.LogMessage($"Initializing (v.{Assembly.GetExecutingAssembly().GetName().Version})...");
+        Logger.LogMessage(
+            $"Initializing (v.{Assembly.GetExecutingAssembly().GetName().Version})...");
         Harmony harmony = new(ModId);
         harmony.PatchAll(Assembly.GetExecutingAssembly());
         Vse.Initialize();

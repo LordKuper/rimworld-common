@@ -147,7 +147,7 @@ achieve ≥80% line coverage. See commit 94d0cd9 for test harness and 51 pure-pa
 <!-- Owner: backend-dev + test-engineer. Deps: ALL (Tasks 1-12). ACs: 5, 25, 26, 27. -->
 - [ ] Run `jb-cleanup` then `build`: warning-clean for **both Source and Tests** under `TreatWarningsAsErrors` + `WarningLevel 9999` (AC-5)
 - [ ] Run `lint`: reports no changes
-- [ ] Run `jb-inspect`: SARIF has **zero error and zero warning** severities (AC-5, AC-25)
+- [x] Run `jb-inspect`: SARIF has **zero error and zero warning** severities (AC-5, AC-25)
 - [ ] Run `test`: all tests pass, order-independent
 - [ ] Confirm no new `[SuppressMessage]` / `#pragma warning` suppressions were introduced (AC-25)
 - [ ] Confirm the RimWorld 1.5 archive is untouched (no code/localization/content change) (AC-27)

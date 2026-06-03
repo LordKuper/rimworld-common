@@ -20,6 +20,16 @@ public static class StatHelper
     internal const string CustomStatPrefix = "LK";
 
     /// <summary>
+    ///     Provides a comparer for sorting StatDefs by category and label.
+    /// </summary>
+    private static readonly IComparer<StatDef> Comparer = new StatDefCategoryComparer();
+
+    /// <summary>
+    ///     Stores stat definitions grouped by their category.
+    /// </summary>
+    private static readonly Dictionary<StatCategory, SortedSet<StatDef>> Stats = new();
+
+    /// <summary>
     ///     Stores all melee weapon stat definitions.
     /// </summary>
     private static SortedSet<StatDef> _allMeleeWeaponStatDefs = [];
@@ -90,16 +100,6 @@ public static class StatHelper
     private static HashSet<string> _workCategories = [];
 
     /// <summary>
-    ///     Provides a comparer for sorting StatDefs by category and label.
-    /// </summary>
-    private static readonly IComparer<StatDef> Comparer = new StatDefCategoryComparer();
-
-    /// <summary>
-    ///     Stores stat definitions grouped by their category.
-    /// </summary>
-    private static readonly Dictionary<StatCategory, SortedSet<StatDef>> Stats = new();
-
-    /// <summary>
     ///     Static constructor to initialize stat categories and definitions.
     ///     Delegates to <see cref="Rebuild" /> so test fixtures can re-initialize against a
     ///     swapped <see cref="DefProvider.Current" /> without changing load-time behavior.
@@ -107,24 +107,6 @@ public static class StatHelper
     static StatHelper()
     {
         Rebuild();
-    }
-
-    /// <summary>
-    ///     Initializes (or re-initializes) all stat-helper state against the active
-    ///     <see cref="DefProvider.Current" />.
-    ///     Called by the static constructor at game load and by test fixtures after swapping
-    ///     the provider.  Produces the same state as the original static constructor.
-    /// </summary>
-    internal static void Rebuild()
-    {
-        InitializePawnCategories();
-        InitializeWorkCategories();
-        InitializeApparelCategories();
-        InitializeWeaponCategories();
-        InitializeDefaultStats();
-        InitializeCustomStats();
-        InitializeUnionStats();
-        Stats.Clear();
     }
 
     /// <summary>
@@ -138,31 +120,6 @@ public static class StatHelper
         // After IsNullOrEmpty returns false, defName is a non-empty, non-null string.
         _statDefsByName.TryGetValue(defName!.ToLowerInvariant(), out var result);
         return result;
-    }
-
-    /// <summary>
-    ///     Gets the stat definitions for a given category.
-    /// </summary>
-    /// <param name="category">The stat category.</param>
-    /// <returns>A read-only collection of <see cref="StatDef" /> for the specified category.</returns>
-    public static IReadOnlyCollection<StatDef> GetStatsByCategory(StatCategory category)
-    {
-        if (Stats.TryGetValue(category, out var stats)) return stats;
-        var source = category switch
-        {
-            StatCategory.Pawn => _defaultPawnStatDefs,
-            StatCategory.Apparel => _defaultApparelStatDefs,
-            StatCategory.Weapon => _defaultWeaponStatDefs,
-            StatCategory.WeaponMelee => _allMeleeWeaponStatDefs,
-            StatCategory.WeaponRanged => _allRangedWeaponStatDefs,
-            StatCategory.Tool => _allToolStatDefs,
-            StatCategory.Work => _defaultWorkStatDefs,
-            StatCategory.All => _allStatDefs,
-            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
-        };
-        stats = new SortedSet<StatDef>(source, Comparer);
-        Stats[category] = stats;
-        return stats;
     }
 
     /// <summary>
@@ -190,7 +147,9 @@ public static class StatHelper
         }
         catch (Exception exception)
         {
-            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {thing.LabelCapNoCount}.", exception);
+            Logger.LogWarning(
+                $"Could not evaluate stat '{statDef.LabelCap}' of {thing.LabelCapNoCount}.",
+                exception);
             return 0f;
         }
     }
@@ -229,7 +188,8 @@ public static class StatHelper
         }
         catch (Exception exception)
         {
-            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {def.LabelCap}", exception);
+            Logger.LogWarning($"Could not evaluate stat '{statDef.LabelCap}' of {def.LabelCap}",
+                exception);
             return 0f;
         }
     }
@@ -261,6 +221,31 @@ public static class StatHelper
     }
 
     /// <summary>
+    ///     Gets the stat definitions for a given category.
+    /// </summary>
+    /// <param name="category">The stat category.</param>
+    /// <returns>A read-only collection of <see cref="StatDef" /> for the specified category.</returns>
+    public static IReadOnlyCollection<StatDef> GetStatsByCategory(StatCategory category)
+    {
+        if (Stats.TryGetValue(category, out var stats)) return stats;
+        var source = category switch
+        {
+            StatCategory.Pawn => _defaultPawnStatDefs,
+            StatCategory.Apparel => _defaultApparelStatDefs,
+            StatCategory.Weapon => _defaultWeaponStatDefs,
+            StatCategory.WeaponMelee => _allMeleeWeaponStatDefs,
+            StatCategory.WeaponRanged => _allRangedWeaponStatDefs,
+            StatCategory.Tool => _allToolStatDefs,
+            StatCategory.Work => _defaultWorkStatDefs,
+            StatCategory.All => _allStatDefs,
+            _ => throw new ArgumentOutOfRangeException(nameof(category), category, null)
+        };
+        stats = new SortedSet<StatDef>(source, Comparer);
+        Stats[category] = stats;
+        return stats;
+    }
+
+    /// <summary>
     ///     Initializes the apparel category names.
     /// </summary>
     private static void InitializeApparelCategories()
@@ -282,7 +267,8 @@ public static class StatHelper
     private static void InitializeCustomStats()
     {
         _customStatsDefs = new SortedSet<StatDef>(
-            MeleeWeaponStats.StatDefs.Concat(RangedWeaponStats.StatDefs).Concat(ToolStats.StatDefs), Comparer);
+            MeleeWeaponStats.StatDefs.Concat(RangedWeaponStats.StatDefs).Concat(ToolStats.StatDefs),
+            Comparer);
     }
 
     /// <summary>
@@ -297,8 +283,9 @@ public static class StatHelper
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{nameof(StatHelper)}.{nameof(InitializeDefaultStats)}: " +
-                            "failed to read StatDef list from DefProvider.", ex);
+            Logger.LogError(
+                $"{nameof(StatHelper)}.{nameof(InitializeDefaultStats)}: " +
+                "failed to read StatDef list from DefProvider.", ex);
             defs = [];
         }
         _defaultPawnStatDefs = new SortedSet<StatDef>(Comparer);
@@ -356,8 +343,9 @@ public static class StatHelper
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{nameof(StatHelper)}.{nameof(InitializeUnionStats)}: " +
-                            "failed to read StatDef list from DefProvider.", ex);
+            Logger.LogError(
+                $"{nameof(StatHelper)}.{nameof(InitializeUnionStats)}: " +
+                "failed to read StatDef list from DefProvider.", ex);
             allDefs = [];
         }
         var allStatDefsSet = new HashSet<StatDef>(allDefs);
@@ -403,6 +391,24 @@ public static class StatHelper
             nameof(StatCategoryDefOf.PawnWork),
             nameof(StatCategoryDefOf.PawnSocial)
         ];
+    }
+
+    /// <summary>
+    ///     Initializes (or re-initializes) all stat-helper state against the active
+    ///     <see cref="DefProvider.Current" />.
+    ///     Called by the static constructor at game load and by test fixtures after swapping
+    ///     the provider.  Produces the same state as the original static constructor.
+    /// </summary>
+    internal static void Rebuild()
+    {
+        InitializePawnCategories();
+        InitializeWorkCategories();
+        InitializeApparelCategories();
+        InitializeWeaponCategories();
+        InitializeDefaultStats();
+        InitializeCustomStats();
+        InitializeUnionStats();
+        Stats.Clear();
     }
 
     /// <summary>

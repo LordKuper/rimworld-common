@@ -9,7 +9,8 @@ namespace LordKuper.Common;
 ///     Represents a point in RimWorld time, including year, day, and hour.
 /// </summary>
 [PublicAPI]
-public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimWorldTime>, IComparable
+public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimWorldTime>,
+    IComparable
 {
     /// <summary>
     ///     Initializes a new instance of <see cref="RimWorldTime" /> from year, day, and hour.
@@ -187,7 +188,8 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     {
         return map == null
             ? new RimWorldTime(0, 0, 0)
-            : new RimWorldTime(GenLocalDate.Year(map), GenLocalDate.DayOfYear(map), GenLocalDate.HourFloat(map));
+            : new RimWorldTime(GenLocalDate.Year(map), GenLocalDate.DayOfYear(map),
+                GenLocalDate.HourFloat(map));
     }
 
     /// <summary>

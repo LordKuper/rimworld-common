@@ -1,5 +1,5 @@
 using LordKuper.Common.Helpers;
-using Xunit;
+using Verse;
 
 namespace LordKuper.Common.Tests.Helpers;
 
@@ -14,8 +14,7 @@ public class DefHelperTests
     public void GetLabel_NullDef_Throws()
     {
         // AC-17: Null def throws ArgumentNullException
-        Verse.Def? nullDef = null;
-
+        Def? nullDef = null;
         Assert.Throws<ArgumentNullException>(() => nullDef!.GetLabel());
     }
 

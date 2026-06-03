@@ -16,6 +16,12 @@ namespace LordKuper.Common.Helpers;
 public static class PassionHelper
 {
     /// <summary>
+    ///     Stores the mapping between <see cref="Passion" /> values and their corresponding <see cref="PassionCache" />
+    ///     entries.
+    /// </summary>
+    private static readonly Dictionary<Passion, PassionCache> PassionCache = new();
+
+    /// <summary>
     ///     Backing field for the cached list of <see cref="PassionCache" /> entries.
     /// </summary>
     private static List<PassionCache>? _cachedPassions;
@@ -26,12 +32,6 @@ public static class PassionHelper
     private static bool _isInitialized;
 
     /// <summary>
-    ///     Stores the mapping between <see cref="Passion" /> values and their corresponding <see cref="PassionCache" />
-    ///     entries.
-    /// </summary>
-    private static readonly Dictionary<Passion, PassionCache> PassionCache = new();
-
-    /// <summary>
     ///     Gets an ordered, cached list of all <see cref="PassionCache" /> entries.
     /// </summary>
     public static IReadOnlyList<PassionCache> Passions
@@ -39,8 +39,10 @@ public static class PassionHelper
         get
         {
             Initialize();
-            return _cachedPassions ??= PassionCache.Values.OrderByDescending(pc => pc.Passion == Passion.None)
-                .ThenBy(pc => pc.LearnRateFactor).ThenBy(pc => pc.ForgetRateFactor).ThenBy(pc => pc.DefName).ToList();
+            return _cachedPassions ??= PassionCache.Values
+                .OrderByDescending(pc => pc.Passion == Passion.None)
+                .ThenBy(pc => pc.LearnRateFactor).ThenBy(pc => pc.ForgetRateFactor)
+                .ThenBy(pc => pc.DefName).ToList();
         }
     }
 
@@ -73,7 +75,8 @@ public static class PassionHelper
         Initialize();
         return string.IsNullOrEmpty(defName)
             ? throw new ArgumentNullException(nameof(defName), "DefName cannot be null or empty.")
-            : Passions.FirstOrDefault(p => p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
+            : Passions.FirstOrDefault(p =>
+                p.DefName.Equals(defName, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
@@ -112,8 +115,9 @@ public static class PassionHelper
             foreach (var passion in Vse.GetPassions?.Invoke() ?? Enumerable.Empty<Passion>())
             {
                 if (!PassionCache.ContainsKey(passion))
-                    PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion), Vse.GetLabel(passion),
-                        Vse.GetLearnRateFactor(passion), Vse.GetForgetRateFactor(passion));
+                    PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion),
+                        Vse.GetLabel(passion), Vse.GetLearnRateFactor(passion),
+                        Vse.GetForgetRateFactor(passion));
             }
         }
         else
@@ -121,8 +125,8 @@ public static class PassionHelper
             foreach (Passion passion in Enum.GetValues(typeof(Passion)))
             {
                 if (!PassionCache.ContainsKey(passion))
-                    PassionCache[passion] = new PassionCache(passion, passion.ToString(), passion.GetLabel(),
-                        passion.GetLearningFactor(), 1f);
+                    PassionCache[passion] = new PassionCache(passion, passion.ToString(),
+                        passion.GetLabel(), passion.GetLearningFactor(), 1f);
             }
         }
     }

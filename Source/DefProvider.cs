@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using RimWorld;
 using Verse;
 
 namespace LordKuper.Common;
@@ -18,18 +17,12 @@ namespace LordKuper.Common;
 [PublicAPI]
 public static class DefProvider
 {
-    private static IDefProvider _current = new VerseDefProvider();
-
     /// <summary>
     ///     Gets or sets the active <see cref="IDefProvider" />.
     ///     Defaults to <see cref="VerseDefProvider" />.
     ///     Test fixtures may replace this and MUST restore it after each test.
     /// </summary>
-    public static IDefProvider Current
-    {
-        get => _current;
-        set => _current = value;
-    }
+    public static IDefProvider Current { get; set; } = new VerseDefProvider();
 }
 
 /// <summary>
@@ -40,18 +33,26 @@ public static class DefProvider
 internal sealed class VerseDefProvider : IDefProvider
 {
     /// <inheritdoc />
-    public IReadOnlyList<T> AllDefsListForReading<T>() where T : Def =>
-        DefDatabase<T>.AllDefsListForReading;
+    public IEnumerable<T> AllDefs<T>() where T : Def
+    {
+        return DefDatabase<T>.AllDefs;
+    }
 
     /// <inheritdoc />
-    public IEnumerable<T> AllDefs<T>() where T : Def =>
-        DefDatabase<T>.AllDefs;
+    public IReadOnlyList<T> AllDefsListForReading<T>() where T : Def
+    {
+        return DefDatabase<T>.AllDefsListForReading;
+    }
 
     /// <inheritdoc />
-    public T? GetNamedSilentFail<T>(string? defName) where T : Def =>
-        string.IsNullOrEmpty(defName) ? null : DefDatabase<T>.GetNamedSilentFail(defName);
+    public T? GetNamedSilentFail<T>(string? defName) where T : Def
+    {
+        return string.IsNullOrEmpty(defName) ? null : DefDatabase<T>.GetNamedSilentFail(defName);
+    }
 
     /// <inheritdoc />
-    public IReadOnlyList<WorkTypeDef> WorkTypeDefsInPriorityOrder() =>
-        WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.ToList();
+    public IReadOnlyList<WorkTypeDef> WorkTypeDefsInPriorityOrder()
+    {
+        return WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.ToList();
+    }
 }

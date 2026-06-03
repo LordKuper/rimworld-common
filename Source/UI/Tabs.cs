@@ -43,16 +43,17 @@ public static class Tabs
     ///     If null, the bottom region is omitted.
     /// </param>
     public static void DoTab(Rect tabRect, float topFixedHeight, Action<Rect>? doTopContentAction,
-        float scrollableContentHeight, ref Vector2 scrollPosition, Action<Rect>? doScrollableContentAction,
-        float bottomFixedHeight, Action<Rect>? doBottomContentAction)
+        float scrollableContentHeight, ref Vector2 scrollPosition,
+        Action<Rect>? doScrollableContentAction, float bottomFixedHeight,
+        Action<Rect>? doBottomContentAction)
     {
         GetTabRects(tabRect, doTopContentAction == null ? 0f : topFixedHeight,
-            doBottomContentAction == null ? 0f : bottomFixedHeight, out var topFixedRect, out var scrollableRect,
-            out var bottomFixedRect);
+            doBottomContentAction == null ? 0f : bottomFixedHeight, out var topFixedRect,
+            out var scrollableRect, out var bottomFixedRect);
         doTopContentAction?.Invoke(topFixedRect);
         if (doScrollableContentAction != null)
-            ScrollView.DoScrollableContent(scrollableRect, scrollableContentHeight, ref scrollPosition,
-                doScrollableContentAction);
+            ScrollView.DoScrollableContent(scrollableRect, scrollableContentHeight,
+                ref scrollPosition, doScrollableContentAction);
         doBottomContentAction?.Invoke(bottomFixedRect);
     }
 
@@ -99,11 +100,12 @@ public static class Tabs
     /// <exception cref="ArgumentOutOfRangeException">
     ///     Thrown if the combined height of the fixed regions exceeds the available tab area.
     /// </exception>
-    public static void GetTabRects(Rect tabRect, float topFixedHeight, float bottomFixedHeight, out Rect topFixedRect,
-        out Rect scrollableRect, out Rect bottomFixedRect)
+    public static void GetTabRects(Rect tabRect, float topFixedHeight, float bottomFixedHeight,
+        out Rect topFixedRect, out Rect scrollableRect, out Rect bottomFixedRect)
     {
         if (topFixedHeight + bottomFixedHeight > tabRect.height - 100f)
-            throw new ArgumentOutOfRangeException("Height of fixed regions is too large.", (Exception?)null);
+            throw new ArgumentOutOfRangeException("Height of fixed regions is too large.",
+                (Exception?)null);
         var remRect = tabRect;
         if (topFixedHeight > 0)
         {

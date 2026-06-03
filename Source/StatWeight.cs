@@ -16,15 +16,15 @@ public class StatWeight : IExposable
     /// </summary>
     internal const float WeightCap = 2f;
 
-    private bool _isInitialized;
-    private bool _isProtected;
-    private StatDef? _statDef;
-    private string? _statDefName;
-
     /// <summary>
     ///     The weight assigned to the stat.
     /// </summary>
     public float Weight;
+
+    private bool _isInitialized;
+    private bool _isProtected;
+    private StatDef? _statDef;
+    private string? _statDefName;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatWeight" /> class using a <see cref="StatDef" /> and protection
@@ -45,7 +45,8 @@ public class StatWeight : IExposable
     /// <param name="statDef">The stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    internal StatWeight(StatDef statDef, float weight, bool isProtected) : this(statDef, isProtected)
+    internal StatWeight(StatDef statDef, float weight, bool isProtected) : this(statDef,
+        isProtected)
     {
         Weight = weight;
     }
@@ -73,7 +74,8 @@ public class StatWeight : IExposable
     /// <param name="statDefName">The name of the stat definition.</param>
     /// <param name="weight">The weight value.</param>
     /// <param name="isProtected">Whether the stat is protected.</param>
-    public StatWeight(string? statDefName, float weight, bool isProtected) : this(statDefName, isProtected)
+    public StatWeight(string? statDefName, float weight, bool isProtected) : this(statDefName,
+        isProtected)
     {
         Weight = weight;
     }

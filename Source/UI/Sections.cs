@@ -32,13 +32,14 @@ public static class Sections
     /// <param name="remRect">Outputs the remaining rectangle after the section.</param>
     /// <returns>The total vertical space consumed by the section, including header and gaps.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="header" /> is null or whitespace.</exception>
-    public static float DoLabeledSectionBox(Rect rect, float contentHeight, string header, string? tooltip,
-        out Rect sectionContentRect, out Rect remRect)
+    public static float DoLabeledSectionBox(Rect rect, float contentHeight, string header,
+        string? tooltip, out Rect sectionContentRect, out Rect remRect)
     {
         if (string.IsNullOrWhiteSpace(header)) throw new ArgumentNullException(nameof(header));
         var y = 0f;
         y += DoSectionHeader(rect, header, tooltip, out remRect);
-        var outlineRect = Layout.GetTopRowRect(remRect, contentHeight + Layout.ElementGapSmall * 2, out remRect);
+        var outlineRect = Layout.GetTopRowRect(remRect, contentHeight + Layout.ElementGapSmall * 2,
+            out remRect);
         y += outlineRect.height;
         Verse.Widgets.DrawBoxSolidWithOutline(outlineRect, BackgroundColor, OutlineColor);
         sectionContentRect = outlineRect.ContractedBy(Layout.ElementGapSmall);
@@ -82,7 +83,8 @@ public static class Sections
         if (!string.IsNullOrWhiteSpace(tooltip))
         {
             var headerWidth = Labels.GetTextWidth(header, Text.Font);
-            Layout.GetLeftColumnRect(rect, headerWidth + Layout.ElementGapSmall, out var tooltipRect);
+            Layout.GetLeftColumnRect(rect, headerWidth + Layout.ElementGapSmall,
+                out var tooltipRect);
             var buttonRect = Layout.GetLeftColumnRect(tooltipRect, Icons.InfoIconSize, out _);
             Icons.DoIcon(buttonRect, Resources.Textures.InfoIcon, tooltip);
         }
@@ -100,8 +102,8 @@ public static class Sections
     /// <param name="headerTooltip">An optional tooltip for the header.</param>
     /// <param name="remRect">The remaining rectangle below the header.</param>
     /// <returns>The vertical space consumed by the header, including the trailing gap.</returns>
-    internal static float DoToggleableSectionHeader(Rect rect, ref bool isEnabled, string? checkBoxTooltip,
-        string header, string? headerTooltip, out Rect remRect)
+    internal static float DoToggleableSectionHeader(Rect rect, ref bool isEnabled,
+        string? checkBoxTooltip, string header, string? headerTooltip, out Rect remRect)
     {
         if (string.IsNullOrWhiteSpace(header)) throw new ArgumentNullException(nameof(header));
         var y = 0f;
@@ -136,8 +138,8 @@ public static class Sections
     /// <param name="remRect">The remaining rectangle after rendering the section header, for further layout purposes.</param>
     /// <returns>The vertical space occupied by the section header, including any gaps or padding.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="header" /> is <see langword="null" /> or whitespace.</exception>
-    internal static float DoToggleableSectionHeader(Rect rect, ref bool? isEnabled, string? checkBoxTooltip,
-        string header, string? headerTooltip, out Rect remRect)
+    internal static float DoToggleableSectionHeader(Rect rect, ref bool? isEnabled,
+        string? checkBoxTooltip, string header, string? headerTooltip, out Rect remRect)
     {
         if (string.IsNullOrWhiteSpace(header)) throw new ArgumentNullException(nameof(header));
         var y = 0f;

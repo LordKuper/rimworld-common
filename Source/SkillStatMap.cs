@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using RimWorld;
-using Verse;
 
 namespace LordKuper.Common;
 
@@ -49,8 +48,9 @@ internal static class SkillStatMap
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{nameof(SkillStatMap)}.{nameof(BuildMap)}: " +
-                            "failed to read SkillDefs from DefProvider.", ex);
+            Logger.LogError(
+                $"{nameof(SkillStatMap)}.{nameof(BuildMap)}: " +
+                "failed to read SkillDefs from DefProvider.", ex);
             skillDefs = [];
         }
         try
@@ -59,8 +59,9 @@ internal static class SkillStatMap
         }
         catch (Exception ex)
         {
-            Logger.LogError($"{nameof(SkillStatMap)}.{nameof(BuildMap)}: " +
-                            "failed to read StatDefs from DefProvider.", ex);
+            Logger.LogError(
+                $"{nameof(SkillStatMap)}.{nameof(BuildMap)}: " +
+                "failed to read StatDefs from DefProvider.", ex);
             statDefs = [];
         }
         _map = new Dictionary<SkillDef, HashSet<StatDef>>(skillDefs.Count);

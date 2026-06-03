@@ -17,13 +17,14 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     internal const int LimitMaxCap = 20;
     internal const int LimitMinCap = 0;
     internal const int ValueStep = 1;
-    private string? _maxValueBuffer;
-    private string? _minValueBuffer;
 
     /// <summary>
     ///     The allowed skill level range, clamped between <see cref="LimitMinCap" /> and <see cref="LimitMaxCap" />.
     /// </summary>
     public IntRange Limit = new(LimitMinCap, LimitMaxCap);
+
+    private string? _maxValueBuffer;
+    private string? _minValueBuffer;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class.
@@ -43,7 +44,8 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     /// <param name="skillDefName">The def name of the <see cref="SkillDef" /> to limit.</param>
     /// <param name="minValue">The lower bound of the allowed range, or <c>null</c> for no lower bound.</param>
     /// <param name="maxValue">The upper bound of the allowed range, or <c>null</c> for no upper bound.</param>
-    public PawnSkillLimit(string skillDefName, float? minValue, float? maxValue) : this(skillDefName)
+    public PawnSkillLimit(string skillDefName, float? minValue, float? maxValue) : this(
+        skillDefName)
     {
         MinValue = minValue;
         MaxValue = maxValue;
@@ -95,7 +97,8 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MaxValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
                 MaxValue = parsed;
             else
                 _maxValueBuffer = value;
@@ -140,7 +143,8 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MinValue = null;
                 return;
             }
-            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed))
+            if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
+                    out var parsed))
                 MinValue = parsed;
             else
                 _minValueBuffer = value;
