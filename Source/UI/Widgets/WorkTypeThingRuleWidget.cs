@@ -84,7 +84,8 @@ public static class WorkTypeThingRuleWidget
         foreach (var statWeight in statWeights)
         {
             y += Fields.DoLabeledFloatSlider(remRect, 0, [
-                    new IconButton(Textures.Actions.Delete, () => deleteAction(statWeight.StatDefName),
+                    // StatDefName is the dictionary key for this StatWeight — always non-null for an existing entry
+                    new IconButton(Textures.Actions.Delete, () => deleteAction(statWeight.StatDefName!),
                         isEnabled: !statWeight.Protected)
                 ], statWeight.StatDef?.LabelCap ?? statWeight.StatDefName ?? string.Empty,
                 statWeight.StatDef?.description,
@@ -213,7 +214,8 @@ public static class WorkTypeThingRuleWidget
         var stringBuilder = new StringBuilder();
         _ = stringBuilder.AppendLine(def.LabelCap);
         if (Current.Game == null) return stringBuilder.ToString();
-        var stats = rule.StatWeights.Where(sw => sw.StatDef != null).Select(sw => sw.StatDef).ToHashSet();
+        // Where(sw => sw.StatDef != null) guards non-null before Select; ! asserts that to the compiler
+        var stats = rule.StatWeights.Where(sw => sw.StatDef != null).Select(sw => sw.StatDef!).ToHashSet();
         if (!stats.Any()) return stringBuilder.ToString();
         _ = stringBuilder.AppendLine();
         var thing = def.MadeFromStuff

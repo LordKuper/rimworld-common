@@ -44,9 +44,9 @@ Two audit improvements are **won't-do** and are not realized by any task: IMP-03
 ### Task 0 — Resolve nullable-flow build errors under `<Nullable>enable</Nullable>`
 <!-- Owner: backend-dev. Deps: none — MUST land first; ALL other tasks depend on Task 0 (nothing builds until the branch compiles). ACs: prerequisite for AC-5 (warning-clean build) and AC-3/AC-4 (Nullable=enable governance); cross-cutting AC-25 (no new suppressions). -->
 **Owner:** backend-dev · **ACs:** prerequisite for AC-5 (warning-clean build) and AC-3/AC-4 (Nullable=enable governance); cross-cutting AC-25 (no new suppressions — fix with guards/annotations, not `#pragma`/`!` abuse)
-- [ ] Resolve all 33 CS86xx nullable-flow errors so `dotnet build Source -c Release` compiles clean under `Nullable=enable` + `TreatWarningsAsErrors`. Known sites include: `WorkTypeThingRule.cs:201` (CS8604 ×2), `WorkTypeThingRule.cs:224` (CS8602), `PawnFilter.cs:304,312,320,334` (CS8604), `PawnFilter.cs:441` (CS8602), `PawnFilterWidget.cs:126,510,641,752` (CS8604), `PawnFilterWidget.cs:241,269,276` (CS8629), `WorkTypeThingRuleWidget.cs:87` (CS8604) — plus any remaining to reach 0 errors.
-- [ ] Prefer real null-guards / correct nullable annotations over suppression; the null-forgiving operator `!` only where provably non-null with a brief justification; NO new `#pragma`/`[SuppressMessage]` (AC-25).
-- [ ] Re-run `dotnet build Source -c Release` → 0 errors / 0 warnings before proceeding.
+- [x] Resolve all 33 CS86xx nullable-flow errors so `dotnet build Source -c Release` compiles clean under `Nullable=enable` + `TreatWarningsAsErrors`. Known sites include: `WorkTypeThingRule.cs:201` (CS8604 ×2), `WorkTypeThingRule.cs:224` (CS8602), `PawnFilter.cs:304,312,320,334` (CS8604), `PawnFilter.cs:441` (CS8602), `PawnFilterWidget.cs:126,510,641,752` (CS8604), `PawnFilterWidget.cs:241,269,276` (CS8629), `WorkTypeThingRuleWidget.cs:87` (CS8604) — plus any remaining to reach 0 errors.
+- [x] Prefer real null-guards / correct nullable annotations over suppression; the null-forgiving operator `!` only where provably non-null with a brief justification; NO new `#pragma`/`[SuppressMessage]` (AC-25).
+- [x] Re-run `dotnet build Source -c Release` → 0 errors / 0 warnings before proceeding.
 
 **Depends on:** none. **MUST land first — ALL other tasks depend on Task 0** (nothing builds until the branch compiles).
 

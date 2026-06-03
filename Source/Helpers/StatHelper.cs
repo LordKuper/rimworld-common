@@ -121,7 +121,8 @@ public static class StatHelper
     internal static StatDef? GetStatDef(string? defName)
     {
         if (string.IsNullOrEmpty(defName)) return null;
-        _statDefsByName.TryGetValue(defName.ToLowerInvariant(), out var result);
+        // After IsNullOrEmpty returns false, defName is a non-empty, non-null string.
+        _statDefsByName.TryGetValue(defName!.ToLowerInvariant(), out var result);
         return result;
     }
 
@@ -282,7 +283,8 @@ public static class StatHelper
         _defaultWorkStatDefs = new SortedSet<StatDef>(Comparer);
         foreach (var def in defs)
         {
-            var category = def?.category;
+            if (def == null) continue; // guard: oblivious Verse API may include null entries
+            var category = def.category;
             if (category == null) continue;
             var defName = category.defName;
             if (_pawnCategories.Contains(defName))

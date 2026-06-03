@@ -88,7 +88,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     {
         get => string.IsNullOrEmpty(_maxValueBuffer)
             ? MaxValue?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
-            : _maxValueBuffer;
+            : _maxValueBuffer!; // non-null: IsNullOrEmpty was false, so _maxValueBuffer is a non-empty string
         set
         {
             if (ReferenceEquals(value, _maxValueBuffer) || value == _maxValueBuffer) return;
@@ -133,7 +133,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     {
         get => string.IsNullOrEmpty(_minValueBuffer)
             ? MinValue?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
-            : _minValueBuffer;
+            : _minValueBuffer!; // non-null: IsNullOrEmpty was false, so _minValueBuffer is a non-empty string
         set
         {
             if (ReferenceEquals(value, _minValueBuffer) || value == _minValueBuffer) return;

@@ -41,7 +41,7 @@ public class PassionCache(Passion passion, string defName, string label, float l
     /// <summary>
     ///     Gets the icon representing the passion. The icon is cached after the first retrieval.
     /// </summary>
-    public Texture2D Icon => field ? field : field = PassionHelper.GetPassionIcon(Passion);
+    public Texture2D? Icon => field ? field : field = PassionHelper.GetPassionIcon(Passion);
 
     /// <summary>
     ///     Gets the display label for the passion.

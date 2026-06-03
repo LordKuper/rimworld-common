@@ -123,7 +123,7 @@ public static class PawnFilterWidget
         var existingDefNames = new HashSet<string>(limits.Count, StringComparer.OrdinalIgnoreCase);
         foreach (var l in limits)
         {
-            existingDefNames.Add(l.DefName);
+            if (l.DefName != null) existingDefNames.Add(l.DefName);
         }
         var canAdd = false;
         foreach (var def in DefDatabase<PawnCapacityDef>.AllDefsListForReading)
@@ -238,7 +238,8 @@ public static class PawnFilterWidget
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnSkillsSection(remRect, pawnFilter, pawnSkillInputId.Value, ref filterChanged, out remRect);
+            // doSkills is only true when pawnSkillInputId.HasValue (see assignment above); .Value is safe here
+            y += DoPawnSkillsSection(remRect, pawnFilter, pawnSkillInputId!.Value, ref filterChanged, out remRect);
             doGapLine = true;
         }
         if (doWorkPassions)
@@ -266,14 +267,16 @@ public static class PawnFilterWidget
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnStatsSection(remRect, pawnFilter, pawnStatInputId.Value, ref filterChanged, out remRect);
+            // doStats is only true when pawnStatInputId.HasValue (see assignment above); .Value is safe here
+            y += DoPawnStatsSection(remRect, pawnFilter, pawnStatInputId!.Value, ref filterChanged, out remRect);
             doGapLine = true;
         }
         if (doCapacities)
         {
             if (doGapLine)
                 y += Layout.DoGapLineHorizontal(remRect, out remRect);
-            y += DoPawnCapacitiesSection(remRect, pawnFilter, pawnCapacityInputId.Value, ref filterChanged,
+            // doCapacities is only true when pawnCapacityInputId.HasValue (see assignment above); .Value is safe here
+            y += DoPawnCapacitiesSection(remRect, pawnFilter, pawnCapacityInputId!.Value, ref filterChanged,
                 out remRect);
         }
         if (filterChanged && filterChangedAction != null) filterChangedAction.Invoke();
@@ -507,7 +510,7 @@ public static class PawnFilterWidget
             var existingDefNames = new HashSet<string>(limits.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var limit in limits)
             {
-                existingDefNames.Add(limit.DefName);
+                if (limit.DefName != null) existingDefNames.Add(limit.DefName);
             }
             var canAdd = false;
             foreach (var def in DefDatabase<SkillDef>.AllDefsListForReading)
@@ -638,7 +641,7 @@ public static class PawnFilterWidget
         var statDefNamesSet = new HashSet<string>(statLimits.Count, StringComparer.OrdinalIgnoreCase);
         foreach (var l in statLimits)
         {
-            statDefNamesSet.Add(l.DefName);
+            if (l.DefName != null) statDefNamesSet.Add(l.DefName);
         }
         var canAdd = false;
         var statsByCategory = StatHelper.GetStatsByCategory(StatCategory.Pawn);
@@ -749,7 +752,7 @@ public static class PawnFilterWidget
             var traitDefNames = new HashSet<string>(traitLimits.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var limit in traitLimits)
             {
-                traitDefNames.Add(limit.DefName);
+                if (limit.DefName != null) traitDefNames.Add(limit.DefName);
             }
             var canAdd = false;
             foreach (var def in DefDatabase<TraitDef>.AllDefsListForReading)

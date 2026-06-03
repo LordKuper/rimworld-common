@@ -182,8 +182,9 @@ public class WorkTypeThingRule : IExposable
         return def == null
             ? throw new ArgumentNullException(nameof(def))
             : StatWeights.Where(statWeight => statWeight.StatDef != null).Sum(statWeight =>
-                StatRanges.NormalizeStatValue(statWeight.StatDef,
-                    StatHelper.GetStatValueDeviation(def, statWeight.StatDef)) * statWeight.Weight);
+                // Where(sw => sw.StatDef != null) guards non-null; ! asserts that to the compiler
+                StatRanges.NormalizeStatValue(statWeight.StatDef!,
+                    StatHelper.GetStatValueDeviation(def, statWeight.StatDef!)) * statWeight.Weight);
     }
 
     /// <summary>
@@ -198,7 +199,8 @@ public class WorkTypeThingRule : IExposable
         return thing == null
             ? throw new ArgumentNullException(nameof(thing))
             : _statWeights.Values.Where(sw => sw.StatDef != null).Sum(sw =>
-                StatRanges.NormalizeStatValue(sw.StatDef, StatHelper.GetStatValueDeviation(thing, sw.StatDef)) *
+                // Where(sw => sw.StatDef != null) guards non-null; ! asserts that to the compiler
+                StatRanges.NormalizeStatValue(sw.StatDef!, StatHelper.GetStatValueDeviation(thing, sw.StatDef!)) *
                 sw.Weight);
     }
 

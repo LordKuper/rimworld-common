@@ -103,7 +103,7 @@ public static class Tabs
         out Rect scrollableRect, out Rect bottomFixedRect)
     {
         if (topFixedHeight + bottomFixedHeight > tabRect.height - 100f)
-            throw new ArgumentOutOfRangeException("Height of fixed regions is too large.", (Exception)null);
+            throw new ArgumentOutOfRangeException("Height of fixed regions is too large.", (Exception?)null);
         var remRect = tabRect;
         if (topFixedHeight > 0)
         {

@@ -301,22 +301,25 @@ public class PawnFilter : IExposable
             ForbiddenPawnTypes = [..ForbiddenPawnTypes],
             PawnCapacityLimits =
             [
+                // Where(l => l != null) filters nulls; ! asserts non-null to the compiler
                 .. PawnCapacityLimits.Select(l =>
                 {
                     var def = l.Def;
                     return def == null ? null : new PawnCapacityLimit(def) { Limit = l.Limit };
-                }).Where(l => l != null)
+                }).Where(l => l != null).Select(l => l!)
             ],
             PawnSkillLimits =
             [
+                // Where(l => l != null) filters nulls; ! asserts non-null to the compiler
                 .. PawnSkillLimits.Select(l =>
                 {
                     var def = l.Def;
                     return def == null ? null : new PawnSkillLimit(def) { Limit = l.Limit };
-                }).Where(l => l != null)
+                }).Where(l => l != null).Select(l => l!)
             ],
             PawnStatLimits =
             [
+                // Where(l => l != null) filters nulls; ! asserts non-null to the compiler
                 .. PawnStatLimits.Select(l =>
                 {
                     var def = l.Def;
@@ -327,15 +330,16 @@ public class PawnFilter : IExposable
                             Limit = l.Limit, LimitMaxCap = l.LimitMaxCap, LimitMinCap = l.LimitMinCap,
                             ValueStyle = l.ValueStyle
                         };
-                }).Where(l => l != null)
+                }).Where(l => l != null).Select(l => l!)
             ],
             PawnTraitLimits =
             [
+                // Where(l => l != null) filters nulls; ! asserts non-null to the compiler
                 .. PawnTraitLimits.Select(l =>
                 {
                     var def = l.Def;
                     return def == null ? null : new PawnTraitLimit(def) { Limit = l.Limit };
-                }).Where(l => l != null)
+                }).Where(l => l != null).Select(l => l!)
             ],
             TriStateMode = TriStateMode,
             WorkCapacityLimits = new Dictionary<WorkTags, bool>(WorkCapacityLimits),
@@ -438,7 +442,7 @@ public class PawnFilter : IExposable
             stringBuilder.AppendLine(FilterWorkPassions.Value
                 ? string.Join(", ",
                     AllowedWorkPassions.Select(PassionHelper.GetPassionCache).Where(p => p != null)
-                        .Select(p => p.Label))
+                        .Select(p => p!.Label)) // Where(p => p != null) guards non-null; ! asserts that to the compiler
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
         if (FilterWorkCapacities.HasValue)
