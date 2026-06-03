@@ -1,5 +1,8 @@
 using LordKuper.Common.Filters;
+using LordKuper.Common.Filters.Limits;
 using RimWorld;
+using Verse;
+using PawnHealthState = LordKuper.Common.Filters.PawnHealthState;
 
 namespace LordKuper.Common.Tests.Filters;
 
@@ -192,15 +195,66 @@ public class PawnFilterTests
     }
 
     [Fact]
-    public void Validate_ClearsInvalidLimits()
+    public void Validate_WithTriStateModeFalse_SetsNullFlagsToFalse()
     {
-        var filter = new PawnFilter();
-        // Validate should clean up any invalid state
+        // AC-17/AC-20: Validate sets null filter flags to false when TriStateMode is false
+        var filter = new PawnFilter
+        {
+            TriStateMode = false,
+            FilterPawnTypes = null,
+            FilterWorkPassions = null,
+            FilterPawnCapacities = null
+        };
+
         filter.Validate();
 
-        // After validate, filter should be in a consistent state
-        Assert.NotNull(filter.AllowedPawnTypes);
-        Assert.NotNull(filter.ForbiddenPawnTypes);
+        // Null flags should be set to false
+        Assert.False(filter.FilterPawnTypes);
+        Assert.False(filter.FilterWorkPassions);
+        Assert.False(filter.FilterPawnCapacities);
+        Assert.False(filter.FilterPawnHealthStates);
+        Assert.False(filter.FilterPawnSkills);
+        Assert.False(filter.FilterPawnStats);
+        Assert.False(filter.FilterPawnTraits);
+        Assert.False(filter.FilterWorkCapacities);
+        Assert.False(filter.FilterPawnPrimaryWeaponTypes);
+    }
+
+    [Fact]
+    public void Validate_WithTriStateModeTrue_PreservesNullFlags()
+    {
+        // AC-17/AC-20: Validate preserves null flags when TriStateMode is true
+        var filter = new PawnFilter
+        {
+            TriStateMode = true,
+            FilterPawnTypes = null,
+            FilterWorkPassions = null
+        };
+
+        filter.Validate();
+
+        // Null flags should remain null
+        Assert.Null(filter.FilterPawnTypes);
+        Assert.Null(filter.FilterWorkPassions);
+    }
+
+    [Fact]
+    public void Validate_PreservesExistingBoolValues()
+    {
+        // AC-17/AC-20: Validate preserves explicitly set bool values
+        var filter = new PawnFilter
+        {
+            TriStateMode = false,
+            FilterPawnTypes = true,
+            FilterWorkPassions = false,
+            FilterPawnCapacities = true
+        };
+
+        filter.Validate();
+
+        Assert.True(filter.FilterPawnTypes);
+        Assert.False(filter.FilterWorkPassions);
+        Assert.True(filter.FilterPawnCapacities);
     }
 
     [Fact]
@@ -215,6 +269,85 @@ public class PawnFilterTests
 
         // For this test, we're just verifying ExposeData doesn't throw
         // (Full serialization testing requires RimWorld's Scribe infrastructure)
-        Assert.NotNull(original);
+        Assert.Null(Record.Exception(() => original.ExposeData()));
+    }
+
+    [Fact]
+    public void AllowedPawnTypes_ModifyingDoesNotAffectOtherCollections()
+    {
+        // AC-17: AllowedPawnTypes is independent from other filter collections
+        var filter = new PawnFilter
+        {
+            AllowedPawnTypes = [PawnType.Colonist],
+            AllowedWorkPassions = [Passion.Major],
+            AllowedPawnHealthStates = PawnHealthState.Healthy
+        };
+
+        filter.AllowedPawnTypes.Add(PawnType.Guest);
+
+        Assert.Equal(2, filter.AllowedPawnTypes.Count);
+        Assert.Single(filter.AllowedWorkPassions);
+        Assert.Equal(PawnHealthState.Healthy, filter.AllowedPawnHealthStates);
+    }
+
+    [Fact]
+    public void ForbiddenPawnTypes_Independent()
+    {
+        // AC-17: ForbiddenPawnTypes is separate from AllowedPawnTypes
+        var filter = new PawnFilter
+        {
+            AllowedPawnTypes = [PawnType.Colonist],
+            ForbiddenPawnTypes = [PawnType.Slave]
+        };
+
+        Assert.Single(filter.AllowedPawnTypes);
+        Assert.Single(filter.ForbiddenPawnTypes);
+        Assert.Contains(PawnType.Colonist, filter.AllowedPawnTypes);
+        Assert.Contains(PawnType.Slave, filter.ForbiddenPawnTypes);
+    }
+
+    [Fact]
+    public void PawnCapacityLimits_IsModifiable()
+    {
+        // AC-17: PawnCapacityLimits list can be modified
+        var filter = new PawnFilter();
+        Assert.Empty(filter.PawnCapacityLimits);
+
+        var limit = new PawnCapacityLimit("Sight");
+        filter.PawnCapacityLimits.Add(limit);
+
+        Assert.Single(filter.PawnCapacityLimits);
+        Assert.Contains(limit, filter.PawnCapacityLimits);
+    }
+
+    [Fact]
+    public void WorkCapacityLimits_IsModifiable()
+    {
+        // AC-17: WorkCapacityLimits dictionary can be modified
+        var filter = new PawnFilter();
+        Assert.Empty(filter.WorkCapacityLimits);
+
+        filter.WorkCapacityLimits[WorkTags.ManualDumb] = true;
+        filter.WorkCapacityLimits[WorkTags.ManualSkilled] = false;
+
+        Assert.Equal(2, filter.WorkCapacityLimits.Count);
+        Assert.True(filter.WorkCapacityLimits[WorkTags.ManualDumb]);
+        Assert.False(filter.WorkCapacityLimits[WorkTags.ManualSkilled]);
+    }
+
+    [Fact]
+    public void TriStateMode_AffectsValidate()
+    {
+        // AC-17: TriStateMode controls Validate behavior
+        var filter1 = new PawnFilter { TriStateMode = true };
+        var filter2 = new PawnFilter { TriStateMode = false };
+
+        filter1.Validate();
+        filter2.Validate();
+
+        // With TriStateMode true, nulls should stay null
+        Assert.Null(filter1.FilterPawnTypes);
+        // With TriStateMode false, nulls should become false
+        Assert.False(filter2.FilterPawnTypes);
     }
 }
