@@ -129,6 +129,10 @@ public class WorkTypeStatMap
                     var statDef = DefProvider.Current.GetNamedSilentFail<StatDef>(kvp.Key);
                     if (statDef != null)
                         statWeights[statDef] = new StatWeight(statDef, kvp.Value, true);
+                    else
+                        Logger.LogWarning(
+                            $"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
+                            $"StatDef '{kvp.Key}' referenced by work type '{workType.defName}' could not be resolved.");
                 }
             var skillStatMap = SkillStatMap.Map;
             var relevantSkills = workType.relevantSkills;
