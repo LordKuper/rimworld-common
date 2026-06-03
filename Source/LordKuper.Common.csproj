@@ -22,6 +22,11 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
+  <!-- ADR-0001: expose internal Rebuild()/snapshot hooks to the Tests assembly. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="LordKuper.Common.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.4.2">
       <PrivateAssets>all</PrivateAssets>
