@@ -16,7 +16,7 @@ source: ""
   <meta name="subsystem" content="project">
   <meta name="sprint-id" content="">
   <meta name="status" content="approved">
-  <meta name="updated" content="2026-06-03">
+  <meta name="updated" content="2026-06-04">
   <meta name="responsibility" content="single architecture decision (StatRanges adaptive normalization contract)">
   <meta name="provenance" content="original">
   <meta name="source" content="">
@@ -143,7 +143,7 @@ source: ""
         <div class="stats">
           <span class="chip">approved</span>
           <span class="chip">subsystem: project</span>
-          <span class="chip">updated 2026-06-03</span>
+          <span class="chip">updated 2026-06-04</span>
         </div>
       </header>
       <main>
@@ -190,8 +190,8 @@ source: ""
               <code>Ranges</code> cache as values are observed. No behavioral change.
             </li>
             <li>
-              Add explicit XML doc comments to the affected public members
-              (<code>StatRanges.NormalizeStatValue</code>,
+              Add explicit XML doc comments to the affected members
+              (<code>StatRanges.NormalizeStatValue</code> &mdash; <code>internal static</code> &mdash;
               <code>WorkTypeThingRule.GetThingScore</code>,
               <code>WorkTypeThingRule.GetThingDefScore</code>) stating that the returned scores are
               <strong>adaptive</strong> and depend on the set and order of items scored within the
@@ -231,7 +231,7 @@ source: ""
 
           <h2 id="acceptance">Acceptance criteria satisfied</h2>
           <ul>
-            <li><strong>AC-9</strong> — documents the observation-order dependence on the affected public members' XML docs (<code>StatRanges.NormalizeStatValue</code>, <code>WorkTypeThingRule.GetThingScore</code>, <code>GetThingDefScore</code>), with the adaptive behavior retained by design (no behavioral change).</li>
+            <li><strong>AC-9</strong> — documents the observation-order dependence on the affected members' XML docs (<code>StatRanges.NormalizeStatValue</code>, which is <code>internal static</code>, plus <code>WorkTypeThingRule.GetThingScore</code> and <code>GetThingDefScore</code>), with the adaptive behavior retained by design (no behavioral change).</li>
             <li><strong>AC-16</strong> — formally requires the retained adaptive <code>StatRanges.Ranges</code> cache to be in ADR-0001's snapshot/restore set, so order-independence (AC-19) holds despite the documented order-dependent scoring.</li>
           </ul>
           <p class="lede" style="font-size:0.9rem;color:var(--muted)">
@@ -246,7 +246,7 @@ source: ""
         </article>
 
       </main>
-      <footer>by ASD workflow | 2026-06-03 | sprint </footer>
+      <footer>by ASD workflow | 2026-06-04 | sprint </footer>
     </div>
   </div>
 </body>
