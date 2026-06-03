@@ -57,10 +57,3 @@ public class RimWorldTestFramework : XunitTestFramework
     }
 }
 
-/// <summary>
-///     Configuration attribute that specifies the custom test framework.
-///     Apply this to the test assembly via:
-///     [assembly: TestFramework("LordKuper.Common.Tests.RimWorldTestFramework", "LordKuper.Common.Tests")]
-/// </summary>
-[AttributeUsage(AttributeTargets.Assembly)]
-public class RimWorldTestFrameworkAttribute : Attribute;

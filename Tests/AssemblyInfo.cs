@@ -1,16 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
-
-// Force the AssemblyResolverInitialize static constructor to run before test discovery
-[assembly: SuppressMessage("Usage", "CA1806", Justification = "Forces static constructor")]
+// Assembly-level xUnit test-framework selection.
+// RimWorldTestFramework (XunitExtensions.cs) registers the AssemblyResolve handler for RimWorld
+// assemblies in its constructor, which runs before any test discovery or execution. No additional
+// initializer trigger is needed. (Finding 2 / simplification iter-01)
 [assembly: TestFramework("LordKuper.Common.Tests.RimWorldTestFramework", "LordKuper.Common.Tests")]
-
-// Trigger the assembly resolver initialization
-namespace LordKuper.Common.Tests;
-
-internal static class InitializerTrigger
-{
-    static InitializerTrigger()
-    {
-        _ = AssemblyResolverInitialize.Ready;
-    }
-}
