@@ -1,0 +1,16 @@
+{
+  "include": [
+    "[LordKuper.Common*]*"
+  ],
+  "exclude": [
+    "[LordKuper.Common.Tests*]*",
+    "[LordKuper.Common.UI*]*",
+    "[LordKuper.Common]LordKuper.Common.UI.*"
+  ],
+  "include-directories": [
+    "Source"
+  ],
+  "exclude-attributes": [
+    "ExcludeFromCodeCoverage"
+  ]
+}

@@ -158,7 +158,7 @@ public class PawnFilterTests
         Assert.Equal(original.WorkCapacityLimits.Count, copy.WorkCapacityLimits.Count);
     }
 
-    [Fact]
+    [Fact(Skip = "Requires live RimWorld context for Verse.Translator")]
     public void GetSummary_NoFiltersActive_ReturnsEmptyOrMinimal()
     {
         var filter = new PawnFilter();
@@ -168,7 +168,7 @@ public class PawnFilterTests
         // Summary should be empty or very minimal when no filters are set
     }
 
-    [Fact]
+    [Fact(Skip = "Requires live RimWorld context for Verse.Translator")]
     public void GetSummary_WithIndentation_FormatsCorrectly()
     {
         var filter = new PawnFilter { FilterPawnTypes = true };
@@ -178,7 +178,7 @@ public class PawnFilterTests
         Assert.NotEmpty(summary);
     }
 
-    [Fact]
+    [Fact(Skip = "Requires live RimWorld context for Verse.Translator")]
     public void GetSummary_MultipleIndentationLevels_Respects()
     {
         var filter = new PawnFilter { FilterPawnTypes = true };

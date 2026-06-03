@@ -263,6 +263,6 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// </returns>
     public override string ToString()
     {
-        return $"{Year:N0}y {Day:N0}d {Hour:F.1}h";
+        return $"{Year:N0}y {Day:N0}d {Hour:F1}h";
     }
 }

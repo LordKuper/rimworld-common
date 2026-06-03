@@ -566,6 +566,43 @@
                 Called from <see cref="T:LordKuper.Common.Helpers.StatHelper" /> post-init after language is loaded.
             </summary>
         </member>
+        <member name="T:LordKuper.Common.DefProvider">
+            <summary>
+                Static injection point for <see cref="T:LordKuper.Common.IDefProvider" />.
+                Defaults to <see cref="T:LordKuper.Common.VerseDefProvider" /> (live <see cref="T:Verse.DefDatabase`1" /> access).
+                Tests swap <see cref="P:LordKuper.Common.DefProvider.Current" /> to a fake implementation and restore it after each test.
+            </summary>
+            <remarks>
+                This is the single test-isolation seam introduced by ADR-0001.
+                Only one global replacement is supported; no DI container.
+            </remarks>
+        </member>
+        <member name="P:LordKuper.Common.DefProvider.Current">
+            <summary>
+                Gets or sets the active <see cref="T:LordKuper.Common.IDefProvider" />.
+                Defaults to <see cref="T:LordKuper.Common.VerseDefProvider" />.
+                Test fixtures may replace this and MUST restore it after each test.
+            </summary>
+        </member>
+        <member name="T:LordKuper.Common.VerseDefProvider">
+            <summary>
+                Production implementation of <see cref="T:LordKuper.Common.IDefProvider" />: thin pass-through to
+                <see cref="T:Verse.DefDatabase`1" /> and <see cref="T:Verse.WorkTypeDefsUtility" />.
+                Runtime behavior is identical to the direct calls it replaces.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.AllDefsListForReading``1">
+            <inheritdoc />
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.AllDefs``1">
+            <inheritdoc />
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.GetNamedSilentFail``1(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.WorkTypeDefsInPriorityOrder">
+            <inheritdoc />
+        </member>
         <member name="T:LordKuper.Common.Filters.Limits.PawnCapacityLimit">
             <summary>
                 Represents a limit for a specific <see cref="P:LordKuper.Common.Filters.Limits.PawnCapacityLimit.PawnCapacityDef" />.
@@ -1562,6 +1599,16 @@
         <member name="M:LordKuper.Common.Helpers.StatHelper.#cctor">
             <summary>
                 Static constructor to initialize stat categories and definitions.
+                Delegates to <see cref="M:LordKuper.Common.Helpers.StatHelper.Rebuild" /> so test fixtures can re-initialize against a
+                swapped <see cref="P:LordKuper.Common.DefProvider.Current" /> without changing load-time behavior.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.Helpers.StatHelper.Rebuild">
+            <summary>
+                Initializes (or re-initializes) all stat-helper state against the active
+                <see cref="P:LordKuper.Common.DefProvider.Current" />.
+                Called by the static constructor at game load and by test fixtures after swapping
+                the provider.  Produces the same state as the original static constructor.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatDef(System.String)">
@@ -1696,6 +1743,42 @@
             <exception cref="T:System.ArgumentNullException">
                 Thrown if <paramref name="sb" /> is <c>null</c> or <paramref name="text" /> is <c>null</c> or empty.
             </exception>
+        </member>
+        <member name="T:LordKuper.Common.IDefProvider">
+            <summary>
+                Provides access to RimWorld <see cref="T:Verse.Def" /> databases.
+                The default implementation, <see cref="T:LordKuper.Common.VerseDefProvider" />, delegates to
+                <see cref="T:Verse.DefDatabase`1" /> and <see cref="T:Verse.WorkTypeDefsUtility" />.
+                Tests install a fake implementation via <see cref="P:LordKuper.Common.DefProvider.Current" />.
+            </summary>
+            <remarks>
+                This is the single test-isolation seam introduced by ADR-0001.
+                Keep the interface narrow: only add members that have real call sites in the library.
+            </remarks>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.AllDefsListForReading``1">
+            <summary>
+                Returns all defs of type <typeparamref name="T" /> as a list.
+                Corresponds to <c>DefDatabase&lt;T&gt;.AllDefsListForReading</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.AllDefs``1">
+            <summary>
+                Returns all defs of type <typeparamref name="T" /> as an enumerable.
+                Corresponds to <c>DefDatabase&lt;T&gt;.AllDefs</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.GetNamedSilentFail``1(System.String)">
+            <summary>
+                Looks up a def by <paramref name="defName" />, returning <c>null</c> on miss.
+                Corresponds to <c>DefDatabase&lt;T&gt;.GetNamedSilentFail(defName)</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.WorkTypeDefsInPriorityOrder">
+            <summary>
+                Returns work type defs in priority order.
+                Corresponds to <c>WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder</c>.
+            </summary>
         </member>
         <member name="T:LordKuper.Common.Logger">
             <summary>
@@ -1837,6 +1920,16 @@
         <member name="T:LordKuper.Common.Resources.Strings.PawnFilter">
             <summary>
                 Provides string resources for the PawnFilter component.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TooltipCache">
+            <summary>
+                Cache for two-state (on/off) filter tooltips, keyed by filter category name.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TriStateTooltipCache">
+            <summary>
+                Cache for tri-state (on/off/partial) filter tooltips, keyed by filter category name.
             </summary>
         </member>
         <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.AllowedPawnHealthStatesLabel">
@@ -2029,18 +2122,16 @@
                 Gets the localized tooltip for work capacity limits.
             </summary>
         </member>
-        <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.AppendUndefinedFilterTooltip(System.String)">
+        <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterTooltip(System.String,System.String,System.String,System.Boolean)">
             <summary>
-                Appends a tooltip message indicating an undefined filter state to the specified tooltip text.
+                Builds and caches the tooltip string for a filter category, optionally appending the
+                partial/undefined tri-state line.
             </summary>
-            <param name="tooltip">
-                The existing tooltip text to which the undefined filter message will be appended. Cannot be <see langword="null" />
-                .
-            </param>
-            <returns>
-                A new string that combines the original tooltip text with the undefined filter state message, separated by a
-                newline.
-            </returns>
+            <param name="key">Unique key identifying the filter category (used for caching).</param>
+            <param name="onTooltip">Localized description for the "On" state.</param>
+            <param name="offTooltip">Localized description for the "Off" state.</param>
+            <param name="triState">If <see langword="true" />, appends the partial/undefined state line.</param>
+            <returns>The cached tooltip string for the requested state.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnCapacitiesTooltip(System.Boolean)">
             <summary>
@@ -2058,22 +2149,10 @@
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnPrimaryWeaponTypesTooltip(System.Boolean)">
             <summary>
-                Generates a tooltip describing the filter states for pawn primary weapon types.
+                Gets the tooltip for pawn primary weapon types filter, optionally including the tri-state description.
             </summary>
-            <param name="triState">
-                A value indicating whether the tooltip should include a tri-state description. If
-                <see
-                    langword="true" />
-                , the tooltip includes an additional "undefined" state. If <see langword="false" />, the
-                tooltip describes only the "on" and "off" states.
-            </param>
-            <returns>
-                A string containing the tooltip text for the filter states. The tooltip includes descriptions for the
-                "on" and "off" states, and optionally the "undefined" state if <paramref name="triState" /> is
-                <see
-                    langword="true" />
-                .
-            </returns>
+            <param name="triState">If true, includes the partial state description.</param>
+            <returns>The tooltip string for pawn primary weapon types filter.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnSkillsTooltip(System.Boolean)">
             <summary>
@@ -2098,17 +2177,10 @@
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnTypesTooltip(System.Boolean)">
             <summary>
-                Generates a tooltip string describing the filter states for pawn types.
+                Gets the tooltip for pawn types filter, optionally including the tri-state description.
             </summary>
-            <param name="triState">
-                A value indicating whether the filter supports a tri-state mode. If <see langword="true" />, the tooltip
-                includes descriptions for "On", "Off", and "Partial" states. If <see langword="false" />, the tooltip
-                includes descriptions for only "On" and "Off" states.
-            </param>
-            <returns>
-                A string containing the tooltip text for the filter states. The string includes state names and their
-                corresponding descriptions, separated by new lines.
-            </returns>
+            <param name="triState">If true, includes the partial state description.</param>
+            <returns>The tooltip string for pawn types filter.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterWorkCapacitiesTooltip(System.Boolean)">
             <summary>
@@ -2573,9 +2645,27 @@
                 Normalizes a stat value based on the observed range for the specified stat.
                 Updates the range if the value is outside the current bounds.
             </summary>
+            <remarks>
+                <para>
+                    <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+                    is <em>not stable</em> across differing call sequences or sessions. The per-<see cref="T:RimWorld.StatDef" />
+                    min/max range in <see cref="F:LordKuper.Common.StatRanges.Ranges" /> expands as values are observed, so the normalized
+                    result for a given <paramref name="value" /> depends on the <em>set and order</em> of all
+                    values scored so far in the current process. Identical inputs can yield different outputs
+                    if the observation history differs.
+                </para>
+                <para>
+                    This order-dependence is the explicitly documented, user-approved contract.
+                    See ADR-0002 for the rationale. Tests must save/restore <see cref="F:LordKuper.Common.StatRanges.Ranges" /> (via
+                    <c>StaticStateFixture</c>) to prevent cross-test leakage (ADR-0001).
+                </para>
+            </remarks>
             <param name="stat">The stat definition to normalize.</param>
             <param name="value">The value to normalize.</param>
-            <returns>The normalized value in the range [0, 1].</returns>
+            <returns>
+                A normalized value in [0, 1] relative to the min/max range observed so far for
+                <paramref name="stat" />. Not reproducible across differing observation histories.
+            </returns>
         </member>
         <member name="M:LordKuper.Common.StatRanges.UpdateStatRange(RimWorld.StatDef,System.Single)">
             <summary>
@@ -4280,8 +4370,17 @@
         </member>
         <member name="M:LordKuper.Common.WorkTypeStatMap.BuildMap">
             <summary>
-                Builds the mapping between work types and their relevant stats, including default weights,
-                skill-based stats, and recipe-based stats.
+                Builds the mapping between work types and their relevant stats on first access.
+                Delegates to <see cref="M:LordKuper.Common.WorkTypeStatMap.Rebuild" />.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.WorkTypeStatMap.Rebuild">
+            <summary>
+                Builds (or rebuilds) the work-type → stat mappings against the active
+                <see cref="P:LordKuper.Common.DefProvider.Current" />.
+                Called on first access of <see cref="P:LordKuper.Common.WorkTypeStatMap.AutoSwitchStatsMap" /> / <see cref="P:LordKuper.Common.WorkTypeStatMap.DefaultStatsMap" />
+                and by test fixtures after swapping the provider.
+                Produces the same state as the original <c>BuildMap</c>.
             </summary>
         </member>
         <member name="T:LordKuper.Common.WorkTypeThingRule">
@@ -4379,8 +4478,25 @@
             <summary>
                 Calculates a score for the specified <see cref="T:Verse.ThingDef" /> based on the stat weights of this rule.
             </summary>
+            <remarks>
+                <para>
+                    <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+                    is <em>not stable</em> across differing call sequences or sessions. Internally this method
+                    delegates to <see cref="M:LordKuper.Common.StatRanges.NormalizeStatValue(RimWorld.StatDef,System.Single)" />, which maintains a running
+                    min/max per <see cref="T:RimWorld.StatDef" /> that expands as values are observed. A given
+                    <see cref="T:Verse.ThingDef" />'s normalized score therefore depends on the <em>set and order</em>
+                    of all items scored in the current process; identical inputs can yield different outputs
+                    if the observation history differs.
+                </para>
+                <para>
+                    This order-dependence is the explicitly documented, user-approved contract.
+                    See ADR-0002 for the rationale.
+                </para>
+            </remarks>
             <param name="def">The <see cref="T:Verse.ThingDef" /> to score.</param>
-            <returns>The calculated score.</returns>
+            <returns>
+                The calculated score. Not reproducible across differing observation histories.
+            </returns>
             <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
         </member>
         <member name="M:LordKuper.Common.WorkTypeThingRule.GetThingScore(Verse.Thing)">
@@ -4388,8 +4504,25 @@
                 Calculates a normalized [-1..1] score for the specified <see cref="T:Verse.Thing" /> based on the stat weights of this
                 rule.
             </summary>
+            <remarks>
+                <para>
+                    <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+                    is <em>not stable</em> across differing call sequences or sessions. Internally this method
+                    delegates to <see cref="M:LordKuper.Common.StatRanges.NormalizeStatValue(RimWorld.StatDef,System.Single)" />, which maintains a running
+                    min/max per <see cref="T:RimWorld.StatDef" /> that expands as values are observed. A given
+                    <see cref="T:Verse.Thing" />'s normalized score therefore depends on the <em>set and order</em>
+                    of all items scored in the current process; identical inputs can yield different outputs
+                    if the observation history differs.
+                </para>
+                <para>
+                    This order-dependence is the explicitly documented, user-approved contract.
+                    See ADR-0002 for the rationale.
+                </para>
+            </remarks>
             <param name="thing">The thing to score.</param>
-            <returns>The calculated score.</returns>
+            <returns>
+                The calculated score. Not reproducible across differing observation histories.
+            </returns>
             <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="thing" /> is null.</exception>
         </member>
         <member name="M:LordKuper.Common.WorkTypeThingRule.Initialize">
