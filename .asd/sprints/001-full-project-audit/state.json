@@ -1,7 +1,7 @@
 {
   "sprint_id": "001-full-project-audit",
   "branch": "sprint/001-full-project-audit",
-  "phase": "plan",
+  "phase": "impl",
   "reviews": {
     "design": {
       "iteration": 2,
