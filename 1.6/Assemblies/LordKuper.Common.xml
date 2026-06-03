@@ -194,6 +194,21 @@
                 Delegate type for retrieving all <see cref="T:RimWorld.Passion" /> values from VSE.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Compatibility.Vse.GetPassions">
+            <summary>
+                Delegate for retrieving all available passions from VSE.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Compatibility.Vse.PassionDefs">
+            <summary>
+                Cache for mapping <see cref="T:RimWorld.Passion" /> to their corresponding VSE passion definitions.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Compatibility.Vse.VanillaSkillsExpandedActive">
+            <summary>
+                Indicates whether the Vanilla Skills Expanded mod is active.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Compatibility.Vse._forgetRateFactorField">
             <summary>
                 FieldInfo for the 'forgetRateFactor' field in VSE's PassionDef.
@@ -217,21 +232,6 @@
         <member name="F:LordKuper.Common.Compatibility.Vse._passionToDef">
             <summary>
                 Delegate for converting a <see cref="T:RimWorld.Passion" /> to its corresponding <see cref="T:Verse.Def" /> in VSE.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Compatibility.Vse.GetPassions">
-            <summary>
-                Delegate for retrieving all available passions from VSE.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Compatibility.Vse.PassionDefs">
-            <summary>
-                Cache for mapping <see cref="T:RimWorld.Passion" /> to their corresponding VSE passion definitions.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Compatibility.Vse.VanillaSkillsExpandedActive">
-            <summary>
-                Indicates whether the Vanilla Skills Expanded mod is active.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Compatibility.Vse.GetDef(RimWorld.Passion)">
@@ -591,10 +591,10 @@
                 Runtime behavior is identical to the direct calls it replaces.
             </summary>
         </member>
-        <member name="M:LordKuper.Common.VerseDefProvider.AllDefsListForReading``1">
+        <member name="M:LordKuper.Common.VerseDefProvider.AllDefs``1">
             <inheritdoc />
         </member>
-        <member name="M:LordKuper.Common.VerseDefProvider.AllDefs``1">
+        <member name="M:LordKuper.Common.VerseDefProvider.AllDefsListForReading``1">
             <inheritdoc />
         </member>
         <member name="M:LordKuper.Common.VerseDefProvider.GetNamedSilentFail``1(System.String)">
@@ -1383,6 +1383,12 @@
                 Provides helper methods and caching for handling <see cref="T:RimWorld.Passion" /> values and their associated data.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Helpers.PassionHelper.PassionCache">
+            <summary>
+                Stores the mapping between <see cref="T:RimWorld.Passion" /> values and their corresponding <see cref="F:LordKuper.Common.Helpers.PassionHelper.PassionCache" />
+                entries.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Helpers.PassionHelper._cachedPassions">
             <summary>
                 Backing field for the cached list of <see cref="F:LordKuper.Common.Helpers.PassionHelper.PassionCache" /> entries.
@@ -1391,12 +1397,6 @@
         <member name="F:LordKuper.Common.Helpers.PassionHelper._isInitialized">
             <summary>
                 Indicates whether the passion cache has been initialized.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Helpers.PassionHelper.PassionCache">
-            <summary>
-                Stores the mapping between <see cref="T:RimWorld.Passion" /> values and their corresponding <see cref="F:LordKuper.Common.Helpers.PassionHelper.PassionCache" />
-                entries.
             </summary>
         </member>
         <member name="P:LordKuper.Common.Helpers.PassionHelper.Passions">
@@ -1516,6 +1516,16 @@
                 Prefix used for custom stat definitions.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Helpers.StatHelper.Comparer">
+            <summary>
+                Provides a comparer for sorting StatDefs by category and label.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Helpers.StatHelper.Stats">
+            <summary>
+                Stores stat definitions grouped by their category.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Helpers.StatHelper._allMeleeWeaponStatDefs">
             <summary>
                 Stores all melee weapon stat definitions.
@@ -1586,29 +1596,11 @@
                 Stores work category names.
             </summary>
         </member>
-        <member name="F:LordKuper.Common.Helpers.StatHelper.Comparer">
-            <summary>
-                Provides a comparer for sorting StatDefs by category and label.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Helpers.StatHelper.Stats">
-            <summary>
-                Stores stat definitions grouped by their category.
-            </summary>
-        </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.#cctor">
             <summary>
                 Static constructor to initialize stat categories and definitions.
                 Delegates to <see cref="M:LordKuper.Common.Helpers.StatHelper.Rebuild" /> so test fixtures can re-initialize against a
                 swapped <see cref="P:LordKuper.Common.DefProvider.Current" /> without changing load-time behavior.
-            </summary>
-        </member>
-        <member name="M:LordKuper.Common.Helpers.StatHelper.Rebuild">
-            <summary>
-                Initializes (or re-initializes) all stat-helper state against the active
-                <see cref="P:LordKuper.Common.DefProvider.Current" />.
-                Called by the static constructor at game load and by test fixtures after swapping
-                the provider.  Produces the same state as the original static constructor.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatDef(System.String)">
@@ -1617,13 +1609,6 @@
             </summary>
             <param name="defName">The defName of the stat to find.</param>
             <returns>The matching <see cref="T:RimWorld.StatDef" /> if found; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatsByCategory(LordKuper.Common.StatCategory)">
-            <summary>
-                Gets the stat definitions for a given category.
-            </summary>
-            <param name="category">The stat category.</param>
-            <returns>A read-only collection of <see cref="T:RimWorld.StatDef" /> for the specified category.</returns>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatValue(Verse.Thing,RimWorld.StatDef)">
             <summary>
@@ -1656,6 +1641,13 @@
             <param name="thing">The thing.</param>
             <param name="statDef">The stat definition.</param>
             <returns>The deviation from the default base value.</returns>
+        </member>
+        <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatsByCategory(LordKuper.Common.StatCategory)">
+            <summary>
+                Gets the stat definitions for a given category.
+            </summary>
+            <param name="category">The stat category.</param>
+            <returns>A read-only collection of <see cref="T:RimWorld.StatDef" /> for the specified category.</returns>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.InitializeApparelCategories">
             <summary>
@@ -1690,6 +1682,14 @@
         <member name="M:LordKuper.Common.Helpers.StatHelper.InitializeWorkCategories">
             <summary>
                 Initializes work category names.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.Helpers.StatHelper.Rebuild">
+            <summary>
+                Initializes (or re-initializes) all stat-helper state against the active
+                <see cref="P:LordKuper.Common.DefProvider.Current" />.
+                Called by the static constructor at game load and by test fixtures after swapping
+                the provider.  Produces the same state as the original static constructor.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.ReinitializeLabels">
@@ -1756,16 +1756,16 @@
                 Keep the interface narrow: only add members that have real call sites in the library.
             </remarks>
         </member>
-        <member name="M:LordKuper.Common.IDefProvider.AllDefsListForReading``1">
-            <summary>
-                Returns all defs of type <typeparamref name="T" /> as a list.
-                Corresponds to <c>DefDatabase&lt;T&gt;.AllDefsListForReading</c>.
-            </summary>
-        </member>
         <member name="M:LordKuper.Common.IDefProvider.AllDefs``1">
             <summary>
                 Returns all defs of type <typeparamref name="T" /> as an enumerable.
                 Corresponds to <c>DefDatabase&lt;T&gt;.AllDefs</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.AllDefsListForReading``1">
+            <summary>
+                Returns all defs of type <typeparamref name="T" /> as a list.
+                Corresponds to <c>DefDatabase&lt;T&gt;.AllDefsListForReading</c>.
             </summary>
         </member>
         <member name="M:LordKuper.Common.IDefProvider.GetNamedSilentFail``1(System.String)">
@@ -1920,16 +1920,6 @@
         <member name="T:LordKuper.Common.Resources.Strings.PawnFilter">
             <summary>
                 Provides string resources for the PawnFilter component.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TooltipCache">
-            <summary>
-                Cache for two-state (on/off) filter tooltips, keyed by filter category name.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TriStateTooltipCache">
-            <summary>
-                Cache for tri-state (on/off/partial) filter tooltips, keyed by filter category name.
             </summary>
         </member>
         <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.AllowedPawnHealthStatesLabel">
@@ -2107,6 +2097,16 @@
                 Gets the localized tooltip for pawn trait limits.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TooltipCache">
+            <summary>
+                Cache for two-state (on/off) filter tooltips, keyed by filter category name.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TriStateTooltipCache">
+            <summary>
+                Cache for tri-state (on/off/partial) filter tooltips, keyed by filter category name.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.UndefinedFilterTooltip">
             <summary>
                 Gets the localized tooltip text for an undefined filter.
@@ -2121,17 +2121,6 @@
             <summary>
                 Gets the localized tooltip for work capacity limits.
             </summary>
-        </member>
-        <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterTooltip(System.String,System.String,System.String,System.Boolean)">
-            <summary>
-                Builds and caches the tooltip string for a filter category, optionally appending the
-                partial/undefined tri-state line.
-            </summary>
-            <param name="key">Unique key identifying the filter category (used for caching).</param>
-            <param name="onTooltip">Localized description for the "On" state.</param>
-            <param name="offTooltip">Localized description for the "Off" state.</param>
-            <param name="triState">If <see langword="true" />, appends the partial/undefined state line.</param>
-            <returns>The cached tooltip string for the requested state.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnCapacitiesTooltip(System.Boolean)">
             <summary>
@@ -2181,6 +2170,17 @@
             </summary>
             <param name="triState">If true, includes the partial state description.</param>
             <returns>The tooltip string for pawn types filter.</returns>
+        </member>
+        <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterTooltip(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+                Builds and caches the tooltip string for a filter category, optionally appending the
+                partial/undefined tri-state line.
+            </summary>
+            <param name="key">Unique key identifying the filter category (used for caching).</param>
+            <param name="onTooltip">Localized description for the "On" state.</param>
+            <param name="offTooltip">Localized description for the "Off" state.</param>
+            <param name="triState">If <see langword="true" />, appends the partial/undefined state line.</param>
+            <returns>The cached tooltip string for the requested state.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterWorkCapacitiesTooltip(System.Boolean)">
             <summary>
@@ -2757,14 +2757,14 @@
                 Provides a cache for storing stat values of a <see cref="P:LordKuper.Common.ThingCache.Thing" /> and manages cache updates based on a timer.
             </summary>
         </member>
-        <member name="F:LordKuper.Common.ThingCache._updateTimer">
-            <summary>
-                The interval in hours between cache updates.
-            </summary>
-        </member>
         <member name="F:LordKuper.Common.ThingCache.StatValues">
             <summary>
                 Stores cached stat values for the associated <see cref="P:LordKuper.Common.ThingCache.Thing" />.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.ThingCache._updateTimer">
+            <summary>
+                The interval in hours between cache updates.
             </summary>
         </member>
         <member name="F:LordKuper.Common.ThingCache._updateTime">
@@ -3575,6 +3575,21 @@
             <param name="remRect">The remaining rectangle above the bottom row.</param>
             <returns>The rectangle representing the bottom row.</returns>
         </member>
+        <member name="M:LordKuper.Common.UI.Layout.GetCenterRowRect(UnityEngine.Rect,System.Single,UnityEngine.Rect@,UnityEngine.Rect@)">
+            <summary>
+                Calculates and returns the centered row rectangle within the given rectangle, splitting the remaining space
+                into top and bottom rectangles.
+            </summary>
+            <param name="rect">The source rectangle from which the centered row and remaining areas are calculated.</param>
+            <param name="rowHeight">The height of the centered row to extract. Must be a positive value.</param>
+            <param name="topRect">When this method returns, contains the rectangle representing the area above the centered row.</param>
+            <param name="bottomRect">When this method returns, contains the rectangle representing the area below the centered row.</param>
+            <returns>
+                A <see cref="T:UnityEngine.Rect" /> representing the centered row within the given rectangle. If the height of the source
+                rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
+                <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="P:UnityEngine.Rect.zero" />.
+            </returns>
+        </member>
         <member name="M:LordKuper.Common.UI.Layout.GetCenteredRect(UnityEngine.Rect,System.Single,System.Single)">
             <summary>
                 Calculates a rectangle of the specified width and height, centered within the given rectangle.
@@ -3592,21 +3607,6 @@
                 A new <see cref="T:UnityEngine.Rect" /> that is centered within <paramref name="rect" /> and has the specified width and height.
                 If the specified width or height is greater than the dimensions of <paramref name="rect" />, the original
                 rectangle is returned.
-            </returns>
-        </member>
-        <member name="M:LordKuper.Common.UI.Layout.GetCenterRowRect(UnityEngine.Rect,System.Single,UnityEngine.Rect@,UnityEngine.Rect@)">
-            <summary>
-                Calculates and returns the centered row rectangle within the given rectangle, splitting the remaining space
-                into top and bottom rectangles.
-            </summary>
-            <param name="rect">The source rectangle from which the centered row and remaining areas are calculated.</param>
-            <param name="rowHeight">The height of the centered row to extract. Must be a positive value.</param>
-            <param name="topRect">When this method returns, contains the rectangle representing the area above the centered row.</param>
-            <param name="bottomRect">When this method returns, contains the rectangle representing the area below the centered row.</param>
-            <returns>
-                A <see cref="T:UnityEngine.Rect" /> representing the centered row within the given rectangle. If the height of the source
-                rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
-                <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="P:UnityEngine.Rect.zero" />.
             </returns>
         </member>
         <member name="M:LordKuper.Common.UI.Layout.GetLeftColumnRect(UnityEngine.Rect,System.Single,UnityEngine.Rect@)">
@@ -4338,6 +4338,11 @@
                 Used to determine which stats are important for each work type in the game.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.WorkTypeStatMap.DefaultWorkTypeStats">
+            <summary>
+                Default stat weights for specific work types, keyed by work type defName and stat defName.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.WorkTypeStatMap._autoSwitchStatsMap">
             <summary>
                 Stores a mapping from <see cref="T:Verse.WorkTypeDef" /> to a set of <see cref="T:RimWorld.StatDef" />s that are used for
@@ -4348,11 +4353,6 @@
             <summary>
                 Stores a mapping from <see cref="T:Verse.WorkTypeDef" /> to a dictionary of <see cref="T:RimWorld.StatDef" /> and their associated
                 <see cref="T:LordKuper.Common.StatWeight" />.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.WorkTypeStatMap.DefaultWorkTypeStats">
-            <summary>
-                Default stat weights for specific work types, keyed by work type defName and stat defName.
             </summary>
         </member>
         <member name="P:LordKuper.Common.WorkTypeStatMap.AutoSwitchStatsMap">
