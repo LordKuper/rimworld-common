@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using LordKuper.Common.Helpers;
@@ -74,13 +75,45 @@ public class WorkTypeStatMap
     }
 
     /// <summary>
-    ///     Builds the mapping between work types and their relevant stats, including default weights,
-    ///     skill-based stats, and recipe-based stats.
+    ///     Builds the mapping between work types and their relevant stats on first access.
+    ///     Delegates to <see cref="Rebuild" />.
     /// </summary>
     private static void BuildMap()
     {
-        var workTypes = WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder.ToList();
-        var allRecipes = DefDatabase<RecipeDef>.AllDefsListForReading;
+        Rebuild();
+    }
+
+    /// <summary>
+    ///     Builds (or rebuilds) the work-type → stat mappings against the active
+    ///     <see cref="DefProvider.Current" />.
+    ///     Called on first access of <see cref="AutoSwitchStatsMap" /> / <see cref="DefaultStatsMap" />
+    ///     and by test fixtures after swapping the provider.
+    ///     Produces the same state as the original <c>BuildMap</c>.
+    /// </summary>
+    internal static void Rebuild()
+    {
+        IReadOnlyList<WorkTypeDef> workTypes;
+        IReadOnlyList<RecipeDef> allRecipes;
+        try
+        {
+            workTypes = DefProvider.Current.WorkTypeDefsInPriorityOrder();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
+                            "failed to read WorkTypeDefs from DefProvider.", ex);
+            workTypes = [];
+        }
+        try
+        {
+            allRecipes = DefProvider.Current.AllDefsListForReading<RecipeDef>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
+                            "failed to read RecipeDefs from DefProvider.", ex);
+            allRecipes = [];
+        }
         var workTypeStatDefs = StatHelper.GetStatsByCategory(StatCategory.Work);
         _defaultStatsMap = new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
         _autoSwitchStatsMap = new Dictionary<WorkTypeDef, HashSet<StatDef>>(workTypes.Count);
@@ -93,7 +126,7 @@ public class WorkTypeStatMap
             if (DefaultWorkTypeStats.TryGetValue(workType.defName, out var defaultStatWeights))
                 foreach (var kvp in defaultStatWeights)
                 {
-                    var statDef = DefDatabase<StatDef>.GetNamedSilentFail(kvp.Key);
+                    var statDef = DefProvider.Current.GetNamedSilentFail<StatDef>(kvp.Key);
                     if (statDef != null)
                         statWeights[statDef] = new StatWeight(statDef, kvp.Value, true);
                 }

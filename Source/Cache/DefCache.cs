@@ -95,6 +95,6 @@ public abstract class DefCache<T> : IExposable where T : Def
         if (typeof(T) == typeof(StatDef))
             // StatHelper.GetStatDef returns StatDef? (null when not found); the nullable cast is intentional — _def is T?
             _def = (T?)(object?)StatHelper.GetStatDef(_defName);
-        else _def = DefDatabase<T>.GetNamedSilentFail(_defName);
+        else _def = DefProvider.Current.GetNamedSilentFail<T>(_defName);
     }
 }

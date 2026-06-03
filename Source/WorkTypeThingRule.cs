@@ -64,7 +64,7 @@ public class WorkTypeThingRule : IExposable
             if (_allRelevantThings == null || _allRelevantThings.Count == 0)
                 _allRelevantThings =
                 [
-                    ..DefDatabase<ThingDef>.AllDefs.Where(def =>
+                    ..DefProvider.Current.AllDefs<ThingDef>().Where(def =>
                         def.IsWeapon && !def.destroyOnDrop &&
                         (def.statBases != null || def.equippedStatOffsets != null))
                 ];
@@ -211,7 +211,7 @@ public class WorkTypeThingRule : IExposable
     {
         if (_isInitialized) return;
         _isInitialized = true;
-        _workTypeDef = DefDatabase<WorkTypeDef>.GetNamedSilentFail(_workTypeDefName);
+        _workTypeDef = DefProvider.Current.GetNamedSilentFail<WorkTypeDef>(_workTypeDefName);
         if (_workTypeDef == null) return;
         if (WorkTypeStatMap.DefaultStatsMap == null)
             throw new NullReferenceException("Tried to access uninitialized WorkTypeStatMap.");

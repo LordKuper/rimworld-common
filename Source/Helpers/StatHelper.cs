@@ -101,8 +101,21 @@ public static class StatHelper
 
     /// <summary>
     ///     Static constructor to initialize stat categories and definitions.
+    ///     Delegates to <see cref="Rebuild" /> so test fixtures can re-initialize against a
+    ///     swapped <see cref="DefProvider.Current" /> without changing load-time behavior.
     /// </summary>
     static StatHelper()
+    {
+        Rebuild();
+    }
+
+    /// <summary>
+    ///     Initializes (or re-initializes) all stat-helper state against the active
+    ///     <see cref="DefProvider.Current" />.
+    ///     Called by the static constructor at game load and by test fixtures after swapping
+    ///     the provider.  Produces the same state as the original static constructor.
+    /// </summary>
+    internal static void Rebuild()
     {
         InitializePawnCategories();
         InitializeWorkCategories();
@@ -111,6 +124,7 @@ public static class StatHelper
         InitializeDefaultStats();
         InitializeCustomStats();
         InitializeUnionStats();
+        Stats.Clear();
     }
 
     /// <summary>
@@ -276,7 +290,17 @@ public static class StatHelper
     /// </summary>
     private static void InitializeDefaultStats()
     {
-        var defs = DefDatabase<StatDef>.AllDefsListForReading;
+        IReadOnlyList<StatDef> defs;
+        try
+        {
+            defs = DefProvider.Current.AllDefsListForReading<StatDef>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"{nameof(StatHelper)}.{nameof(InitializeDefaultStats)}: " +
+                            "failed to read StatDef list from DefProvider.", ex);
+            defs = [];
+        }
         _defaultPawnStatDefs = new SortedSet<StatDef>(Comparer);
         _defaultApparelStatDefs = new SortedSet<StatDef>(Comparer);
         _defaultWeaponStatDefs = new SortedSet<StatDef>(Comparer);
@@ -325,7 +349,17 @@ public static class StatHelper
     /// </summary>
     private static void InitializeUnionStats()
     {
-        var allDefs = DefDatabase<StatDef>.AllDefsListForReading;
+        IReadOnlyList<StatDef> allDefs;
+        try
+        {
+            allDefs = DefProvider.Current.AllDefsListForReading<StatDef>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"{nameof(StatHelper)}.{nameof(InitializeUnionStats)}: " +
+                            "failed to read StatDef list from DefProvider.", ex);
+            allDefs = [];
+        }
         var allStatDefsSet = new HashSet<StatDef>(allDefs);
         allStatDefsSet.UnionWith(_customStatsDefs);
         _allStatDefs = new SortedSet<StatDef>(allStatDefsSet, Comparer);

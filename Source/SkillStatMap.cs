@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RimWorld;
 using Verse;
 
@@ -40,8 +41,28 @@ internal static class SkillStatMap
 #if DEBUG
         Logger.LogMessage($"Building {nameof(SkillStatMap)}...");
 #endif
-        var skillDefs = DefDatabase<SkillDef>.AllDefsListForReading;
-        var statDefs = DefDatabase<StatDef>.AllDefsListForReading;
+        IReadOnlyList<SkillDef> skillDefs;
+        IReadOnlyList<StatDef> statDefs;
+        try
+        {
+            skillDefs = DefProvider.Current.AllDefsListForReading<SkillDef>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"{nameof(SkillStatMap)}.{nameof(BuildMap)}: " +
+                            "failed to read SkillDefs from DefProvider.", ex);
+            skillDefs = [];
+        }
+        try
+        {
+            statDefs = DefProvider.Current.AllDefsListForReading<StatDef>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"{nameof(SkillStatMap)}.{nameof(BuildMap)}: " +
+                            "failed to read StatDefs from DefProvider.", ex);
+            statDefs = [];
+        }
         _map = new Dictionary<SkillDef, HashSet<StatDef>>(skillDefs.Count);
         foreach (var skill in skillDefs)
         {
