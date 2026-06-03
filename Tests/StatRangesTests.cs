@@ -9,9 +9,8 @@ namespace LordKuper.Common.Tests;
 ///     AC-20: StatRanges maintains per-stat adaptive ranges and is cleared between tests via StaticStateFixture.
 /// </summary>
 [Collection("StaticState")]
-public class StatRangesTests : IClassFixture<StaticStateFixture>
+public class StatRangesTests : StaticStateTestBase
 {
-    public StatRangesTests(StaticStateFixture fixture) { _ = fixture; }
 
     [Fact]
     public void NormalizeStatValue_FirstValue_ExpandsRange()

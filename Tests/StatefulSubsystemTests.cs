@@ -15,9 +15,8 @@ namespace LordKuper.Common.Tests;
 ///     PawnFilter limits, caches, time+helpers, and WorkTypeThingRule.
 /// </summary>
 [Collection("StaticState")]
-public class StatefulSubsystemTests : IClassFixture<StaticStateFixture>
+public class StatefulSubsystemTests : StaticStateTestBase
 {
-    public StatefulSubsystemTests(StaticStateFixture fixture) { _ = fixture; }
 
     // Helper class for DefCache test
     private class TestDefCache : DefCache<StatDef>

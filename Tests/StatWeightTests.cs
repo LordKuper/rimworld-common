@@ -7,9 +7,8 @@ namespace LordKuper.Common.Tests;
 ///     Tests for <see cref="StatWeight" /> construction, weight math, and serialization (AC-20).
 /// </summary>
 [Collection("StaticState")]
-public class StatWeightTests : IClassFixture<StaticStateFixture>
+public class StatWeightTests : StaticStateTestBase
 {
-    public StatWeightTests(StaticStateFixture fixture) { _ = fixture; }
 
     [Fact]
     public void Ctor_Parameterless_InitializesEmpty()
