@@ -1,0 +1,23 @@
+# commands.yaml — machine-only SSoT for project build/test/run commands
+# read by Backend Dev, Test Engineer, and review agents
+#
+# .NET Framework (net472) RimWorld mod library. Building requires the
+# RimWorldManagedDir env var / MSBuild property pointing at RimWorld's Managed dir.
+
+test: "dotnet test Tests\\LordKuper.Common.Tests.csproj"
+lint: "dotnet format Source\\LordKuper.Common.sln --verify-no-changes --severity warn"
+build: "dotnet build Source\\LordKuper.Common.sln -c Release"
+run: ""
+
+custom:
+  # JetBrains ReSharper CLI (jetbrains.resharper.globaltools, command `jb`).
+  # Run jb-cleanup before build; run jb-inspect after lint and verify the sarif has no error/warning.
+  jb-cleanup:       "jb cleanupcode Source\\LordKuper.Common.sln"
+  jb-inspect:       "jb inspectcode Source\\LordKuper.Common.sln -o=\".\\TestResults\\jb-inspect.sarif\" --build"
+
+  # @google/design.md tooling (Windows pattern; run from project root).
+  # Run designmd-install once per session before first lint/diff/export.
+  designmd-install: "npm install @google/design.md"
+  designmd-lint:    "node_modules\\.bin\\design.md.cmd lint design\\ux\\DESIGN.md"
+  designmd-diff:    "node_modules\\.bin\\design.md.cmd diff"
+  designmd-export:  "node_modules\\.bin\\design.md.cmd export --format json-tailwind design\\ux\\DESIGN.md"

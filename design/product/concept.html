@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: project vision, target users, value proposition, identity
+  excludes: tech stack, ux, requirements, architecture
+  delegates_to: stack.html (tech), DESIGN.md (visual identity), requirements/ (features)
+provenance: reverse-engineered
+source: Source/ + Source/LordKuper.Common.csproj + README.md
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="Concept">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-03">
+  <meta name="responsibility" content="project vision, target users, value proposition, identity">
+  <meta name="provenance" content="reverse-engineered">
+  <meta name="source" content="Source/ + Source/LordKuper.Common.csproj + README.md">
+  <title>Concept — rimworld-common</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    /* Concept */
+    .pillar-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+    .pillar-grid li { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 12px; }
+    .pillar-grid li strong { display: block; margin-bottom: 4px; color: var(--accent); }
+    .anti-pillar-grid li { border-left-color: var(--danger); }
+    .anti-pillar-grid li strong { color: var(--danger); }
+    ul.user-segments { list-style: none; padding: 0; }
+    ul.user-segments li { padding: 8px 12px; margin: 6px 0; border-left: 3px solid var(--accent); background: var(--card-bg); border-radius: 4px; }
+    ul.user-segments li b { color: var(--accent); }
+
+    .src { display: block; margin-top: 8px; font-size: 0.78rem; color: var(--muted); }
+    .src code { font-size: 0.92em; }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#vision">Vision</a></li>
+        <li><a href="#target-users">Target users</a></li>
+        <li><a href="#value-proposition">Value proposition</a></li>
+        <li><a href="#pillars">Pillars</a></li>
+        <li><a href="#anti-pillars">Anti-Pillars</a></li>
+        <li><a href="#constraints">Constraints</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>Concept</span>
+          <span>project</span>
+          <span class="status-draft">draft</span>
+          <span class="provenance-reverse-engineered">reverse-engineered (from Source/ + Source/LordKuper.Common.csproj + README.md)</span>
+        </div>
+        <h1>Concept — rimworld-common</h1>
+        <div class="stats">
+          <span class="chip">2 pillars</span>
+          <span class="chip">2 anti-pillars</span>
+          <span class="chip">updated 2026-06-03</span>
+        </div>
+      </header>
+      <main>
+
+<section id="vision" class="hero">
+  <h2>Vision</h2>
+  <p class="lede">A single shared .NET class library that consolidates the cross-cutting building blocks RimWorld mods repeatedly need — definition and stat caches, pawn and stat helpers, reusable filters and custom-stat models, and a consistent IMGUI widget toolkit — so each dependent mod implements its own features instead of re-solving the same plumbing.</p>
+</section>
+
+<section id="target-users">
+  <h2>Target users</h2>
+  <ul class="user-segments">
+    <li><b>Dependent RimWorld mods</b> — consume the shared assembly to obtain caching, helper, filter, custom-stat, and UI primitives rather than maintaining their own copies, keeping behaviour and look-and-feel consistent across the mod family.</li>
+    <li><b>The library's own maintainer</b> — develops and evolves dependent mods against one versioned common surface, fixing or extending shared logic in a single place.</li>
+  </ul>
+</section>
+
+<section id="value-proposition">
+  <h2>Value proposition</h2>
+  <p class="lede">Dependent mods get a ready-made, RimWorld-aware foundation: timed and definition caches for hot-path lookups, helpers over pawns/stats/defs/math/text, composable pawn and limit filters, melee/ranged/tool custom-stat models, and a unified widget set (buttons, fields, sliders, selectors, tabs, scroll views, pawn boxes). This removes duplicated plumbing, centralizes Harmony-based RimWorld integration, and yields consistent UI and behaviour across every mod that links it.</p>
+</section>
+
+<section id="pillars">
+  <h2>Pillars</h2>
+  <ul class="pillar-grid">
+    <li><strong>Reusable shared foundation</strong>Cross-cutting concerns (caching, helpers, filters, custom stats, UI) live once in a versioned assembly and are consumed by many mods, never copy-pasted per mod.
+    </li>
+    <li><strong>RimWorld-native integration</strong>Built directly against the game's managed assemblies and Unity IMGUI, with Harmony available for runtime patching, so primitives speak RimWorld's own types (Pawn, Def, Stat) and UI idioms.
+    </li>
+  </ul>
+</section>
+
+<section id="anti-pillars" class="callout">
+  <h2>Anti-Pillars</h2>
+  <ul class="pillar-grid anti-pillar-grid">
+    <li><strong>Not a standalone player-facing mod</strong>This is a library, not a gameplay mod — it ships no features players enable on their own; value is realized only through dependent mods that reference it.
+    </li>
+    <li><strong>Not a general-purpose / cross-game framework</strong>Scope is deliberately bound to RimWorld and its API surface — it does not aim to be a portable utility library independent of the game.
+    </li>
+  </ul>
+</section>
+
+<section id="constraints" class="callout warn">
+  <h2>Constraints</h2>
+  <ul>
+    <li>Targets <code>net472</code> to match the RimWorld runtime; cannot adopt newer target frameworks the game does not load.</li>
+    <li>Depends on game-managed assemblies resolved from <code>$(RimWorldManagedDir)</code> (Assembly-CSharp, UnityEngine modules) — builds require a local RimWorld install path.</li>
+    <li>Harmony is referenced for patching but excluded from runtime output (<code>PrivateAssets=all</code>, <code>ExcludeAssets=runtime</code>) — the host environment must provide Harmony at load time.</li>
+    <li>Supports multiple RimWorld versions (currently 1.5 and 1.6) via version-specific folders: per-version assemblies, languages, and content ship under version-named directories (<code>1.5/</code>, <code>1.6/</code>), with the build emitting into the matching <code>&lt;version&gt;/Assemblies/</code> folder. New RimWorld versions are onboarded by adding a new version folder rather than breaking existing ones.</li>
+    <li>Warnings-as-errors at maximum warning level on all configurations — code must stay clean to compile.</li>
+  </ul>
+</section>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-03 | sprint </footer>
+    </div>
+  </div>
+  <script>
+    // Scrollspy: highlight current section in TOC
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>
