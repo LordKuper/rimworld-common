@@ -1,7 +1,7 @@
-using System;
-using LordKuper.Common;
+using System.Collections;
+using System.Reflection;
+using JetBrains.Annotations;
 using LordKuper.Common.Helpers;
-using Xunit;
 
 namespace LordKuper.Common.Tests;
 
@@ -19,6 +19,7 @@ namespace LordKuper.Common.Tests;
 ///     - StatRanges.Ranges adaptive cache (restored via Reflection)
 ///     - DefCache, ThingCache, PassionCache static state (reset via Reflection)
 /// </remarks>
+[UsedImplicitly]
 public class StaticStateFixture : IDisposable
 {
     private readonly IDefProvider _originalProvider;
@@ -44,29 +45,29 @@ public class StaticStateFixture : IDisposable
 
         // Reset SkillStatMap via reflection (it has lazy BuildMap but no public Rebuild)
         var sksmType = typeof(SkillStatMap);
-        var mapField = sksmType.GetField("_map", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        var mapField = sksmType.GetField("_map", BindingFlags.NonPublic | BindingFlags.Static);
         if (mapField != null)
             mapField.SetValue(null, null);
 
         // Reset PassionHelper via reflection since there's no public Rebuild
         var phType = typeof(PassionHelper);
-        var isInitField = phType.GetField("_isInitialized", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-        var cachedPassionsField = phType.GetField("_cachedPassions", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-        var passionCacheField = phType.GetField("PassionCache", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-
+        var isInitField =
+            phType.GetField("_isInitialized", BindingFlags.NonPublic | BindingFlags.Static);
+        var cachedPassionsField =
+            phType.GetField("_cachedPassions", BindingFlags.NonPublic | BindingFlags.Static);
+        var passionCacheField =
+            phType.GetField("PassionCache", BindingFlags.NonPublic | BindingFlags.Static);
         if (isInitField != null)
             isInitField.SetValue(null, false);
-
         if (cachedPassionsField != null)
             cachedPassionsField.SetValue(null, null);
-
-        if (passionCacheField?.GetValue(null) is System.Collections.IDictionary cache)
+        if (passionCacheField?.GetValue(null) is IDictionary cache)
             cache.Clear();
 
         // Reset StatRanges.Ranges via reflection
         var srType = typeof(StatRanges);
-        var rangesField = srType.GetField("Ranges", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-        if (rangesField?.GetValue(null) is System.Collections.IDictionary ranges)
+        var rangesField = srType.GetField("Ranges", BindingFlags.NonPublic | BindingFlags.Static);
+        if (rangesField?.GetValue(null) is IDictionary ranges)
             ranges.Clear();
     }
 }

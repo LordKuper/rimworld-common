@@ -6,7 +6,7 @@ namespace LordKuper.Common.Helpers;
 /// <summary>
 ///     Provides helper methods for working with enumeration types.
 /// </summary>
-public static class EnumHelper
+internal static class EnumHelper
 {
     /// <summary>
     ///     Identifies the flags of an enumeration that are not present in the specified value.
@@ -22,7 +22,7 @@ public static class EnumHelper
     ///     An enumeration value representing the combination of flags that are defined in the enumeration but are not set
     ///     in the specified <paramref name="value" />.
     /// </returns>
-    public static T AbsentFlags<T>(T value) where T : Enum
+    internal static T AbsentFlags<T>(T value) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
         long absentFlags = 0;
@@ -49,14 +49,15 @@ public static class EnumHelper
     ///     An <see cref="IEnumerable{T}" /> containing the unique flags set in <paramref name="value" /> that are not present
     ///     in <paramref name="excludedFlags" />.
     /// </returns>
-    public static IEnumerable<T> GetUniqueFlags<T>(T value, T excludedFlags) where T : Enum
+    internal static IEnumerable<T> GetUniqueFlags<T>(T value, T excludedFlags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
         var excludedLong = Convert.ToInt64(excludedFlags);
         foreach (T flag in Enum.GetValues(typeof(T)))
         {
             var flagLong = Convert.ToInt64(flag);
-            if ((valueLong & flagLong) == flagLong && (excludedLong & flagLong) != flagLong && flagLong != 0)
+            if ((valueLong & flagLong) == flagLong && (excludedLong & flagLong) != flagLong &&
+                flagLong != 0)
                 yield return flag;
         }
     }
@@ -75,7 +76,7 @@ public static class EnumHelper
     ///     An <see cref="IEnumerable{T}" /> containing the flags of type <typeparamref name="T" /> that are set in the
     ///     specified <paramref name="value" />. The collection will be empty if no flags are set.
     /// </returns>
-    public static IEnumerable<T> GetUniqueFlags<T>(T value) where T : Enum
+    internal static IEnumerable<T> GetUniqueFlags<T>(T value) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
         foreach (T flag in Enum.GetValues(typeof(T)))
@@ -96,7 +97,7 @@ public static class EnumHelper
     ///     <see langword="true" /> if all the flags in <paramref name="flags" /> are set in <paramref name="value" />  and
     ///     <paramref name="flags" /> is not zero; otherwise, <see langword="false" />.
     /// </returns>
-    public static bool HasAllFlags<T>(T value, T flags) where T : Enum
+    internal static bool HasAllFlags<T>(T value, T flags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
         var flagsLong = Convert.ToInt64(flags);
@@ -115,7 +116,7 @@ public static class EnumHelper
     ///         langword="false" />
     ///     .
     /// </returns>
-    public static bool HasAnyFlag<T>(T value, T flags) where T : Enum
+    internal static bool HasAnyFlag<T>(T value, T flags) where T : Enum
     {
         var valueLong = Convert.ToInt64(value);
         var flagsLong = Convert.ToInt64(flags);

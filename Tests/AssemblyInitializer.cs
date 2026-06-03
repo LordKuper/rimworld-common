@@ -1,6 +1,5 @@
-using System;
 using System.Reflection;
-using Xunit;
+using JetBrains.Annotations;
 
 namespace LordKuper.Common.Tests;
 
@@ -9,7 +8,8 @@ namespace LordKuper.Common.Tests;
 ///     that use RimWorld context. This fixture runs once per test collection, ensuring that
 ///     Assembly-CSharp and UnityEngine modules are available for all tests in the collection.
 /// </summary>
-public class AssemblyInitializerFixture : IDisposable
+[UsedImplicitly]
+internal class AssemblyInitializerFixture : IDisposable
 {
     public AssemblyInitializerFixture()
     {
@@ -23,20 +23,26 @@ public class AssemblyInitializerFixture : IDisposable
         // No cleanup needed
     }
 
+    private static bool IsRimWorldAssembly(string assemblyName)
+    {
+        return assemblyName == "Assembly-CSharp" || assemblyName == "Assembly-CSharp-firstpass" ||
+               assemblyName.StartsWith("UnityEngine", StringComparison.Ordinal) ||
+               assemblyName == "Unity.Burst" || assemblyName == "Unity.Collections" ||
+               assemblyName == "Unity.Mathematics" ||
+               assemblyName == "com.rlabrecque.steamworks.net";
+    }
+
     private static void RegisterRimWorldAssemblyResolver()
     {
-        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+        AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
         {
             var assemblyName = new AssemblyName(args.Name);
-            var rimWorldDir = Environment.GetEnvironmentVariable("RIMWORLD_DIR")
-                           ?? Environment.GetEnvironmentVariable("RimWorldDir")
-                           ?? "D:\\Games\\Steam\\steamapps\\common\\RimWorld";
-
+            var rimWorldDir = Environment.GetEnvironmentVariable("RIMWORLD_DIR") ??
+                              Environment.GetEnvironmentVariable("RimWorldDir") ??
+                              "D:\\Games\\Steam\\steamapps\\common\\RimWorld";
             var managedDir = Path.Combine(rimWorldDir, "RimWorldWin64_Data", "Managed");
             var assemblyPath = Path.Combine(managedDir, $"{assemblyName.Name}.dll");
-
             if (File.Exists(assemblyPath) && IsRimWorldAssembly(assemblyName.Name))
-            {
                 try
                 {
                     return Assembly.LoadFrom(assemblyPath);
@@ -45,21 +51,8 @@ public class AssemblyInitializerFixture : IDisposable
                 {
                     return null;
                 }
-            }
-
             return null;
         };
-    }
-
-    private static bool IsRimWorldAssembly(string assemblyName)
-    {
-        return assemblyName == "Assembly-CSharp"
-            || assemblyName == "Assembly-CSharp-firstpass"
-            || assemblyName.StartsWith("UnityEngine", StringComparison.Ordinal)
-            || assemblyName == "Unity.Burst"
-            || assemblyName == "Unity.Collections"
-            || assemblyName == "Unity.Mathematics"
-            || assemblyName == "com.rlabrecque.steamworks.net";
     }
 }
 

@@ -1,13 +1,16 @@
-using Xunit;
-using LordKuper.Common.Tests;
+using System.Diagnostics.CodeAnalysis;
 
 // Force the AssemblyResolverInitialize static constructor to run before test discovery
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1806", Justification = "Forces static constructor")]
-
+[assembly: SuppressMessage("Usage", "CA1806", Justification = "Forces static constructor")]
 [assembly: TestFramework("LordKuper.Common.Tests.RimWorldTestFramework", "LordKuper.Common.Tests")]
 
 // Trigger the assembly resolver initialization
-internal static class _InitializerTrigger
+namespace LordKuper.Common.Tests;
+
+internal static class InitializerTrigger
 {
-    static _InitializerTrigger() => _ = AssemblyResolverInitialize.Ready;
+    static InitializerTrigger()
+    {
+        _ = AssemblyResolverInitialize.Ready;
+    }
 }

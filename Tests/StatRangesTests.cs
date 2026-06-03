@@ -1,8 +1,5 @@
-using LordKuper.Common;
 using LordKuper.Common.Helpers;
 using RimWorld;
-using Verse;
-using Xunit;
 
 namespace LordKuper.Common.Tests;
 
@@ -14,12 +11,7 @@ namespace LordKuper.Common.Tests;
 [Collection("StaticState")]
 public class StatRangesTests : IClassFixture<StaticStateFixture>
 {
-    private readonly StaticStateFixture _fixture;
-
-    public StatRangesTests(StaticStateFixture fixture)
-    {
-        _fixture = fixture;
-    }
+    public StatRangesTests(StaticStateFixture fixture) { _ = fixture; }
 
     [Fact]
     public void NormalizeStatValue_FirstValue_ExpandsRange()
@@ -28,7 +20,6 @@ public class StatRangesTests : IClassFixture<StaticStateFixture>
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
-
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
 
@@ -40,24 +31,20 @@ public class StatRangesTests : IClassFixture<StaticStateFixture>
     }
 
     [Fact]
-    public void NormalizeStatValue_SecondValue_UpdatesRange()
+    public void NormalizeStatValue_LargeRanges_Supported()
     {
-        // AC-20 / ADR-0002: Second call updates the range if value is outside [min, max]
+        // AC-20: Large value ranges are handled without numeric overflow
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
-
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
+        var small = StatRanges.NormalizeStatValue(statDef, 1000f);
+        var large = StatRanges.NormalizeStatValue(statDef, 1_000_000f);
 
-        var first = StatRanges.NormalizeStatValue(statDef, 10f);  // Range: [10, 10]
-        var second = StatRanges.NormalizeStatValue(statDef, 20f); // Range: [10, 20]
-        var third = StatRanges.NormalizeStatValue(statDef, 15f);  // Range: [10, 20]
-
-        // All should be valid normalized values
-        Assert.True(!float.IsNaN(first) && !float.IsInfinity(first));
-        Assert.True(!float.IsNaN(second) && !float.IsInfinity(second));
-        Assert.True(!float.IsNaN(third) && !float.IsInfinity(third));
+        // Both should be valid (no overflow)
+        Assert.True(!float.IsNaN(small) && !float.IsInfinity(small));
+        Assert.True(!float.IsNaN(large) && !float.IsInfinity(large));
     }
 
     [Fact]
@@ -69,21 +56,20 @@ public class StatRangesTests : IClassFixture<StaticStateFixture>
         var statDef2 = new StatDef { defName = "Stat2", label = "Stat 2", category = null };
         fakeProvider.AddDef(statDef1);
         fakeProvider.AddDef(statDef2);
-
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
 
         // Normalize some values for stat1
         StatRanges.NormalizeStatValue(statDef1, 10f);
-        var norm1_20 = StatRanges.NormalizeStatValue(statDef1, 20f);
+        var norm120 = StatRanges.NormalizeStatValue(statDef1, 20f);
 
         // Normalize some values for stat2
         StatRanges.NormalizeStatValue(statDef2, 100f);
-        var norm2_200 = StatRanges.NormalizeStatValue(statDef2, 200f);
+        var norm2200 = StatRanges.NormalizeStatValue(statDef2, 200f);
 
         // Both should succeed independently
-        Assert.True(!float.IsNaN(norm1_20) && !float.IsInfinity(norm1_20));
-        Assert.True(!float.IsNaN(norm2_200) && !float.IsInfinity(norm2_200));
+        Assert.True(!float.IsNaN(norm120) && !float.IsInfinity(norm120));
+        Assert.True(!float.IsNaN(norm2200) && !float.IsInfinity(norm2200));
     }
 
     [Fact]
@@ -93,10 +79,8 @@ public class StatRangesTests : IClassFixture<StaticStateFixture>
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
-
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
-
         var neg10 = StatRanges.NormalizeStatValue(statDef, -10f);
         var neg5 = StatRanges.NormalizeStatValue(statDef, -5f);
         var zero = StatRanges.NormalizeStatValue(statDef, 0f);
@@ -108,22 +92,22 @@ public class StatRangesTests : IClassFixture<StaticStateFixture>
     }
 
     [Fact]
-    public void NormalizeStatValue_LargeRanges_Supported()
+    public void NormalizeStatValue_SecondValue_UpdatesRange()
     {
-        // AC-20: Large value ranges are handled without numeric overflow
+        // AC-20 / ADR-0002: Second call updates the range if value is outside [min, max]
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
-
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
+        var first = StatRanges.NormalizeStatValue(statDef, 10f); // Range: [10, 10]
+        var second = StatRanges.NormalizeStatValue(statDef, 20f); // Range: [10, 20]
+        var third = StatRanges.NormalizeStatValue(statDef, 15f); // Range: [10, 20]
 
-        var small = StatRanges.NormalizeStatValue(statDef, 1000f);
-        var large = StatRanges.NormalizeStatValue(statDef, 1_000_000f);
-
-        // Both should be valid (no overflow)
-        Assert.True(!float.IsNaN(small) && !float.IsInfinity(small));
-        Assert.True(!float.IsNaN(large) && !float.IsInfinity(large));
+        // All should be valid normalized values
+        Assert.True(!float.IsNaN(first) && !float.IsInfinity(first));
+        Assert.True(!float.IsNaN(second) && !float.IsInfinity(second));
+        Assert.True(!float.IsNaN(third) && !float.IsInfinity(third));
     }
 
     [Fact]
@@ -133,12 +117,9 @@ public class StatRangesTests : IClassFixture<StaticStateFixture>
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
-
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
-
         var result = StatRanges.NormalizeStatValue(statDef, 0f);
-
         Assert.True(!float.IsNaN(result) && !float.IsInfinity(result));
     }
 }

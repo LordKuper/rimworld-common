@@ -1,6 +1,4 @@
-using System;
 using System.Reflection;
-using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -23,26 +21,20 @@ public class RimWorldTestFramework : XunitTestFramework
         // Register the assembly resolver only once
         if (AppDomain.CurrentDomain.GetData("RimWorldResolverInitialized") != null)
             return;
-
         AppDomain.CurrentDomain.SetData("RimWorldResolverInitialized", true);
-
-        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
+        AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
         {
             var assemblyName = new AssemblyName(args.Name);
 
             // Only handle RimWorld assemblies - let other resolution proceed normally
             if (!IsRimWorldAssembly(assemblyName.Name))
                 return null;
-
-            var rimWorldDir = Environment.GetEnvironmentVariable("RIMWORLD_DIR")
-                           ?? Environment.GetEnvironmentVariable("RimWorldDir")
-                           ?? "D:\\Games\\Steam\\steamapps\\common\\RimWorld";
-
+            var rimWorldDir = Environment.GetEnvironmentVariable("RIMWORLD_DIR") ??
+                              Environment.GetEnvironmentVariable("RimWorldDir") ??
+                              "D:\\Games\\Steam\\steamapps\\common\\RimWorld";
             var managedDir = Path.Combine(rimWorldDir, "RimWorldWin64_Data", "Managed");
             var assemblyPath = Path.Combine(managedDir, $"{assemblyName.Name}.dll");
-
             if (File.Exists(assemblyPath))
-            {
                 try
                 {
                     return Assembly.LoadFrom(assemblyPath);
@@ -51,21 +43,17 @@ public class RimWorldTestFramework : XunitTestFramework
                 {
                     return null;
                 }
-            }
-
             return null;
         };
     }
 
     private static bool IsRimWorldAssembly(string assemblyName)
     {
-        return assemblyName == "Assembly-CSharp"
-            || assemblyName == "Assembly-CSharp-firstpass"
-            || assemblyName.StartsWith("UnityEngine", StringComparison.Ordinal)
-            || assemblyName == "Unity.Burst"
-            || assemblyName == "Unity.Collections"
-            || assemblyName == "Unity.Mathematics"
-            || assemblyName == "com.rlabrecque.steamworks.net";
+        return assemblyName == "Assembly-CSharp" || assemblyName == "Assembly-CSharp-firstpass" ||
+               assemblyName.StartsWith("UnityEngine", StringComparison.Ordinal) ||
+               assemblyName == "Unity.Burst" || assemblyName == "Unity.Collections" ||
+               assemblyName == "Unity.Mathematics" ||
+               assemblyName == "com.rlabrecque.steamworks.net";
     }
 }
 
