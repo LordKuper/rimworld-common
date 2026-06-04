@@ -7,7 +7,15 @@ responsibility:
 
 # xUnit @ 2.9.3 (test stack: + Microsoft.NET.Test.Sdk 17.14.1 + xunit.runner.visualstudio 2.8.2)
 
-This reference covers the whole xUnit-based test stack as one unit, since the three packages are version-coupled:
+> **SUPERSEDED (2026-06-04, sprint 002).** The project migrated off xUnit. The test framework role is now
+> [NUnit @ 4.6.1](nunit-4.6.1.md) + [NUnit3TestAdapter @ 6.2.0](nunit3-testadapter-6.2.0.md); assertions are
+> [FluentAssertions @ 7.2.2](fluentassertions-7.2.2.md). `Microsoft.NET.Test.Sdk` 17.14.1 is retained (the
+> NUnit adapter needs the same VSTest host). The decision is governed by
+> [ADR-0004](../adr/adr-0004-test-framework-xunit-to-nunit.html) (framework) and
+> [ADR-0005](../adr/adr-0005-fluentassertions-7x.html) (assertions). This document is kept for history only —
+> do **not** treat it as current; `xunit` / `xunit.runner.visualstudio` are no longer referenced by the test project.
+
+This reference covers the whole (now retired) xUnit-based test stack as one unit, since the three packages are version-coupled:
 
 | Package | Pinned | Role |
 |---|---|---|

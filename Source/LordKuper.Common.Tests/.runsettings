@@ -7,17 +7,13 @@
     </EnvironmentVariables>
   </RunConfiguration>
 
-  <!-- Coverlet code coverage configuration -->
-  <DataCollectionRunSettings>
-    <DataCollectors>
-      <DataCollector friendlyName="XPlat code coverage">
-        <Configuration>
-          <!-- Include only the LordKuper.Common assembly (Source) -->
-          <Include>[LordKuper.Common]*</Include>
-          <!-- Exclude UI namespace (untestable IMGUI rendering) -->
-          <ExcludeByFile>**/UI/**/*.cs</ExcludeByFile>
-        </Configuration>
-      </DataCollector>
-    </DataCollectors>
-  </DataCollectionRunSettings>
+  <!-- NUnit adapter settings.
+       InProcess=true: run tests in the testhost process without spawning a sub-process.
+       This ensures the RimWorld AssemblyResolve handler (registered by the global [SetUpFixture]
+       [OneTimeSetUp] in RimWorldResolverSetup.cs) is live in the same AppDomain that NUnit scans
+       for test types, resolving the Assembly-CSharp discovery-time dependency without requiring
+       copy-local DLLs. -->
+  <NUnit>
+    <InProcess>true</InProcess>
+  </NUnit>
 </RunSettings>

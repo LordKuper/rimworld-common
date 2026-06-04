@@ -887,6 +887,16 @@
                 Serializes the limit's state (def name, value range, caps, and value style) for saving and loading.
             </summary>
         </member>
+        <member name="M:LordKuper.Common.Filters.Limits.StatLimit.EnsureConfigured">
+            <summary>
+                Ensures caps and value style are configured before any property access.
+                Guards against re-entrant calls: accessing <see cref="T:Verse.Def" /> inside
+                <see cref="M:LordKuper.Common.Filters.Limits.StatLimit.Configure(RimWorld.StatDef)" /> triggers <see cref="M:LordKuper.Common.Cache.DefCache`1.Initialize" />, which calls
+                back into this method before the outer <c>Configure</c> completes. The
+                <c>_configuring</c> flag short-circuits that nested call so the outer
+                <c>Configure</c> can finish and set <c>_isConfigured = true</c>.
+            </summary>
+        </member>
         <member name="M:LordKuper.Common.Filters.Limits.StatLimit.Initialize">
             <summary>
                 Initializes the limit after its def is resolved, ensuring caps and value style are configured.

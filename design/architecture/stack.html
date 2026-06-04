@@ -16,7 +16,7 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
   <meta name="subsystem" content="project">
   <meta name="sprint-id" content="">
   <meta name="status" content="draft">
-  <meta name="updated" content="2026-06-03">
+  <meta name="updated" content="2026-06-04">
   <meta name="responsibility" content="current tech stack reference (languages, frameworks, runtime, infra)">
   <meta name="provenance" content="reverse-engineered">
   <meta name="source" content="Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj">
@@ -132,7 +132,7 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
         <div class="stats">
           <span class="chip">net472</span>
           <span class="chip">RimWorld 1.5 + 1.6</span>
-          <span class="chip">updated 2026-06-03</span>
+          <span class="chip">updated 2026-06-04</span>
         </div>
       </header>
       <main>
@@ -145,7 +145,7 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
       <tr>
         <td><strong>C#</strong></td>
         <td class="ver">latest</td>
-        <td><span class="chip area">Source/ (library)</span> <span class="chip area">Tests/ (xUnit)</span></td>
+        <td><span class="chip area">Source/ (library)</span> <span class="chip area">Tests/ (NUnit)</span></td>
       </tr>
     </tbody>
   </table>
@@ -247,7 +247,7 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
 
 <section id="versions">
   <h2>Version pinning &amp; lag</h2>
-  <p>Pinned versions versus latest stable upstream, with the resulting lag/risk read. Game-provided references (RimWorld/Unity) are intentionally bound to the install and are excluded from upgrade-lag scoring.</p>
+  <p>Pinned versions versus latest stable upstream, with the resulting lag/risk read. Game-provided references (RimWorld/Unity) are intentionally bound to the install and are excluded from upgrade-lag scoring. The test stack is NUnit 4.6.1 + NUnit3TestAdapter 6.2.0 + FluentAssertions 7.2.2 (FA held on 7.x by license); coverage runs through the AltCover global tool via <code>scripts/coverage.ps1</code>, not a <code>coverlet.collector</code> reference (the test project does not reference coverlet).</p>
   <table class="tech-table">
     <thead><tr><th>Dependency</th><th>Pinned</th><th>Latest stable</th><th>Lag</th><th>Risk</th></tr></thead>
     <tbody>
@@ -266,32 +266,39 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
         <td><span class="chip area">LOW</span> — pinned to RimWorld's runtime by design, not a free choice.</td>
       </tr>
       <tr>
-        <td><strong>xunit</strong></td>
-        <td class="ver">2.9.3</td>
-        <td class="ver">3.x line exists</td>
-        <td>major line behind (v2 vs v3)</td>
-        <td><span class="chip area">LOW–MEDIUM</span> — v2 is the legacy line but fully supported; no migration pressure.</td>
+        <td><strong>NUnit</strong></td>
+        <td class="ver">4.6.1</td>
+        <td class="ver">4.6.x (current)</td>
+        <td>none / minimal</td>
+        <td><span class="chip area">LOW</span> — current 4.x line; framework floor <code>net462</code> satisfied by <code>net472</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>NUnit3TestAdapter</strong></td>
+        <td class="ver">6.2.0</td>
+        <td class="ver">6.2.x (current)</td>
+        <td>none / minimal</td>
+        <td><span class="chip area">LOW</span> — current adapter line; pairs with NUnit 4.6.x. Name keeps "NUnit3" (adapter/engine lineage, not framework major).</td>
+      </tr>
+      <tr>
+        <td><strong>FluentAssertions</strong></td>
+        <td class="ver">7.2.2</td>
+        <td class="ver">8.x line exists</td>
+        <td>held on 7.x by license</td>
+        <td><span class="chip area">LOW</span> — 7.x is the last Apache-2.0 major; 8.x requires a paid commercial license, so the suite pins 7.x deliberately and must never float to 8.x.</td>
       </tr>
       <tr>
         <td><strong>Microsoft.NET.Test.Sdk</strong></td>
         <td class="ver">17.14.1</td>
         <td class="ver">17.14.x (current)</td>
         <td>none / minimal</td>
-        <td><span class="chip area">LOW</span></td>
+        <td><span class="chip area">LOW</span> — VSTest host; required by NUnit3TestAdapter too.</td>
       </tr>
       <tr>
-        <td><strong>xunit.runner.visualstudio</strong></td>
-        <td class="ver">2.8.2</td>
-        <td class="ver">3.x line exists</td>
-        <td>tracks xunit v2</td>
-        <td><span class="chip area">LOW</span> — paired with the pinned xunit v2.</td>
-      </tr>
-      <tr>
-        <td><strong>coverlet.collector</strong></td>
-        <td class="ver">6.0.4</td>
-        <td class="ver">10.0.1</td>
-        <td>several major versions behind</td>
-        <td><span class="chip area">MEDIUM</span> — largest upgrade gap; test-time only, so blast radius is contained to coverage collection.</td>
+        <td><strong>AltCover</strong> (global tool)</td>
+        <td class="ver">tool-resolved</td>
+        <td class="ver">current</td>
+        <td>n/a</td>
+        <td><span class="chip area">LOW</span> — the actual coverage harness, invoked via <code>scripts/coverage.ps1</code> (Cecil static instrumentation). Test-time only; not a package reference of the test project.</td>
       </tr>
     </tbody>
   </table>
@@ -303,10 +310,11 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
     <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
     <tbody>
       <tr><td><strong>Microsoft.NET.Sdk</strong></td><td>SDK-style project build for both the library and the test project.</td></tr>
-      <tr><td><strong>xUnit 2.9.3</strong></td><td>Unit test framework (<code>[Fact]</code> / <code>[Theory]</code>); discovered via <code>Using Include="Xunit"</code>.</td></tr>
+      <tr><td><strong>NUnit 4.6.1</strong></td><td>Unit test framework (<code>[Test]</code> / <code>[TestCase]</code>); discovered via <code>Using Include="NUnit.Framework"</code>. Assertions are FluentAssertions, not NUnit <code>Assert.*</code>.</td></tr>
+      <tr><td><strong>FluentAssertions 7.2.2</strong></td><td>Assertion library (<code>.Should()</code> style); pinned to the Apache-2.0 7.x line, added via <code>Using Include="FluentAssertions"</code>. 8.x is commercial-licensed and not adopted.</td></tr>
       <tr><td><strong>Microsoft.NET.Test.Sdk 17.14.1</strong></td><td>Test host / VSTest adapter integration that makes the test project runnable under <code>dotnet test</code> and the IDE test runner.</td></tr>
-      <tr><td><strong>xunit.runner.visualstudio 2.8.2</strong></td><td>VSTest runner enabling xUnit discovery and execution in Visual Studio and CI.</td></tr>
-      <tr><td><strong>coverlet.collector 6.0.4</strong></td><td>Code-coverage data collector wired into the VSTest pipeline (collector form, runtime/build assets).</td></tr>
+      <tr><td><strong>NUnit3TestAdapter 6.2.0</strong></td><td>VSTest runner enabling NUnit 4.x discovery and execution in Visual Studio and via <code>dotnet test</code>. Name keeps "NUnit3" (adapter/engine lineage), works with NUnit 4.</td></tr>
+      <tr><td><strong>AltCover</strong> (global tool, via <code>scripts/coverage.ps1</code>)</td><td>The code-coverage harness: Cecil static instrumentation of the test output, then collect. Used instead of a VSTest data collector because <code>coverlet.collector</code> silently yields 0% against the RimWorld-referencing assembly. The AltCover <code>--assemblyFilter</code> excludes the test-framework assemblies (<code>nunit</code> after the migration, was <code>xunit</code>).</td></tr>
       <tr><td><strong>Roslyn analyzers (built-in)</strong></td><td>Warnings-as-errors at <code>WarningLevel 9999</code> on all configurations; XML documentation generation enabled on the library.</td></tr>
     </tbody>
   </table>
@@ -326,7 +334,7 @@ source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
 </section>
 
       </main>
-      <footer>by ASD workflow | 2026-06-03 | sprint </footer>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
     </div>
   </div>
   <script>

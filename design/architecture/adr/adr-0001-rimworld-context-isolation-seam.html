@@ -16,7 +16,7 @@ source: ""
   <meta name="subsystem" content="project">
   <meta name="sprint-id" content="">
   <meta name="status" content="approved">
-  <meta name="updated" content="2026-06-03">
+  <meta name="updated" content="2026-06-04">
   <meta name="responsibility" content="single architecture decision (RimWorld-context isolation seam)">
   <meta name="provenance" content="original">
   <meta name="source" content="">
@@ -143,7 +143,7 @@ source: ""
         <div class="stats">
           <span class="chip">approved</span>
           <span class="chip">subsystem: project</span>
-          <span class="chip">updated 2026-06-03</span>
+          <span class="chip">updated 2026-06-04</span>
         </div>
       </header>
       <main>
@@ -228,13 +228,20 @@ source: ""
               internal reset/snapshot/<code>Rebuild()</code> hooks.
             </li>
             <li>
-              Add an xUnit <code>StaticStateFixture</code> (used via <code>IClassFixture</code> plus a
-              <code>[Collection]</code> to serialize across classes that touch shared statics). It
+              Add a <code>StaticStateFixture</code> driven per-test from an
+              <code>abstract StaticStateTestBase</code> base class, whose NUnit <code>[SetUp]</code>
+              (snapshot) / <code>[TearDown]</code> (restore) hooks run once per test; the static-touching
+              classes are serialized by NUnit's non-parallel-by-default execution, made explicit with
+              <code>[NonParallelizable]</code> rather than an xUnit <code>[Collection]</code>. It
               snapshots and restores the static caches:
               <code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>,
               <code>PassionHelper</code>, the <code>DefCache</code> statics, <strong>and
               <code>StatRanges.Ranges</code></strong> — the latter explicitly, because ADR-0002 keeps
               that cache mutable (see <a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>).
+              The per-test <code>[SetUp]</code>/<code>[TearDown]</code> granularity is deliberate, chosen over
+              a per-class NUnit <code>[OneTimeSetUp]</code> fixture so each test gets true isolation. The
+              mechanism is detailed in
+              <a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>.
             </li>
             <li>
               The new <code>IDefProvider</code> abstraction and the <code>InternalsVisibleTo</code> grant
@@ -259,7 +266,7 @@ source: ""
                 <li>Adds a new abstraction (<code>IDefProvider</code>) and a mutable global injection point (<code>DefProvider.Current</code>) — a global the rest of the codebase must respect.</li>
                 <li><code>InternalsVisibleTo</code> widens the internal surface to the Tests assembly; internal reset/snapshot hooks become a maintained contract.</li>
                 <li>Static-ctor extraction into <code>Rebuild()</code> is behavior-sensitive: it MUST reproduce load-time ordering exactly, or load-time semantics drift.</li>
-                <li>Cross-class test serialization via <code>[Collection]</code> reduces test parallelism for the affected suites.</li>
+                <li>Test serialization for the affected suites relies on NUnit's non-parallel-by-default execution (made explicit with <code>[NonParallelizable]</code>); it reduces parallelism for those classes and assumes no <code>[assembly: Parallelizable]</code> opt-in is ever added.</li>
                 <li><strong>Behavioral/API note:</strong> no public-API break in production paths; the new public/injectable seam is additive. The reset/snapshot hooks are <code>internal</code>, not part of the public mod API.</li>
               </ul>
             </div>
@@ -274,7 +281,7 @@ source: ""
           <h2 id="acceptance">Acceptance criteria satisfied</h2>
           <ul>
             <li><strong>AC-13</strong> — provides the RimWorld-context isolation seam that lets stateful subsystems run without a live <code>DefDatabase</code>/game context.</li>
-            <li><strong>AC-14</strong>, <strong>AC-15</strong> — the <code>StaticStateFixture</code> save/restores the shared static caches (<code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>, <code>StatRanges</code>, <code>PassionHelper</code>, and the <code>DefCache</code> statics) around each test.</li>
+            <li><strong>AC-14</strong>, <strong>AC-15</strong> — the <code>StaticStateFixture</code>, driven per-test via <code>[SetUp]</code>/<code>[TearDown]</code> on <code>StaticStateTestBase</code>, save/restores the shared static caches (<code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>, <code>StatRanges</code>, <code>PassionHelper</code>, and the <code>DefCache</code> statics) around each test.</li>
             <li><strong>AC-16</strong> — the snapshot set explicitly includes the adaptive <code>StatRanges.Ranges</code> cache retained under ADR-0002.</li>
             <li><strong>AC-18</strong> — records the isolation-seam approach in an ADR before broad test build-out.</li>
             <li><strong>AC-19</strong> — the snapshot/restore makes the suite pass order-independently with no inter-test state leakage.</li>
@@ -289,11 +296,25 @@ source: ""
           <h2 id="related">Related ADRs</h2>
           <ul>
             <li><a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>: keeps <code>StatRanges.Ranges</code> mutable, which is exactly why this ADR's fixture must snapshot/restore it.</li>
+            <li><a href="adr-0006-rimworld-assemblyresolve-setupfixture.html">ADR-0006</a>: re-houses the RimWorld <code>AssemblyResolve</code> seam in a global NUnit <code>[SetUpFixture]</code> (was xUnit <code>[assembly: TestFramework]</code>).</li>
+            <li><a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>: remaps this ADR's static-state isolation mechanism vocabulary to NUnit — the isolation contract here is unchanged.</li>
           </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            <strong>Remap note (sprint 002, 2026-06-04):</strong> the test-framework vocabulary in this ADR was
+            updated from xUnit to NUnit during sprint 002 (<code>StaticStateFixture</code> via
+            <code>IClassFixture</code> + <code>[Collection]</code> serialization + <code>IDisposable</code>
+            snapshot/restore → per-test <code>[SetUp]</code>/<code>[TearDown]</code> on
+            <code>StaticStateTestBase</code> + <code>[NonParallelizable]</code>; the RimWorld resolver hook
+            moved to a global <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code>). Only the mechanism
+            wording changed — the isolation contract, the <code>IDefProvider</code> seam, and the
+            <code>InternalsVisibleTo</code> grant are unchanged. See
+            <a href="adr-0006-rimworld-assemblyresolve-setupfixture.html">ADR-0006</a> and
+            <a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>.
+          </p>
         </article>
 
       </main>
-      <footer>by ASD workflow | 2026-06-03 | sprint </footer>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
     </div>
   </div>
 </body>

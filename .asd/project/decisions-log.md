@@ -116,3 +116,182 @@ Append-only. Never edited or removed. New entries appended below.
 - **Decision**: Sprint 001 (full-project audit + in-scope fixes, shape B) completed. impl-review DoD met (iter-02 all APPROVE). Final state: build 0/0 (Source+Tests), dotnet format clean, jb-inspect SARIF 0, 142 tests pass / 3 skip / 0 fail, AltCover coverage 38.2% testable-core. Delivered: nullable-enable migration, root Directory.Build.props governance + RimWorld-path fail-fast, IDefProvider test-isolation seam, WorkTypeStatMap null-stat logging, StatRanges adaptive docs, Resources tooltip DRY, PawnFilter.Combine split, RimWorldTime format bugfix, test harness + coverage measurement. PR https://github.com/LordKuper/rimworld-common/pull/4 targeting main.
 - **Won't-do (recorded)**: IMP-03 LangVersion pin; IMP-07 Def-extraction (weights kept as overridable seed defaults); IMP-09 1.5 localization (frozen archive). AC-21 80% re-scoped to achieved 38.2% per user acceptance.
 - **Affected docs**: entire sprint; archived to .asd/sprints/archived/001-full-project-audit/
+
+## 2026-06-04 — Sprint 002 scope approved: migrate tests to NUnit + FluentAssertions
+
+- **Decision**: Approved scope for sprint `002-migrate-tests-nunit-fluent`: migrate `Source/LordKuper.Common.Tests` (net472) from xUnit to NUnit and convert all assertions to FluentAssertions `.Should()` style wherever possible (~236 `Assert.*` call sites across ~146 test methods in 11 files). In scope: `.csproj` package swap (remove `xunit`/`xunit.runner.visualstudio`, add `NUnit`/`NUnit3TestAdapter`/`FluentAssertions`, update `<Using>` includes); rewrite of test infrastructure (`RimWorldTestFramework` + `AssemblyResolve` → NUnit `[SetUpFixture]`/`OneTimeSetUp`; `StaticState` isolation → `[NonParallelizable]` + `[SetUp]`/`[TearDown]`); attribute mapping (`[Fact]`→`[Test]`, `[Theory]`+`[InlineData]`→`[TestCase]`, `[Fact(Skip)]`→`[Test, Ignore]`); CI/coverage update (`scripts/coverage.ps1`).
+- **Rationale**: Standardize on NUnit + FluentAssertions for more expressive assertions and a maintainable runner setup, while preserving overall behaviour and coverage.
+- **Affected docs**: `.asd/sprints/002-migrate-tests-nunit-fluent/sprint.md`
+
+## 2026-06-04 — FluentAssertions version pinned to 7.x
+
+- **Decision**: Use FluentAssertions 7.x.
+- **Rationale**: 7.x is free under Apache-2.0; 8.x carries a commercial license and was rejected on that basis.
+
+## 2026-06-04 — Config scope of the migration
+
+- **Decision**: Migration config scope includes `.csproj` packages, a full test-infrastructure rewrite, and CI/coverage scripts.
+- **Rationale**: All three layers reference xUnit-specific constructs and must change together for the suite to build and run under NUnit.
+
+## 2026-06-04 — Migration mode: refactor + cleanup
+
+- **Decision**: Perform a refactor + cleanup migration rather than a strict 1:1 port; overall coverage stays equivalent.
+- **Rationale**: Permits tightening or pruning weak/redundant assertions during the conversion while keeping behaviour and coverage equivalent overall.
+
+## 2026-06-04 — Audit approved; "update CI config" reduced to local scripts only
+
+- **Decision**: User approved `audit.md` for sprint `002-migrate-tests-nunit-fluent`. Resolved the open scope question on the "update CI config" item: it reduces to local scripts only — `scripts/coverage.ps1` plus `.asd/project/commands.yaml`. No in-repo CI workflow will be added.
+- **Rationale**: The audit confirmed `.github/` is absent and CI is external/none; there is no in-repo pipeline to modify, so the CI-related work collapses to the local coverage script and the ASD commands registry.
+- **Affected docs**: `.asd/sprints/002-migrate-tests-nunit-fluent/audit.md`, `scripts/coverage.ps1`, `.asd/project/commands.yaml`
+
+## 2026-06-04 — Design drafts approved — sprint 002 NUnit + FluentAssertions migration (PRD + 4 ADRs)
+
+- **Decision**: Approved sprint 002 design drafts: `prd.html` (28 acceptance criteria) and `adr.html` (ADR-0004…ADR-0007, all Accepted), plus 3 new tech-references under `design/architecture/tech-reference/`. **ADR-0004**: adopt NUnit 4.6.1 as the test framework (replacing xUnit). **ADR-0005**: adopt FluentAssertions 7.2.2 as the assertion library. **ADR-0006**: relocate the RimWorld-context resolver seam to a NUnit `[SetUpFixture]` for assembly-level setup/teardown. **ADR-0007**: remap the xUnit static-state isolation pattern (`StaticStateFixture`/`StaticStateTestBase`) onto NUnit's lifecycle. UX-spec and design-system **skipped** as a no-UI test-migration sprint.
+- **Notes for design-promote**: (1) ADR-0001 (RimWorld-context isolation seam) carries xUnit-specific vocabulary that will be remapped to NUnit on promotion; (2) ADR-0003 prose contains a path discrepancy referencing `Source/Directory.Build.props` — observed but out of scope for this sprint, flag for promote.
+- **Rationale**: Migrate the test suite off xUnit onto NUnit + FluentAssertions for the project's preferred test stack; no production-runtime impact. UX/design-system artifacts are N/A for a test-only migration.
+- **Affected docs**: .asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html, .asd/sprints/002-migrate-tests-nunit-fluent/design/adr.html, .asd/sprints/002-migrate-tests-nunit-fluent/design/architecture/tech-reference/*.md
+
+## 2026-06-04 — Design-review APPROVE (iter 04) — DoD met (sprint 002)
+
+- **Decision**: Sprint 002 design drafts (prd.html, adr.html ADR-0004…ADR-0007, 3 tech-references) passed design-review at **iteration 04** — all required reviewers APPROVE (documentation, simplification, external/Codex). UI review **N/A** throughout (no ux-spec; no-UI test-migration sprint). Iteration trace: iter-01 documentation=CONCERNS, simplification=CONCERNS, external=FAIL (1 critical resolver-timing on ADR-0006, 1 high arithmetic); iter-02 documentation=APPROVE, simplification=APPROVE, external=CONCERNS (1 high `[Theory]` mapping); iter-03 documentation=APPROVE, simplification=APPROVE, external=CONCERNS (1 high AC-28 untestable coverage); iter-04 all APPROVE.
+- **Key adjudication — external CRITICAL on ADR-0006 (resolver-timing)**: **user-accepted risk**. Keep the NUnit `[SetUpFixture]`/`[OneTimeSetUp]` assembly-level resolver seam; documented a `[ModuleInitializer]` net472-polyfill fallback to revisit during impl **if** discovery-time assembly resolution fails before `OneTimeSetUp` runs. Not blocking for design DoD.
+- **Autofixes applied across iterations**: (1) AC-9 + ADR-0004 exact case counts pinned — 129 `[Test]` + 3 `[Test, Ignore]` derived from 132 `[Fact]`; 3 `[Theory]`→13 `[TestCase]`; 142 executed + 3 ignored. (2) SSoT dedup — ADR-0005 now links to the PRD assertion table rather than restating it. (3) `adr.html` SUBSYSTEM=project alignment corrected. (4) AC-26 reduced to a single-story citation. (5) ADR-id reconciliation in tech-references (resolver=ADR-0006, remap=ADR-0007). (6) `[Theory]`→`[TestCase]`-only mapping clarified (no `[TestCaseSource]`). (7) AC-28 pinned to an objective threshold — coverage ≥37.2% (baseline 38.2%, −1.0pp tolerance), measured via AltCover through `scripts/coverage.ps1` under the NUnit3 runner.
+- **Rationale**: External Codex review surfaced a real assembly-resolver timing concern (discovery may bind RimWorld types before `OneTimeSetUp`); user accepted the risk with a documented impl-time fallback rather than over-engineering the seam now. Remaining external highs across iters were untestable-AC / mapping-precision gaps, all closed by tightening ACs and ADR wording to objective, verifiable statements.
+- **Affected docs**: .asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html, .asd/sprints/002-migrate-tests-nunit-fluent/design/adr.html, .asd/sprints/002-migrate-tests-nunit-fluent/design/architecture/tech-reference/*.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Design-promote — sprint 002 NUnit + FluentAssertions decisions promoted to persistent design/
+
+- **Decision**: Promoted sprint 002 design drafts to persistent `design/` (architecture domain, flat; decomposition disabled; no UX/product writes). **4 new ADRs promoted (status=approved)**: ADR-0004 (`adr-0004-test-framework-xunit-to-nunit.html`) test framework xUnit→NUnit; ADR-0005 (`adr-0005-fluentassertions-7x.html`) FluentAssertions 7.x; ADR-0006 (`adr-0006-rimworld-assemblyresolve-setupfixture.html`) RimWorld AssemblyResolve seam on NUnit `[SetUpFixture]`, preserving the design-review accepted-risk on resolver timing and the documented `[ModuleInitializer]` net472 fallback; ADR-0007 (`adr-0007-staticstate-isolation-nunit-remap.html`) static-state isolation remap onto NUnit lifecycle. **ADR-0001 remapped in place**: xUnit vocabulary rewritten to NUnit (`[SetUpFixture]`/`[SetUp]`/`[TearDown]`/`[NonParallelizable]`); the `IDefProvider` seam + snapshot/restore contract + `InternalsVisibleTo` left unchanged; cross-linked to ADR-0006/ADR-0007; dated remap note added (sprint 002). **stack.html reconciled**: test-tooling rows xUnit/runner/coverlet replaced with NUnit 4.6.1 + NUnit3TestAdapter 6.2.0 + FluentAssertions 7.2.2 + AltCover; coverage framing corrected. **Tech-references**: `xunit-2.9.3.md` and `coverlet-collector-6.0.4.md` marked SUPERSEDED (retained for history); 3 new refs verified. **Project rule docs reworded**: `custom-coding-rules.md` (Testing section remapped to NUnit + FluentAssertions), `custom-common-rules.md` (Tests line → NUnit/FA).
+- **Out of scope (left untouched)**: ADR-0003 `Source/Directory.Build.props` path-wording discrepancy (observed at design, deferred — not this sprint); `commands.yaml` / `coverage.ps1` (impl phase).
+- **Rationale**: The migration's durable architecture decisions belong in persistent `design/`; the contract-preserving ADR-0001 remap and stack/tech-reference reconciliation keep the SSoT consistent with the chosen NUnit + FluentAssertions stack without altering the test-isolation contract.
+- **Affected docs**: design/architecture/adr/adr-0001*.html, design/architecture/adr/adr-0004*.html, design/architecture/adr/adr-0005*.html, design/architecture/adr/adr-0006*.html, design/architecture/adr/adr-0007*.html, design/architecture/stack.html, design/architecture/tech-reference/*.md, .asd/project/custom-coding-rules.md, .asd/project/custom-common-rules.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Plan approved for sprint 002-migrate-tests-nunit-fluent
+
+- **Decision**: Approved a **7-task** `plan.md` for the NUnit + FluentAssertions migration, all owned by **asd-backend-dev** (unit-only scope; no asd-test-engineer). Tasks: **T1** package + global-usings swap — remove xunit/xunit.runner.visualstudio, add NUnit/NUnit3TestAdapter/FluentAssertions, update `<Using>` includes (ACs 1-4); **T2** resolver seam → NUnit `[SetUpFixture]`/`[OneTimeSetUp]` for assembly-level AssemblyResolve setup/teardown (ACs 19-21); **T3** StaticState isolation remap onto NUnit lifecycle (`[NonParallelizable]` + `[SetUp]`/`[TearDown]`) (ACs 22-25); **T4** attribute migration `[Fact]`→`[Test]`, `[Theory]`+`[InlineData]`→`[TestCase]`, `[Fact(Skip)]`→`[Test, Ignore]` (ACs 5-9); **T5** assertion conversion across 236 `Assert.*` sites to FluentAssertions `.Should()` (ACs 10-18); **T6** coverage script + commands update — `scripts/coverage.ps1` and `.asd/project/commands.yaml` for the NUnit3 runner (ACs 27, 28; tooling); **T7** verification gate — build/test/coverage green + cross-cutting (ACs 26, 28 + cross-cutting). **Dependency spine**: T1 → T2 / T3 / T4 → T5 → T6 → T7. All **28 ACs** covered, no orphans. **DoD**: all ACs covered + unit-only scope + all impl-review reviewers green. The design-review accepted-risk fallback (ADR-0006 `[ModuleInitializer]` net472 resolver-timing polyfill) is recorded in T2 / Risks to revisit during impl if discovery-time assembly resolution fails before `OneTimeSetUp`.
+- **Rationale**: A single dependency spine — package/usings swap first, then the three independent infrastructure remaps (resolver seam, static-state isolation, attribute migration), converging on the bulk assertion conversion, then coverage tooling, then the verification gate — keeps the migration buildable at each step and traces every AC end-to-end. Unit-only scope under one backend dev avoids the prior test-engineer reliability issue.
+- **Affected docs**: .asd/sprints/002-migrate-tests-nunit-fluent/plan.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl assessment approved — sprint 002 NUnit + FluentAssertions migration
+
+- **Decision**: Impl phase (initial mode) complete and approved at the impl assessment gate. All 7 plan tasks done; full xUnit→NUnit+FluentAssertions migration delivered:
+  - **Package swap** (T1): removed xunit/xunit.runner.visualstudio; added NUnit 4.6.1, NUnit3TestAdapter 6.2.0, FluentAssertions 7.2.2; kept Microsoft.NET.Test.Sdk 17.14.1; `<Using>` includes updated.
+  - **Resolver seam** (T2): relocated to a global `[SetUpFixture]`/`[OneTimeSetUp]` (`RimWorldResolverSetup.cs`). The design-review accepted-risk `[ModuleInitializer]` net472 fallback was **NOT needed** — discovery-time assembly resolution works as-is.
+  - **Static-state isolation** (T3): remapped onto NUnit lifecycle via `[NonParallelizable]` + `[SetUp]`/`[TearDown]` (`StaticStateTestBase`).
+  - **Attribute migration** (T4): `[Fact]`→`[Test]`, `[Theory]`+`[InlineData]`→`[TestCase]`, 3 `Skip`→`Ignore`.
+  - **Assertion conversion** (T5): 236 `Assert.*` sites converted to FluentAssertions `.Should()`.
+  - **Coverage tooling** (T6): `coverage.ps1` `--assemblyFilter` xunit→nunit; removed the post-instrument RimWorld-DLL-deletion step (NUnit needs the DLLs present at discovery).
+- **Coverage recovery**: independent verification found 37.05% (just under the AC-28 37.2% floor) because the migration bypassed `SkillStatMap.BuildMap()` (Unity-native ECall, not coverable without a RimWorld harness). Per user direction, added **24 StatLimit unit tests** (pure parsing/clamp logic, no harness) raising coverage to **41.08%** — above the 37.2% floor and the 38.2% baseline.
+- **Cleanup**: removed the dead `XunitExtensions.cs` tombstone.
+- **Out-of-scope finding (logged for follow-up)**: a latent infinite-recursion bug in `StatLimit` (parameterless/string ctor → EnsureConfigured→Def→Initialize→EnsureConfigured) — spawned as a **separate task**, NOT fixed in this sprint.
+- **Verified gates** (independent orchestrator verification): build 0 warnings / 0 errors (`dotnet build Source\LordKuper.Common.slnx -c Release`); tests 166 passed / 0 failed / 3 ignored (169 total, NUnit3 adapter); coverage 449/1093 = **41.08%** (AltCover via `scripts\coverage.ps1`); xUnit fully removed (zero live `[Fact]`/`[Theory]`/`[InlineData]`/`Assert.*` in .cs).
+- **Rationale**: The migration preserves behaviour and coverage equivalence while standardizing on the project's preferred NUnit + FluentAssertions stack; the StatLimit unit tests recover coverage lost to an untestable Unity-native path without standing up a full RimWorld harness.
+- **Affected docs**: Source/LordKuper.Common.Tests/**, scripts/coverage.ps1, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl-review iter 01: CONCERNS → impl fix (sprint 002)
+
+- **Decision**: Sprint 002 impl-review iteration 01 returned mixed verdicts — quality=CONCERNS, simplification=CONCERNS, documentation=CONCERNS, external=CONCERNS; implementation/testing/performance=APPROVE; ui=N/A (no-UI test-migration sprint). No FAIL; routed back to **impl fix mode** (`review_fixes_pending=iter-01`). Findings to fix:
+  - **quality**: (1) ADR-id references embedded in code comments violate the self-contained-code rule — strip ADR-NNNN citations from `.cs` comments. (2) Hard-coded machine-specific RimWorld fallback path in `RimWorldResolverSetup.cs` causes silent failure when the env var is unset — replace with explicit fail-fast on missing RimWorld dir rather than a silent bad-path fallback.
+  - **simplification**: (1) `StaticStateFixture` is a single-consumer abstraction → collapse into `StaticStateTestBase` and **delete `StaticStateFixture.cs`**. (2) Stale `--assemblyFilter coverlet` token lingering in `coverage.ps1` → remove.
+  - **documentation**: code ships a live `[ModuleInitializer]` while ADR-0006 records it as an unadopted fallback (doc↔code drift). **RESOLVED by orchestrator empirical check**: `[OneTimeSetUp]` alone passes all 166 tests, so the `[ModuleInitializer]` is **NOT load-bearing and will be REMOVED** — honors the user's option-C decision and makes code match ADR-0006 / tech-reference / rules (collapses 3 of the 4 documentation findings). Remaining doc finding: `commands.yaml` coverage comment still says ">=80% floor" (stale from sprint 001) → correct.
+  - **external**: (1) StatLimit buffer tests are not culture-pinned → comma-decimal locale risk; pin culture (e.g. invariant) in the affected tests. (2) `MathHelper` `BeApproximately` tolerance band is slightly wider than the prior xUnit precision-4 → tighten the tolerance to match.
+- **Rationale**: Reviewers caught real maintainability/correctness gaps — self-contained-code violations, a silent-failure resolver fallback, a one-consumer abstraction, stale tooling tokens, doc↔code drift on the resolver bootstrap, and culture/tolerance fragility in the new tests — that warrant a fix round before DoD. The `[ModuleInitializer]` removal aligns the live code with the design-review accepted-risk decision (resolver via `[OneTimeSetUp]` only).
+- **Affected docs**: Source/LordKuper.Common.Tests/**, scripts/coverage.ps1, .asd/project/commands.yaml, design/architecture/adr/adr-0006*.html, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl fix for iter-01: findings resolved (sprint 002)
+
+- **Decision**: Impl-review iter-01 findings resolved in impl fix mode; phase returns to `impl-review`. Resolutions:
+  - **F1 (documentation/doc↔code drift)**: removed the non-load-bearing `[ModuleInitializer]` + net472 polyfill + idempotency guard from `RimWorldResolverSetup.cs`. Orchestrator independently verified `[OneTimeSetUp]` alone passes all 166 tests; code now matches ADR-0006 option-C and the tech-reference, resolving the doc↔code drift.
+  - **F2 (quality/fail-fast)**: resolver now fails fast with an actionable `InvalidOperationException` when `RIMWORLD_DIR`/`RimWorldDir` is unset or the Managed dir is missing; the hard-coded machine-specific fallback path was removed (ADR-0003 fail-fast governance).
+  - **F3 (quality/self-contained code)**: stripped `ADR-NNNN`/`AC-N` citations from code comments (self-contained-code rule).
+  - **F4 (simplification)**: collapsed `StaticStateFixture` into `StaticStateTestBase` `[SetUp]`/`[TearDown]` (deleted `StaticStateFixture.cs`); the save/restore set was preserved verbatim.
+  - **F5 (simplification)**: removed the stale `--assemblyFilter coverlet` token from `scripts/coverage.ps1`.
+  - **F6 (documentation)**: updated the `commands.yaml` coverage comment — removed the stale ">=80% floor"; now ≥37.2% floor, measured 41.08%.
+  - **F7 (external/culture)**: culture-pinned `StatLimitTests` (`[SetCulture("en-US")]`) for locale-robust decimal parsing.
+  - **F8 (external/tolerance)**: tightened `MathHelper` `BeApproximately` tolerance to 5e-5 (faithful to the prior xUnit precision-4).
+  - **Also**: fixed a stale `[ModuleInitializer]` reference comment in `.runsettings`.
+- **Verified gates** (independent orchestrator verification): build 0 warnings / 0 errors; 166 passed / 0 failed / 3 ignored; AltCover coverage 41.08%.
+- **Rationale**: All iter-01 findings closed — doc↔code drift removed by deleting the non-load-bearing resolver bootstrap, silent-failure fallback replaced with explicit fail-fast, self-contained-code and single-consumer-abstraction violations cleared, stale tooling/doc tokens corrected, and culture/tolerance fragility in the new tests fixed — without regressing the green verification gate. Code↔ADR-0006/ADR-0003 alignment restored.
+- **Affected docs**: Source/LordKuper.Common.Tests/**, scripts/coverage.ps1, .asd/project/commands.yaml, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl-review iter 02: implementation FAIL overridden by user (false alarm) + CONCERNS → impl fix (sprint 002)
+
+- **Decision**: Sprint 002 impl-review iteration 02 verdicts — quality=CONCERNS, implementation=**FAIL (overridden by user)**, testing=APPROVE, simplification=CONCERNS, documentation=CONCERNS, performance=APPROVE, external=APPROVE, ui=N/A. No remaining hard FAIL; routed back to **impl fix mode** (`review_fixes_pending=iter-02`) to resolve doc-reconciliation CONCERNS.
+  - **Implementation FAIL overridden (false alarm)**: User adjudicated both blocking claims as non-issues. (1) **AC-28 coverage**: actual coverage is **41.08% (449/1093)**, independently orchestrator-verified 3× — above the 37.2% floor and the 38.2% baseline. The reviewer cited a **stale 37.05%** figure read from `plan.md:107` (a pre-recovery number, before the +24 StatLimit recovery tests landed); AC-28 is SATISFIED. (2) **AC-9 case-count "discrepancy"**: the delta is the **user-authorized +24 StatLimit coverage-recovery tests** (pure parsing/clamp logic, no harness), not a scope violation; AC-9 is SATISFIED. Override recorded in `state.json.escalations[]`.
+  - **Doc-reconciliation fixes routed to impl fix (iter-03)**:
+    - **ADR-0006** — reconcile to as-built: the real discovery mechanism is the `CopyRimWorldTestDeps` MSBuild target copying RimWorld DLLs into the test `bin`; the `[OneTimeSetUp]` resolver is the **fallback**. Remove the phantom "idempotency guard retained" and phantom "delete-DLLs" claims.
+    - **ADR-0007** — reconcile: there is **no `StaticStateFixture` type** (logic was inlined into `StaticStateTestBase`).
+    - Strip the stale `StaticStateFixture` XML-doc comments in `StatRangesTests.cs` / `StatefulSubsystemTests.cs`.
+    - Update `plan.md:107` stale **37.05% → 41.08%**.
+    - **PRD**: AC-9 reflect the +24 authorized recovery tests; AC-28 note achieved 41.08%.
+- **Rationale**: The implementation reviewer's FAIL rested on a stale coverage figure and a mischaracterized (user-authorized) test-count delta; independent verification clears both, so the FAIL is a false alarm and overridden. The genuine remaining findings are documentation/code drift between the as-built resolver+isolation design and the ADRs/PRD/plan/XML-doc comments, which warrant a doc-reconciliation fix round before DoD.
+- **Affected docs**: design/architecture/adr/adr-0006*.html, design/architecture/adr/adr-0007*.html, Source/LordKuper.Common.Tests/StatRangesTests.cs, Source/LordKuper.Common.Tests/StatefulSubsystemTests.cs, .asd/sprints/002-migrate-tests-nunit-fluent/plan.md, .asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl-review iter 03: 6 APPROVE, 1 documentation CONCERNS (HIGH) → doc fix (sprint 002)
+
+- **Decision**: Sprint 002 impl-review iteration 03 verdicts — quality=APPROVE, implementation=APPROVE, testing=APPROVE, simplification=APPROVE, documentation=**CONCERNS (1 HIGH)**, performance=APPROVE, external=APPROVE, ui=N/A. No FAIL; routed the single documentation finding back to **impl fix mode** (`review_fixes_pending=iter-03`) → iter-04.
+  - **Remaining finding (documentation, HIGH — doc-actuality count drift)**: ADR-0007 and the `nunit-4.6.1.md` tech-reference state **three** static-touching `[NonParallelizable]` classes, but the as-built has **four** — `StatLimitTests` is the uncounted fourth class, added during the coverage-recovery round (the user-authorized +24 StatLimit tests). Architect corrected the count to **four** to reconcile the docs with the as-built suite.
+- **Verified gates** (carried from iter-02 fix verification): coverage **41.08%**, build **0 warnings / 0 errors**, **166 passed / 3 ignored**.
+- **Rationale**: All six substantive reviewers APPROVE; the sole open item is a documentation count drift introduced when the StatLimit recovery tests added a fourth static-touching `[NonParallelizable]` class that the ADR-0007/tech-reference count never picked up. Correcting the count from three to four closes the doc↔as-built gap; no code change required.
+- **Affected docs**: design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/nunit-4.6.1.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl-review iter 04: external CONCERNS (HIGH teardown BuildMap hazard) + documentation reviewer incomplete (API overload) → fix (sprint 002)
+
+- **Decision**: Sprint 002 impl-review iteration 04 verdicts — quality=APPROVE, implementation=APPROVE, testing=APPROVE, simplification=APPROVE, performance=APPROVE, external=**CONCERNS (1 HIGH)**, documentation=**INCOMPLETE**, ui=N/A. No FAIL; routed to **impl fix mode** → iter-05 re-review.
+  - **documentation reviewer INCOMPLETE**: the reviewer agent failed with an API-overload error and produced no verdict. Recorded as `INCOMPLETE` (not a substantive finding); to be re-dispatched and re-reviewed at iter-05.
+  - **external CONCERNS (HIGH — new latent-fragility finding)**: `StaticStateTestBase.TearDownStaticState` called `WorkTypeStatMap.Rebuild()`, which reaches `SkillStatMap.Map`→`BuildMap`→a Verse/Unity ECall. The hazard was masked only by a `#if DEBUG` guard plus a swallowing `try/catch`; in a non-DEBUG run or if the guard were removed, teardown would touch the game-bound native path. Latent fragility in test isolation, not a current failure.
+- **Rationale**: Five substantive reviewers APPROVE; the external reviewer surfaced a real latent test-isolation hazard (teardown reaching the uncoverable BuildMap/DefDatabase native path, masked by DEBUG + swallow), which warrants a fix round before DoD. The documentation reviewer's INCOMPLETE is an infrastructure failure (API overload), not a finding — it is simply re-run at iter-05.
+- **Affected docs**: Source/LordKuper.Common.Tests/**, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl fix for iter-04: teardown hazard resolved (sprint 002)
+
+- **Decision**: Impl-review iter-04 external HIGH finding resolved in impl fix mode; phase returns to `impl-review` for iter-05 re-review (which also re-runs the documentation reviewer that errored out at iter-04). `StaticStateTestBase.TearDownStaticState` was reworked to reset all static caches by **reflection-nulling their backing fields** — `StatHelper`'s 14 fields + `Stats.Clear()`; `WorkTypeStatMap._autoSwitchStatsMap`/`_defaultStatsMap`; `SkillStatMap._map`; `PassionHelper` statics; `StatRanges.Ranges` — with **no `Rebuild()`/getter access during teardown**, eliminating the `BuildMap`/`DefDatabase` native-ECall path entirely. The prior `#if DEBUG` + swallowing `try/catch` mask is gone. Committed as `daf6746`.
+- **Verified gates** (independent orchestrator verification): build 0 warnings / 0 errors; **166 passed / 0 failed / 3 ignored**; AltCover coverage **40.9% (447/1093)** — still above the 37.2% floor (−0.18pp vs prior because the `Rebuild` bodies are no longer exercised during teardown).
+- **Rationale**: Resetting static state by nulling backing fields removes any teardown-time call into the Verse/Unity ECall path, closing the latent-fragility hazard without the DEBUG-guarded swallow; the minor coverage drop is expected (teardown no longer executes `Rebuild` bodies) and remains comfortably above the floor. The fix is re-reviewed at iter-05.
+- **Affected docs**: Source/LordKuper.Common.Tests/**, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl fix for iter-02: doc-reconciliation resolved (sprint 002)
+
+- **Decision**: Impl-review iter-02 doc-reconciliation findings resolved in impl fix mode; phase returns to `impl-review`. Resolutions:
+  - **ADR-0006** reconciled to as-built in both the sprint draft and persistent `adr-0006`: the `CopyRimWorldTestDeps` MSBuild target (copying RimWorld DLLs into the test `bin`) is the **primary discovery mechanism**; the `[OneTimeSetUp]` resolver is the **fallback**. Removed the phantom "idempotency guard retained" and phantom "delete-DLLs" claims; `[ModuleInitializer]` recorded as considered-and-rejected.
+  - **ADR-0007** reconciled: there is **no `StaticStateFixture` type** — the isolation logic is inlined in `StaticStateTestBase`.
+  - **NUnit tech-reference** aligned with the as-built resolver/isolation design.
+  - **PRD**: AC-9 reflects the **+24 authorized StatLimit recovery tests** (166 executed + 3 ignored); AC-28 records the achieved **41.08%**.
+  - Stripped stale `StaticStateFixture` XML-doc comments in `StatRangesTests.cs` / `StatefulSubsystemTests.cs`.
+  - `plan.md:107` coverage figure updated **37.05% → 41.08%**.
+- **Verified gates** (independent orchestrator verification): build 0 warnings / 0 errors; 166 passed / 0 failed / 3 ignored; AltCover coverage **41.08%** (unchanged — only comments/docs edited).
+- **Rationale**: The remaining iter-02 findings were documentation↔code drift between the as-built resolver+isolation design and the ADRs/PRD/plan/XML-doc comments; reconciling the docs to the as-built state (MSBuild-target-primary discovery, no `StaticStateFixture` type, recovered coverage figures) closes the drift without touching test or production logic, so the green verification gate is preserved.
+- **Affected docs**: design/architecture/adr/adr-0006*.html, design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/*.md, Source/LordKuper.Common.Tests/StatRangesTests.cs, Source/LordKuper.Common.Tests/StatefulSubsystemTests.cs, .asd/sprints/002-migrate-tests-nunit-fluent/plan.md, .asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl fix for iter-03: doc count corrected (sprint 002)
+
+- **Decision**: Impl fix for iter-03 — the single HIGH documentation finding (static-touching `[NonParallelizable]` class count) resolved by the architect: corrected **three → four** classes (the fourth is `StatLimitTests`, added during the user-authorized +24 StatLimit coverage-recovery round) in ADR-0007 and the `nunit-4.6.1.md` tech-reference. No code changed, so the verification gate is unchanged: build 0 warnings / 0 errors, 166 passed / 3 ignored, AltCover coverage 41.08%. Phase returns to `impl-review`.
+- **Rationale**: The finding was a documentation↔as-built count drift only; reconciling the doc count to the four-class as-built suite closes the gap without touching test or production logic, preserving the green verification gate.
+- **Affected docs**: design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/nunit-4.6.1.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — impl-review iter 05: APPROVE — DoD met (sprint 002)
+
+- **Decision**: impl-review DoD met at iteration 05. All seven required reviewers APPROVE at the critical floor — quality, implementation, testing, simplification, documentation, performance, external; UI N/A. `review_fixes_pending` cleared; sprint advances to `pr`.
+- **Final verified state** (independent orchestrator verification): build 0 warnings / 0 errors (Release); 166 tests pass / 0 fail / 3 ignored under NUnit3; AltCover coverage 40.9% (447/1093), above the ≥37.2% floor.
+- **Resolved**: the iter-04 teardown BuildMap/Unity-ECall hazard resolved via reflection-null caches.
+- **Carried out of scope**: the StatLimit ctor-recursion bug remains logged as a separate out-of-scope task; not a blocker for this sprint.
+- **Rationale**: With all required reviewers at APPROVE and the green verification gate (clean Release build, full NUnit3 pass, coverage above floor), the impl⇄impl-review cycle terminates and the sprint proceeds to PR.
+- **Affected docs**: .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Sprint 002 PR-gate addition: StatLimit infinite-recursion bug fixed (user-authorized production change)
+
+- **Decision**: At the PR gate the user pulled in the previously-deferred **StatLimit ctor-recursion bug** (logged at impl assessment as a spawned, out-of-scope follow-up task) as an **in-scope production fix** by explicit user direction.
+  - **Root cause**: `StatLimit.Initialize()` override unconditionally called `EnsureConfigured()` → `Configure(Def)` → `Def` → `Initialize()` → `EnsureConfigured()` cycle; `_isConfigured` was never set because the outer `Configure` never returned (stuck resolving `Def`) → **StackOverflow** for `new StatLimit()` / `new StatLimit(string)` before any external `Def` resolution.
+  - **Fix**: added a `_configuring` re-entry guard in `StatLimit.EnsureConfigured()` (try/finally) so the nested call short-circuits and the outer `Configure` completes. Siblings (`PawnSkillLimit`, `PawnCapacityLimit`, `PawnTraitLimit`) confirmed **NOT affected** (no `EnsureConfigured`/`Configure`/`Initialize`-override pattern; constant caps).
+  - **Tests**: +10 regression tests (parameterless + string-ctor property access without overflow; correct `Configure(null)` defaults).
+  - **AC-18 supersession**: the PRD non-goal "production code unchanged except as required by the migration" is **explicitly superseded** for this one user-authorized fix — production code **WAS** changed (`StatLimit.cs`) by user direction.
+  - **Verified** (independent orchestrator verification): build **0 warnings / 0 errors** (Release); **176 tests pass / 0 fail / 3 ignored**; AltCover coverage **42.21% (463/1097)**, above the ≥37.2% floor; focused quality review of the fix **APPROVE** (zero findings).
+- **Rationale**: The recursion bug is a genuine production-crash hazard (`new StatLimit()` overflows the stack before any Def is involved); the user opted to land the small, guard-only fix plus regression tests now rather than defer it to a separate sprint. Phase remains `impl-review` (DoD already met); the change does not regress the green verification gate and the sprint proceeds to PR.
+- **Affected docs**: Source/LordKuper.Common/**/StatLimit.cs, Source/LordKuper.Common.Tests/**, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Sprint 002-migrate-tests-nunit-fluent completed, archived, PR opened
+
+- **Decision**: Sprint 002 completed and archived. Full xUnit→NUnit 4.6.1 + FluentAssertions 7.2.2 test migration: resolver seam via `CopyRimWorldTestDeps` (primary) + `[SetUpFixture]`/`[OneTimeSetUp]` fallback; `StaticState` per-test reflection-reset isolation (backing-field nulling, no `Rebuild()`/native ECall in teardown); 236 `Assert.*`→`.Should()`; attribute remap (`[Fact]`→`[Test]`, `[Theory]`+`[InlineData]`→`[TestCase]`, `Skip`→`Ignore`); `coverage.ps1` retargeted to the NUnit3 runner. Added +24 StatLimit coverage-recovery tests; user-authorized StatLimit infinite-recursion production fix (`_configuring` re-entry guard) with +10 regression tests.
+- **Final verified state**: build 0 warnings / 0 errors (Release); 176 tests pass / 0 fail / 3 ignored under NUnit3; AltCover coverage 42.21% (463/1097), above the ≥37.2% floor. impl-review DoD met at iter-05 (all reviewers APPROVE). PR https://github.com/LordKuper/rimworld-common/pull/5 → main. ADRs 0004-0007 promoted; ADR-0001 remapped to NUnit.
+- **Rationale**: Standardize the test suite on the project's preferred NUnit + FluentAssertions stack while preserving behaviour and coverage equivalence; the user-authorized StatLimit fix closes a genuine production-crash hazard surfaced during the migration.
+- **Affected docs**: entire sprint; archived to .asd/sprints/archived/002-migrate-tests-nunit-fluent/

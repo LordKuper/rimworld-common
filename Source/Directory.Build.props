@@ -14,13 +14,13 @@
 
   <PropertyGroup>
     <!-- Resolve RimWorld install dir: prefer env-var RIMWORLD_DIR, then MSBuild property RimWorldDir.
-         The hardcoded machine-specific fallback has been removed (ADR-0003 / AC-2):
-         if neither variable resolves to an existing directory the build fails fast below. -->
+         No machine-specific fallback: if neither variable resolves to an existing directory
+         the build fails fast below with an actionable error. -->
     <RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
     <RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
   </PropertyGroup>
 
-  <!-- Fail fast if RimWorld path is unresolved or does not exist on disk (AC-2). -->
+  <!-- Fail fast if RimWorld path is unresolved or does not exist on disk. -->
   <Target Name="CheckRimWorldDir" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(RimWorldDir)' == '' OR !Exists('$(RimWorldManagedDir)')"
            Text="Set RIMWORLD_DIR (or RimWorldDir) to your RimWorld install path; '$(RimWorldManagedDir)' does not exist." />

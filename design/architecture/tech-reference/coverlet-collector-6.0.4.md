@@ -7,6 +7,14 @@ responsibility:
 
 # coverlet.collector @ 6.0.4
 
+> **SUPERSEDED / RETIRED (2026-06-04, sprint 002).** This reference described a coverage path the project does
+> **not** actually use. The real coverage harness is the **AltCover** global tool, invoked via
+> `scripts/coverage.ps1` (Cecil static instrumentation), because `coverlet.collector` silently yields 0%
+> against the RimWorld-referencing assembly. The test project does **not** reference `coverlet.collector`.
+> See [stack.html](../stack.html) (Tooling / Version-pinning) for the current AltCover framing and
+> [ADR-0004](../adr/adr-0004-test-framework-xunit-to-nunit.html) for the AltCover `--assemblyFilter` change
+> (`xunit` → `nunit`). Kept for history only — do **not** treat the content below as current.
+
 ## Canonical source
 - Project: https://github.com/coverlet-coverage/coverlet
 - NuGet: https://www.nuget.org/packages/coverlet.collector/6.0.4

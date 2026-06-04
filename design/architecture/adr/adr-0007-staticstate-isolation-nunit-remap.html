@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (StaticState isolation remap: xUnit [Collection]/IDisposable -> NUnit [SetUp]/[TearDown] + [NonParallelizable])
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="002-migrate-tests-nunit-fluent">
+  <meta name="status" content="approved">
+  <meta name="updated" content="2026-06-04">
+  <meta name="responsibility" content="single architecture decision (StaticState isolation remap: xUnit Collection/IDisposable to NUnit SetUp/TearDown + NonParallelizable)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0007 · StaticState isolation remap to NUnit</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#reconciliation">Reconciliation note</a></li>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">approved</span>
+        </div>
+        <h1>ADR-0007 · StaticState isolation: xUnit <code>[Collection]</code>/<code>IDisposable</code> → NUnit <code>[SetUp]</code>/<code>[TearDown]</code> + <code>[NonParallelizable]</code></h1>
+        <div class="stats">
+          <span class="chip">approved</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-04</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0007">
+          <div class="meta">
+            <span class="status-chip status-accepted">approved</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0007</span>
+          </div>
+
+          <section class="callout" id="reconciliation" style="border-left:4px solid var(--info);padding:8px 14px;background:var(--card-bg);border-radius:4px;margin:14px 0;">
+            <p style="margin:0;">
+              <strong>Reconciliation note — 2026-06-04 (sprint 002 impl-review iter-02).</strong>
+              This ADR was updated to describe the <em>as-built</em> implementation. There is <strong>no
+              <code>StaticStateFixture</code> type</strong> in the built code: the snapshot/restore logic is
+              inlined directly into <code>StaticStateTestBase</code>'s <code>[SetUp]</code>/<code>[TearDown]</code>
+              methods. <strong>Teardown-mechanism note — 2026-06-04 (sprint 002 impl-review):</strong> teardown
+              does <em>not</em> call <code>StatHelper.Rebuild()</code> or <code>WorkTypeStatMap.Rebuild()</code>; it
+              <strong>resets</strong> each cache by reflection-nulling its backing fields so the cache lazily
+              rebuilds under the next test's provider. This avoids triggering
+              <code>SkillStatMap.BuildMap()</code>'s game-context dependency (DefDatabase / Verse native calls,
+              unavailable in a headless test process) during teardown. The captured / reset-set membership and the
+              <code>[NonParallelizable]</code> serialization are unchanged. Status remains <strong>approved</strong>.
+            </p>
+          </section>
+
+          <h2 id="context">Context</h2>
+          <p>
+            Four test classes (<code>StatWeightTests</code>, <code>StatefulSubsystemTests</code>,
+            <code>StatRangesTests</code>, <code>StatLimitTests</code>) touch shared static caches and isolate via the xUnit seam
+            introduced in <a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>:
+            a <code>StaticStateFixture : IDisposable</code> snapshotted <code>DefProvider.Current</code> and
+            restored it (rebuilding <code>StatHelper</code>, <code>WorkTypeStatMap</code>, and reflection
+            resets of <code>SkillStatMap._map</code>,
+            <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>,
+            <code>StatRanges.Ranges</code>); <code>StaticStateTestBase</code> drove it per-test via ctor +
+            <code>Dispose</code>; and a <code>[CollectionDefinition("StaticState", DisableParallelization=true)]</code>
+            + <code>[Collection("StaticState")]</code> serialized the classes. ADR-0001 was deliberate that
+            per-test ctor+<code>Dispose</code> (not per-class <code>IClassFixture</code>) gives true per-test
+            isolation. The migration must preserve the isolation <em>contract</em> (the exact snapshot/restore
+            set) while re-expressing the xUnit lifecycle vocabulary in NUnit (PRD AC-22 … AC-25). This makes
+            ADR-0001's xUnit-specific prose inaccurate; that ADR is approved and persistent, so its wording
+            is remapped in place during this design-promote step (not edited silently).
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Re-express the ADR-0001 isolation seam in NUnit: keep the snapshot/restore body verbatim,
+            <strong>inline it directly into</strong> <code>StaticStateTestBase</code>, drive it from per-test
+            <code>[SetUp]</code> (snapshot) / <code>[TearDown]</code> (restore), and replace the xUnit
+            collection-serialization with NUnit's default non-parallel execution (made explicit via
+            <code>[NonParallelizable]</code>).
+          </p>
+          <ul>
+            <li>
+              <strong>Snapshot/reset preserved verbatim</strong> (AC-22): the set of snapshotted/reset
+              statics — <code>DefProvider.Current</code> (captured in <code>[SetUp]</code>, restored in
+              <code>[TearDown]</code>); <strong>reset</strong> of <code>StatHelper</code> (backing fields nulled
+              + <code>Stats</code> cleared) and <code>WorkTypeStatMap</code>
+              (<code>_autoSwitchStatsMap</code>/<code>_defaultStatsMap</code> nulled); reflection resets of
+              <code>SkillStatMap._map</code>,
+              <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>, and
+              <code>StatRanges.Ranges</code> — is unchanged as a <em>membership</em> contract. The
+              <strong>mechanism</strong> is uniform reflection-nulling of each cache's backing fields rather than
+              any <code>Rebuild()</code> call: teardown never invokes <code>StatHelper.Rebuild()</code> or
+              <code>WorkTypeStatMap.Rebuild()</code>, because those paths reach
+              <code>SkillStatMap.BuildMap()</code> / <code>DefProvider.Current.AllDefsListForReading()</code>,
+              which hit DefDatabase / Verse native calls unavailable in a headless test process. Nulling the
+              fields leaves each cache in its idle state so it lazily rebuilds under the next test's provider
+              (every test that needs a cache already calls the relevant <code>Rebuild()</code> in its own setup
+              after installing a <code>FakeDefProvider</code>). This body is framework-agnostic and is the actual
+              isolation contract from ADR-0001 (and the <code>StatRanges.Ranges</code> entry exists because
+              <a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>
+              keeps that cache mutable). The as-built form has <strong>no separate
+              <code>StaticStateFixture</code> type</strong>: the snapshot/restore logic lives inline in
+              <code>StaticStateTestBase</code>'s <code>[SetUp]</code>/<code>[TearDown]</code> methods, which is
+              simpler than carrying a dedicated disposable fixture type and is sufficient because the base
+              class is the only consumer.
+            </li>
+            <li>
+              <strong>Per-test lifecycle remap</strong> (AC-23): <code>StaticStateTestBase</code>'s
+              constructor → <code>[SetUp]</code> (capture <code>_originalProvider</code> = current provider);
+              its <code>Dispose()</code> → <code>[TearDown]</code> (restore the provider first, then reset the
+              dependent caches by reflection-nulling their backing fields). NUnit
+              <code>[SetUp]</code>/<code>[TearDown]</code> are per-test, matching
+              the original ctor+<code>Dispose</code> per-test granularity exactly — the deliberate ADR-0001
+              choice over per-class <code>IClassFixture</code> is preserved.
+            </li>
+            <li>
+              <strong>Serialization remap</strong> (AC-24): drop
+              <code>[CollectionDefinition("StaticState", DisableParallelization=true)]</code> and
+              <code>[Collection("StaticState")]</code>. NUnit runs <strong>non-parallel by default</strong>
+              (this project sets no <code>[Parallelizable]</code>/<code>[assembly: Parallelizable]</code>),
+              so the static-touching classes are already serialized. Apply <code>[NonParallelizable]</code>
+              to the four classes anyway, as an explicit, self-documenting statement of intent (belt-and-
+              suspenders against a future accidental opt-in to parallelism).
+            </li>
+            <li>
+              <strong>Relationship to ADR-0001.</strong> This ADR supersedes the
+              <em>xUnit-specific wording</em> of ADR-0001 (<code>StaticStateFixture</code> via
+              <code>IClassFixture</code>, <code>[Collection]</code> serialization,
+              <code>IDisposable</code> snapshot/restore) — <strong>not</strong> ADR-0001's isolation
+              <em>contract</em> or its <code>IDefProvider</code>/<code>InternalsVisibleTo</code> decisions,
+              which stand unchanged. ADR-0001's mechanism prose is remapped in place during this
+              design-promote step; ADR-0001 is not marked superseded as a whole — only its mechanism vocabulary
+              is updated, with a cross-link to this ADR.
+            </li>
+            <li>
+              <strong>No cross-test bleed</strong> (AC-25): running the full suite repeatedly and in any
+              order yields the same results; the 8 plain (non-isolated) classes are unaffected by the seam.
+            </li>
+            <li>
+              The <code>InternalsVisibleTo</code> grant and the internal reset/snapshot hooks from ADR-0001
+              remain in force; this remap introduces no new abstraction, layer, or dependency, so no fresh
+              Complication Approval is needed.
+            </li>
+          </ul>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Isolation contract is preserved bit-for-bit; only the lifecycle vocabulary changes, so the risk of altering what the suite verifies is minimal.</li>
+                <li>NUnit's non-parallel-by-default removes the need for an explicit serialization construct; <code>[NonParallelizable]</code> is documentation, not load-bearing wiring — simpler than the xUnit collection machinery.</li>
+                <li>Per-test <code>[SetUp]</code>/<code>[TearDown]</code> map 1:1 to the original per-test ctor+<code>Dispose</code>, keeping the deliberate per-test (not per-class) granularity from ADR-0001.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Approved-ADR remap:</strong> ADR-0001 (approved, persistent) described the seam in vocabulary the code no longer uses. The wording is remapped in place during this design-promote step, keeping the contract unchanged so only mechanism prose moves; the cross-link records the relationship.</li>
+                <li>Relying on NUnit's non-parallel default is implicit: if anyone later adds <code>[Parallelizable]</code> at assembly scope, the static-state suites would race and the snapshot/restore isolation would break. <code>[NonParallelizable]</code> on the four classes is the explicit guard, but a global parallel opt-in could still mis-order setup; the tech-reference notes "do not add <code>[assembly: Parallelizable]</code>".</li>
+                <li>The reflection-driven reset set is a maintained contract: if production adds a new static cache, the snapshot/restore set must be extended in lockstep or new cross-test bleed appears — same standing obligation as under xUnit, carried forward unchanged.</li>
+                <li>The <code>StaticStateTestBase</code> ctor→<code>[SetUp]</code> / <code>Dispose</code>→<code>[TearDown]</code> rewrite is behavior-sensitive (ordering of snapshot vs. test body); must be verified by repeated/random-order full runs (AC-25), not inspection.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Per-class <code>[OneTimeSetUp]</code>/<code>[OneTimeTearDown]</code> (snapshot once per class)</strong> — rejected: coarsens isolation to per-class, reversing ADR-0001's deliberate per-test choice; a test that mutates statics could then leak into the next test in the same class.</li>
+            <li><strong>Keep a serialization marker analogous to <code>[Collection]</code> (e.g. an explicit single-threaded fixture)</strong> — rejected: redundant given NUnit's non-parallel default; adds machinery for no behavioral gain.</li>
+            <li><strong>Mark ADR-0001 fully superseded and re-state the whole isolation decision here</strong> — rejected: ADR-0001's contract (<code>IDefProvider</code>, the snapshot set, <code>InternalsVisibleTo</code>) is unchanged and still authoritative; only the mechanism vocabulary moves, so a scoped vocabulary remap is correct, not a wholesale supersession.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-22</strong> — the snapshot/reset set (DefProvider.Current; StatHelper + WorkTypeStatMap; SkillStatMap, PassionHelper, StatRanges.Ranges) is preserved verbatim as a membership contract; teardown resets every cache by reflection-nulling its backing fields (no Rebuild() calls), so lazy rebuild happens under the next test's provider and SkillStatMap.BuildMap()'s game-context dependency is never triggered during teardown.</li>
+            <li><strong>AC-23</strong> — per-test ctor/Dispose remaps to per-test <code>[SetUp]</code>/<code>[TearDown]</code>, preserving per-test granularity.</li>
+            <li><strong>AC-24</strong> — xUnit <code>[Collection]</code> serialization drops to NUnit non-parallel default, made explicit with <code>[NonParallelizable]</code> on the four classes.</li>
+            <li><strong>AC-25</strong> — repeated/random-order full runs yield identical results; the 8 plain classes are unaffected.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html"><code>.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>: defines the isolation contract this ADR preserves; its xUnit vocabulary is remapped in place by this decision.</li>
+            <li><a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>: keeps <code>StatRanges.Ranges</code> mutable — why it is in the snapshot/restore set.</li>
+            <li><a href="adr-0006-rimworld-assemblyresolve-setupfixture.html">ADR-0006</a>: the other infra seam remapped in this migration (RimWorld resolver).</li>
+            <li><a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>: the framework swap whose non-parallel-by-default behavior this ADR leans on.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
+    </div>
+  </div>
+</body>
+</html>

@@ -7,14 +7,7 @@ namespace LordKuper.Common.Tests.Cache;
 /// </summary>
 public class TimedCacheTests
 {
-    private class TestTimedCache : TimedCache
-    {
-        public TestTimedCache(float updateInterval, bool updateOnFirstAccess = false) : base(
-            updateInterval, updateOnFirstAccess)
-        { }
-    }
-
-    [Fact]
+    [Test]
     public void Update_AfterDueReset_NewInterval()
     {
         // After update is due and processed, new interval starts
@@ -25,11 +18,11 @@ public class TimedCacheTests
         cache.Update(time1);
         var isDue2 = cache.Update(time2);
         var isDue3 = cache.Update(time3);
-        Assert.True(isDue2);
-        Assert.False(isDue3); // New interval starts from time2
+        isDue2.Should().BeTrue();
+        isDue3.Should().BeFalse(); // New interval starts from time2
     }
 
-    [Fact]
+    [Test]
     public void Update_CrossesMultipleDays()
     {
         // Time can span multiple days
@@ -38,10 +31,10 @@ public class TimedCacheTests
         var time2 = new RimWorldTime(0, 3, 0f); // 3 days = 72 hours later
         cache.Update(time1);
         var isDue = cache.Update(time2);
-        Assert.True(isDue); // 72 > 50
+        isDue.Should().BeTrue(); // 72 > 50
     }
 
-    [Fact]
+    [Test]
     public void Update_CrossesYears()
     {
         // Time can span multiple years
@@ -50,10 +43,10 @@ public class TimedCacheTests
         var time2 = new RimWorldTime(1, 0, 0f); // 1 year = 1440 hours later
         cache.Update(time1);
         var isDue = cache.Update(time2);
-        Assert.True(isDue); // 1440 > 1000
+        isDue.Should().BeTrue(); // 1440 > 1000
     }
 
-    [Fact]
+    [Test]
     public void Update_FirstCallWithTime_RecordsTime()
     {
         // First call records the time, regardless of updateOnFirstAccess
@@ -69,31 +62,31 @@ public class TimedCacheTests
         // Cache2: first call is not due, second is within interval
         cache2.Update(time1);
         var isDue2 = cache2.Update(time2); // 5 < 10, so not due
-        Assert.False(isDue1);
-        Assert.False(isDue2);
+        isDue1.Should().BeFalse();
+        isDue2.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Update_FirstCall_WithUpdateOnFirstAccess_ReturnsTrue()
     {
         // First call returns true if updateOnFirstAccess is true
         var cache = new TestTimedCache(10f, true);
         var time = new RimWorldTime(0, 0, 0f);
         var isDue = cache.Update(time);
-        Assert.True(isDue);
+        isDue.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Update_FirstCall_WithoutUpdateOnFirstAccess_ReturnsFalse()
     {
         // First call returns false if updateOnFirstAccess is false
         var cache = new TestTimedCache(10f);
         var time = new RimWorldTime(0, 0, 0f);
         var isDue = cache.Update(time);
-        Assert.False(isDue);
+        isDue.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Update_LargeInterval()
     {
         // Large intervals work correctly
@@ -102,10 +95,10 @@ public class TimedCacheTests
         var time2 = new RimWorldTime(10, 0, 0f); // ~14400 hours
         cache.Update(time1);
         var isDue = cache.Update(time2);
-        Assert.True(isDue);
+        isDue.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Update_MultipleCallsTracksLastUpdateTime()
     {
         // Update time advances with each call and interval is tracked from last update
@@ -116,11 +109,11 @@ public class TimedCacheTests
         cache.Update(time1);
         var isDue2 = cache.Update(time2); // Tracks from time1, not due yet
         var isDue3 = cache.Update(time3); // (16 - 0 = 16 >= 10) Should be due
-        Assert.False(isDue2);
-        Assert.True(isDue3); // (16 - 0) = 16 >= 10, so due
+        isDue2.Should().BeFalse();
+        isDue3.Should().BeTrue(); // (16 - 0) = 16 >= 10, so due
     }
 
-    [Fact]
+    [Test]
     public void Update_SecondCallAtExactInterval_ReturnsTrue()
     {
         // Update at exact interval boundary returns true
@@ -129,10 +122,10 @@ public class TimedCacheTests
         var time2 = new RimWorldTime(0, 0, 10f); // Exactly 10 hours later
         cache.Update(time1);
         var isDue = cache.Update(time2);
-        Assert.True(isDue);
+        isDue.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Update_SecondCallBeyondInterval_ReturnsTrue()
     {
         // Update beyond interval returns true
@@ -141,10 +134,10 @@ public class TimedCacheTests
         var time2 = new RimWorldTime(0, 0, 15f); // 15 hours later (more than 10 hour interval)
         cache.Update(time1);
         var isDue = cache.Update(time2);
-        Assert.True(isDue);
+        isDue.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Update_SecondCallWithinInterval_ReturnsFalse()
     {
         // Update within interval returns false
@@ -153,10 +146,10 @@ public class TimedCacheTests
         var time2 = new RimWorldTime(0, 0, 5f); // 5 hours later (less than 10 hour interval)
         cache.Update(time1);
         var isDue = cache.Update(time2);
-        Assert.False(isDue);
+        isDue.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Update_WithZeroInterval_AlwaysDue()
     {
         // Zero interval means always due (after first)
@@ -167,7 +160,14 @@ public class TimedCacheTests
         cache.Update(time1);
         var isDue2 = cache.Update(time2); // 0 >= 0 interval
         var isDue3 = cache.Update(time3); // 0.001 >= 0 interval
-        Assert.True(isDue2);
-        Assert.True(isDue3);
+        isDue2.Should().BeTrue();
+        isDue3.Should().BeTrue();
+    }
+
+    private class TestTimedCache : TimedCache
+    {
+        public TestTimedCache(float updateInterval, bool updateOnFirstAccess = false) : base(
+            updateInterval, updateOnFirstAccess)
+        { }
     }
 }

@@ -22,7 +22,7 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <!-- ADR-0001: expose internal Rebuild()/snapshot hooks to the Tests assembly. -->
+  <!-- Expose internal Rebuild()/snapshot hooks to the Tests assembly for per-test state isolation. -->
   <ItemGroup>
     <InternalsVisibleTo Include="LordKuper.Common.Tests" />
   </ItemGroup>

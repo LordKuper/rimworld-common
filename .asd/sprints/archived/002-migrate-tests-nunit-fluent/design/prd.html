@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: product requirements (sprint draft full scope, or persistent per-subsystem feature set)
+  excludes: ui mockups, design decisions, code, ux flows
+  delegates_to: ux-spec.html (ui + flows), adr.html (decisions)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="PRD">
+  <meta name="subsystem" content="sprint">
+  <meta name="sprint-id" content="002-migrate-tests-nunit-fluent">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-04">
+  <meta name="responsibility" content="product requirements (sprint draft full scope, or persistent per-subsystem feature set)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>PRD — Sprint 002 · migrate-tests-nunit-fluent</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    ol.goal-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    ol.goal-grid li { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; }
+    ol.goal-grid .num { flex: 0 0 auto; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+    ol.goal-grid p { margin: 0; }
+
+    details.role-group { border: 1px solid var(--border); border-radius: 6px; margin: 8px 0; background: var(--card-bg); }
+    details.role-group > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+    details.role-group > summary .count { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
+    details.role-group ul.stories { margin: 0; padding: 4px 16px 12px 28px; }
+    ul.stories li { margin: 4px 0; }
+    ul.stories b { color: var(--accent); font-weight: 600; }
+
+    table.ac-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+    .chip.prio-must   { background: var(--chip-must-bg);   color: var(--chip-must-fg); border-color: var(--chip-must-fg); }
+    .chip.prio-should { background: var(--chip-should-bg); color: var(--chip-should-fg); border-color: var(--chip-should-fg); }
+    .chip.prio-may    { background: var(--chip-may-bg);    color: var(--chip-may-fg); border-color: var(--chip-may-fg); }
+
+    ul.non-goals { margin: 0; padding-left: 22px; }
+    ul.non-goals li::marker { content: "⊘  "; color: var(--warn); }
+
+    /* definition-list pattern: Purpose / Entry / Exit / Notes */
+    dl.def-list { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 8px 0; }
+    dl.def-list dt { font-weight: 600; color: var(--muted); }
+    dl.def-list dd { margin: 0; }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      details.role-group[open] > summary { list-style: none; }
+      details.role-group { break-inside: avoid; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#goals">Goals</a></li>
+        <li><a href="#user-stories">User stories</a></li>
+        <li><a href="#acceptance-criteria">Acceptance criteria</a></li>
+        <li><a href="#assertion-mapping">Assertion mapping reference</a></li>
+        <li><a href="#ux">UX / UI</a></li>
+        <li><a href="#non-goals">Non-goals</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>PRD</span>
+          <span>sprint</span>
+          <span class="status-draft">draft</span>
+        </div>
+        <h1>PRD — Sprint 002 · migrate-tests-nunit-fluent</h1>
+        <div class="stats">
+          <span class="chip">5 goals</span>
+          <span class="chip">7 stories</span>
+          <span class="chip">28 AC</span>
+          <span class="chip">7 non-goals</span>
+          <span class="chip">updated 2026-06-04</span>
+        </div>
+      </header>
+      <main>
+<section id="problem" class="hero">
+  <h2>Problem</h2>
+  <p class="lede">The <code>Source/LordKuper.Common.Tests</code> project (net472) is written against xUnit, with all assertions in <code>Assert.*</code> form and a custom xUnit-specific test-framework seam (<code>[assembly: TestFramework]</code> + a RimWorld <code>AssemblyResolve</code> handler). The project standardizes on NUnit + FluentAssertions for more expressive, diff-rich assertions and a maintainable runner setup. The migration must swap the framework, the assertion library, the custom test infrastructure, and the local coverage tooling together — while preserving the suite's behaviour and overall coverage. Getting any one layer wrong (most notably the assembly-resolver timing) presents as mass test failure rather than an obvious wiring bug, so the requirements below are framed as concrete, verifiable checks across every affected layer.</p>
+</section>
+
+<section id="goals">
+  <h2>Goals</h2>
+  <ol class="goal-grid">
+    <li><span class="num">G1</span><p>Replace the xUnit package stack with NUnit + NUnit3TestAdapter + FluentAssertions 7.x in the test project, leaving the rest of the build governance intact.</p></li>
+    <li><span class="num">G2</span><p>Migrate every test attribute and every <code>Assert.*</code> call site to NUnit attributes and FluentAssertions <code>.Should()</code> form, preserving behaviour and the three intentionally-skipped tests.</p></li>
+    <li><span class="num">G3</span><p>Re-implement the custom RimWorld test infrastructure (assembly-resolve seam and static-state isolation) under NUnit with the same load-bearing contract.</p></li>
+    <li><span class="num">G4</span><p>Keep the suite building warning-clean under <code>TreatWarningsAsErrors</code> and fully discoverable/green under the NUnit3 adapter, with overall coverage equivalent.</p></li>
+    <li><span class="num">G5</span><p>Update the local coverage harness (<code>scripts/coverage.ps1</code>) and command registry so coverage runs correctly under NUnit; no in-repo CI workflow is added.</p></li>
+  </ol>
+</section>
+
+<section id="user-stories">
+  <h2>User stories</h2>
+
+  <details class="role-group" open>
+    <summary>Maintainer <span class="count">4</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a maintainer, <b>I want</b> the test project to reference NUnit, NUnit3TestAdapter and FluentAssertions 7.x instead of xUnit, <b>so that</b> the suite runs on the standardized, free-licensed stack. <em>(AC-1 … AC-4)</em></li>
+      <li><b>as</b> a maintainer, <b>I want</b> all xUnit attributes mapped to NUnit equivalents with the skipped tests preserved, <b>so that</b> the same set of tests exists and runs (or is intentionally ignored) after the swap. <em>(AC-5 … AC-9)</em></li>
+      <li><b>as</b> a maintainer, <b>I want</b> every <code>Assert.*</code> call replaced by an equivalent FluentAssertions <code>.Should()</code> assertion, <b>so that</b> failures are more readable and the assertion intent is preserved. <em>(AC-10 … AC-16)</em></li>
+      <li><b>as</b> a maintainer, <b>I want</b> the migration to be a behaviour-preserving refactor with overall coverage held equivalent, <b>so that</b> the swap does not silently weaken or change what the suite verifies. <em>(AC-17, AC-18, AC-26)</em></li>
+    </ul>
+  </details>
+
+  <details class="role-group" open>
+    <summary>Test engineer <span class="count">2</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a test engineer, <b>I want</b> the RimWorld <code>AssemblyResolve</code> seam re-implemented so it registers before any RimWorld-typed test class loads under NUnit, <b>so that</b> RimWorld/Unity-referencing tests resolve their types instead of failing at discovery. <em>(AC-19 … AC-21)</em></li>
+      <li><b>as</b> a test engineer, <b>I want</b> the StaticState snapshot/restore isolation preserved under NUnit per-test setup/teardown with no cross-test bleed, <b>so that</b> tests touching shared statics stay deterministic and serialized. <em>(AC-22 … AC-25)</em></li>
+    </ul>
+  </details>
+
+  <details class="role-group" open>
+    <summary>Maintainer (coverage) <span class="count">1</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a maintainer, <b>I want</b> the local AltCover coverage script and command registry to work with the NUnit3 adapter, <b>so that</b> I can still measure coverage locally after the migration. <em>(AC-27, AC-28)</em></li>
+    </ul>
+  </details>
+</section>
+
+<section id="acceptance-criteria">
+  <h2>Acceptance criteria</h2>
+  <p>Each criterion is one testable assertion. Area chips: <code>packaging</code>, <code>attributes</code>, <code>assertions</code>, <code>infra</code>, <code>isolation</code>, <code>build/run</code>, <code>coverage</code>. Counts referenced below are the audited current-state figures: 132 <code>[Fact]</code> (129 executed + 3 <code>[Fact(Skip=…)]</code>), 3 <code>[Theory]</code> expanding to 13 <code>[InlineData]</code> cases, and 236 <code>Assert.*</code> call sites across 12 distinct methods in 11 files; the migration must account for every one.</p>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-1"><td><a href="#AC-1">AC-1</a></td><td><code>LordKuper.Common.Tests.csproj</code> references <code>NUnit</code>, <code>NUnit3TestAdapter</code>, and <code>FluentAssertions</code> pinned to a 7.x version; no <code>xunit</code> or <code>xunit.runner.visualstudio</code> PackageReference remains.</td><td><span class="chip area">packaging</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-2"><td><a href="#AC-2">AC-2</a></td><td>The <code>FluentAssertions</code> reference resolves to the highest <code>7.x</code> (Apache-2.0) version and not to <code>8.x</code> or later (commercial license).</td><td><span class="chip area">packaging</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-3"><td><a href="#AC-3">AC-3</a></td><td><code>Microsoft.NET.Test.Sdk</code> (17.14.1) is retained, and <code>NUnit3TestAdapter</code> mirrors the existing runner convention (<code>PrivateAssets=all</code>, runtime/build asset includes) used previously by <code>xunit.runner.visualstudio</code>.</td><td><span class="chip area">packaging</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-4"><td><a href="#AC-4">AC-4</a></td><td>The global <code>&lt;Using Include="Xunit" /&gt;</code> is replaced by <code>NUnit.Framework</code> (and <code>FluentAssertions</code> as needed); <code>ImplicitUsings=enable</code> and the RimWorld <code>&lt;Reference&gt;</code> block, production <code>&lt;ProjectReference&gt;</code>, and <code>Directory.Build.props</code> inheritance are unchanged.</td><td><span class="chip area">packaging</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-5"><td><a href="#AC-5">AC-5</a></td><td>Every <code>[Fact]</code> attribute (132, including the 3 skipped) is migrated to <code>[Test]</code>; no <code>[Fact]</code> attribute remains in any test file.</td><td><span class="chip area">attributes</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-6"><td><a href="#AC-6">AC-6</a></td><td>Every <code>[Theory]</code> (3 methods: <code>MathHelperTests.NormalizeValue_Theory</code>, <code>EnumHelperTests.HasAllFlags_ReturnsExpected</code>, <code>EnumHelperTests.HasAnyFlag_ReturnsExpected</code>), being parameterized, is migrated to one <code>[TestCase(...)]</code> attribute per former <code>[InlineData(...)]</code> row and carries <b>no</b> standalone <code>[Test]</code> attribute — in NUnit each <code>[TestCase(...)]</code> both declares a runnable case and supplies its arguments, so adding <code>[Test]</code> to an argument-taking method would create a spurious, non-runnable case.</td><td><span class="chip area">attributes</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-7"><td><a href="#AC-7">AC-7</a></td><td>All 13 <code>[InlineData(...)]</code> rows (5 in MathHelper, 8 in EnumHelper) are migrated to <code>[TestCase(...)]</code>, preserving every argument tuple, including the EnumHelper enum-flag expressions and the MathHelper multi-arg cases.</td><td><span class="chip area">attributes</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-8"><td><a href="#AC-8">AC-8</a></td><td>The 3 skipped tests in <code>Filters/PawnFilterTests.cs</code> (<code>GetSummary_MultipleIndentationLevels_Respects</code>, <code>GetSummary_NoFiltersActive_ReturnsEmptyOrMinimal</code>, <code>GetSummary_WithIndentation_FormatsCorrectly</code>) are migrated to <code>[Test, Ignore("Requires live RimWorld context for Verse.Translator")]</code> — still present in the suite, reported as ignored, not deleted.</td><td><span class="chip area">attributes</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-9"><td><a href="#AC-9">AC-9</a></td><td>The migrated case inventory matches the pre-migration suite exactly: 132 <code>[Fact]</code> methods → 132 <code>[Test]</code> methods, of which 129 are executed and 3 are ignored (<code>[Test, Ignore(...)]</code>); plus 3 parameterized <code>[Theory]</code> methods whose 13 <code>[InlineData]</code> rows become 13 <code>[TestCase(...)]</code> cases — each parameterized method carrying <b>only</b> its <code>[TestCase(...)]</code> attributes and <b>no</b> standalone <code>[Test]</code> (so no spurious, non-runnable case is added). Executed cases = 129 single-case <code>[Test]</code> methods + 13 <code>[TestCase(...)]</code> parameterized cases = <b>142 executed</b> at the migration baseline, with <b>3 ignored</b> additionally reported. No pre-existing test method or case is silently dropped or duplicated. <b>As-delivered reconciliation:</b> after the behaviour-preserving migration was complete, <b>24 additional <code>StatLimit</code> unit tests</b> were added under explicit user authorization during implementation, for coverage recovery (see <a href="#AC-28">AC-28</a>) — pure-logic tests requiring no RimWorld harness, that re-cover code which the migration's per-test NUnit isolation legitimately stopped exercising. These are net-new tests, not migrated cases, and do not alter the <code>[Fact]</code>/<code>[Theory]</code>/<code>[TestCase]</code> migration mapping above. Delivered suite total: <b>142 migrated + 24 added = 166 executed</b>, with <b>3 ignored</b> additionally reported.</td><td><span class="chip area">attributes</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-10"><td><a href="#AC-10">AC-10</a></td><td>No <code>Xunit.Assert.*</code> call site remains anywhere a FluentAssertions equivalent exists; the 236 audited call sites across the 11 test files are converted to <code>.Should()</code> form.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-11"><td><a href="#AC-11">AC-11</a></td><td><code>Assert.Equal(exp, act)</code> sites are converted to <code>act.Should().Be(exp)</code> (collection-equality sites use the equivalent collection assertion), preserving expected/actual orientation.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-12"><td><a href="#AC-12">AC-12</a></td><td><code>Assert.Equal(exp, act, precision)</code> float sites (e.g. MathHelper precision <code>4</code>) are converted to <code>act.Should().BeApproximately(exp, tolerance)</code> with <code>tolerance = 10^-precision</code> (or the test author's intended epsilon), documented per site; the boundary/clamp cases are spot-checked to confirm equivalent pass/fail behaviour.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-13"><td><a href="#AC-13">AC-13</a></td><td><code>Assert.True</code>/<code>Assert.False</code> over a value comparison are converted to the value-comparing FluentAssertions form (e.g. <code>x.Should().Be(y)</code>) rather than the weaker <code>.Should().BeTrue()</code>, so the failure diff is preserved; plain boolean checks use <code>.Should().BeTrue()</code>/<code>.Should().BeFalse()</code>.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-should">should</span></td></tr>
+      <tr id="AC-14"><td><a href="#AC-14">AC-14</a></td><td>The remaining distinct xUnit assert methods in use (<code>Null</code>, <code>NotNull</code>, <code>Contains</code>, <code>DoesNotContain</code>, <code>Single</code>, <code>NotSame</code>, <code>Empty</code>, <code>NotEmpty</code>) are each converted to their documented FluentAssertions equivalent per the <a href="#assertion-mapping">assertion mapping reference</a>, with the correct collection-vs-substring overload chosen at each site.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-15"><td><a href="#AC-15">AC-15</a></td><td><code>Assert.Throws&lt;T&gt;(() =&gt; ...)</code> sites (in DefHelper, TextHelper, RimWorldTime, PawnFilter) are converted to <code>action.Should().Throw&lt;T&gt;()</code>, preserving the asserted exception type and any message/inner-exception assertion present at the site.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-16"><td><a href="#AC-16">AC-16</a></td><td>The PRD's <a href="#assertion-mapping">assertion mapping reference</a> table is the authoritative conversion contract; every conversion conforms to it, and any site that cannot map 1:1 (e.g. the precision nuance in AC-12) is called out as an explicit, reviewable edit.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-17"><td><a href="#AC-17">AC-17</a></td><td>Any assertion-strength change (tightening or pruning a weak/redundant assertion, permitted by the refactor+cleanup mode) is an explicit, individually reviewable edit — never an accidental side effect of mechanical conversion.</td><td><span class="chip area">assertions</span></td><td><span class="chip prio-should">should</span></td></tr>
+      <tr id="AC-18"><td><a href="#AC-18">AC-18</a></td><td>Production code in <code>Source/LordKuper.Common</code> is unchanged except where strictly required by the test migration; no test is removed to make the suite pass.</td><td><span class="chip area">build/run</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-19"><td><a href="#AC-19">AC-19</a></td><td>The xUnit framework seam (<code>[assembly: TestFramework(...)]</code> in <code>AssemblyInfo.cs</code> and <code>RimWorldTestFramework : XunitTestFramework</code>) is replaced by a global (namespace-less) NUnit <code>[SetUpFixture]</code> with <code>[OneTimeSetUp]</code>; no xUnit framework attribute or type remains.</td><td><span class="chip area">infra</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-20"><td><a href="#AC-20">AC-20</a></td><td>The RimWorld <code>AppDomain.AssemblyResolve</code> handler is registered before any RimWorld-typed test class loads, preserving the existing assembly-name match set (<code>Assembly-CSharp</code>, <code>Assembly-CSharp-firstpass</code>, <code>UnityEngine*</code>, <code>Unity.Burst</code>, <code>Unity.Collections</code>, <code>Unity.Mathematics</code>, <code>com.rlabrecque.steamworks.net</code>), the env-var lookup (<code>RIMWORLD_DIR</code>/<code>RimWorldDir</code> with the existing fallback path), the <code>Managed\&lt;name&gt;.dll</code> <code>Assembly.LoadFrom</code> resolution, and the null-for-others contract.</td><td><span class="chip area">infra</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-21"><td><a href="#AC-21">AC-21</a></td><td>The RimWorld-typed test suites that depend on the resolver (<code>StatWeightTests</code>, <code>RimWorldTimeTests</code>, <code>PawnFilterTests</code>) discover and run without <code>FileNotFoundException</code>/<code>TypeLoadException</code> under NUnit, confirming the resolver is live before type load.</td><td><span class="chip area">infra</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-22"><td><a href="#AC-22">AC-22</a></td><td>The StaticState snapshot/restore logic (snapshot of <code>DefProvider.Current</code>; restore + rebuild of <code>StatHelper</code>, <code>WorkTypeStatMap</code>, and reflection resets of <code>SkillStatMap._map</code>, <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>, <code>StatRanges.Ranges</code>) is preserved verbatim as the isolation contract — the set of snapshotted/restored statics is unchanged.</td><td><span class="chip area">isolation</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-23"><td><a href="#AC-23">AC-23</a></td><td>The snapshot/restore runs per-test under NUnit <code>[SetUp]</code> (snapshot) / <code>[TearDown]</code> (restore), preserving the original per-test isolation granularity (not per-class).</td><td><span class="chip area">isolation</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-24"><td><a href="#AC-24">AC-24</a></td><td>The three static-touching test classes (<code>StatWeightTests</code>, <code>StatefulSubsystemTests</code>, <code>StatRangesTests</code>) run non-parallel (assembly is non-parallel by default in NUnit; <code>[NonParallelizable]</code> applied where it makes the intent explicit), replacing the xUnit <code>[CollectionDefinition(... DisableParallelization=true)]</code>/<code>[Collection("StaticState")]</code> serialization.</td><td><span class="chip area">isolation</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-25"><td><a href="#AC-25">AC-25</a></td><td>There is no cross-test static-state bleed: running the full suite repeatedly and in any order yields the same results, with the 8 plain (non-isolated) test classes unaffected by the isolation seam.</td><td><span class="chip area">isolation</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-26"><td><a href="#AC-26">AC-26</a></td><td>The full test project builds under the inherited <code>Directory.Build.props</code> governance (<code>TreatWarningsAsErrors</code>, high WarningLevel, Nullable) with zero warnings/errors, and all tests — including the 3 ignored — are discovered and run green under the NUnit3 adapter via <code>dotnet test</code>.</td><td><span class="chip area">build/run</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-27"><td><a href="#AC-27">AC-27</a></td><td><code>scripts/coverage.ps1</code> runs end-to-end under the NUnit3 adapter: the AltCover instrument/collect flow and the step-3 RimWorld-DLL removal still cooperate with the ported runtime resolver, and the <code>--assemblyFilter xunit</code> is updated to exclude the NUnit adapter assemblies (<code>nunit.framework</code>, <code>NUnit3.TestAdapter</code>) instead, so coverage does not crash and the NUnit assemblies are not counted into the denominator.</td><td><span class="chip area">coverage</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-28"><td><a href="#AC-28">AC-28</a></td><td>The <code>.asd/project/commands.yaml</code> <code>test</code>/<code>coverage</code> commands still resolve and run correctly against the migrated suite (the wrapper command strings are runner-agnostic and need no change), and no <code>.github/</code> workflow or other in-repo CI config is added. Post-migration AltCover coverage of testable-core, as produced by <code>scripts/coverage.ps1</code> under the NUnit3 runner, MUST NOT regress below the sprint-001 delivered baseline of <b>38.2% testable-core</b> (recorded in <code>.asd/project/decisions-log.md</code>) minus a 1.0 percentage-point measurement-noise tolerance — i.e. measured coverage MUST be <b>&#8805; 37.2% testable-core</b>. The 37.2% floor is the objective pass/fail threshold. <b>As-delivered measured result: 41.08% testable-core (449 / 1093 points)</b>, above the 37.2% floor and above the 38.2% baseline. Note: the framework migration on its own dropped coverage to 37.05% — the migration's per-test NUnit isolation legitimately stopped exercising <code>SkillStatMap.BuildMap()</code>'s Unity-native ECall (which xUnit had incidentally counted); the 24 net-new <code>StatLimit</code> pure-logic unit tests added under explicit user authorization (see <a href="#AC-9">AC-9</a>) recovered coverage to the final verified <b>41.08%</b>.</td><td><span class="chip area">coverage</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="assertion-mapping">
+  <h2>Assertion mapping reference</h2>
+  <p><b>Authoritative single source of truth</b> for the <code>Assert.*</code>→<code>.Should()</code> per-method mapping (the conversion contract for AC-10 … AC-16). This PRD table is the canonical home of the mapping; other artifacts (e.g. ADR-0005) link here rather than duplicate it. All 12 distinct xUnit assert methods in use are listed; no other <code>Assert.*</code> method (<code>Same</code>, <code>IsType</code>, <code>Collection</code>, <code>Raises</code>, <code>Multiple</code>) appears in the suite.</p>
+  <table>
+    <thead>
+      <tr><th>xUnit <code>Assert</code></th><th>Approx. count</th><th>FluentAssertions 7.x form</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>Assert.Equal(exp, act)</code></td><td>~108</td><td><code>act.Should().Be(exp)</code></td><td>Collection-equality sites use <code>act.Should().Equal(exp)</code>; preserve expected/actual orientation.</td></tr>
+      <tr><td><code>Assert.Equal(exp, act, precision)</code></td><td>subset (e.g. MathHelper <code>,4</code>)</td><td><code>act.Should().BeApproximately(exp, 10^-precision)</code></td><td><b>Not 1:1.</b> xUnit precision = decimal places; FA tolerance = absolute. Choose tolerance ≈ <code>10^-precision</code> (AC-12) and spot-check boundary/clamp cases.</td></tr>
+      <tr><td><code>Assert.True(x)</code> / <code>Assert.False(x)</code></td><td>many</td><td><code>x.Should().BeTrue()</code> / <code>.BeFalse()</code></td><td>Prefer value-comparing form when <code>x</code> is a comparison, to keep the diff (AC-13).</td></tr>
+      <tr><td><code>Assert.Null</code> / <code>Assert.NotNull</code></td><td>several</td><td><code>.Should().BeNull()</code> / <code>.Should().NotBeNull()</code></td><td>Direct map.</td></tr>
+      <tr><td><code>Assert.Contains</code> / <code>Assert.DoesNotContain</code></td><td>several</td><td><code>.Should().Contain(...)</code> / <code>.Should().NotContain(...)</code></td><td>Both collection-element and string-substring overloads exist in FA; pick the one matching the site's argument type.</td></tr>
+      <tr><td><code>Assert.Single</code></td><td>several</td><td><code>.Should().ContainSingle()</code></td><td><code>.Should().HaveCount(1)</code> acceptable where the single element is not subsequently used.</td></tr>
+      <tr><td><code>Assert.Empty</code> / <code>Assert.NotEmpty</code></td><td>several</td><td><code>.Should().BeEmpty()</code> / <code>.Should().NotBeEmpty()</code></td><td>Direct map.</td></tr>
+      <tr><td><code>Assert.NotSame</code></td><td>2 (PawnFilter)</td><td><code>.Should().NotBeSameAs(...)</code></td><td>Reference inequality; direct map.</td></tr>
+      <tr><td><code>Assert.Throws&lt;T&gt;(() =&gt; ...)</code></td><td>several</td><td><code>action.Should().Throw&lt;T&gt;()</code></td><td>Lambda wrapping shape changes; preserve the asserted exception type and any message assertion (AC-15).</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ux">
+  <h2>UX / UI</h2>
+  <p><b>Not applicable.</b> This sprint is a test-suite migration with no user-facing surface — no UI, no UX flows, no mockups, no design system changes. UX-spec and accessibility artifacts are out of scope for this sprint.</p>
+</section>
+
+<section id="non-goals" class="callout warn">
+  <h2>Non-goals</h2>
+  <ul class="non-goals">
+    <li>Adding new test coverage beyond the existing suite — coverage stays equivalent overall, not expanded.</li>
+    <li>Changing production code in <code>Source/LordKuper.Common</code> except where strictly required by the migration.</li>
+    <li>Adding any in-repo CI workflow (<code>.github/workflows/</code>, pipeline YAML); the "CI config" scope reduces to <code>scripts/coverage.ps1</code> + <code>.asd/project/commands.yaml</code> only.</li>
+    <li>Migrating to FluentAssertions 8.x or any commercially-licensed assertion library — pinned to 7.x (Apache-2.0).</li>
+    <li>Deleting or permanently disabling the 3 RimWorld-context-dependent tests — they remain present as <code>[Test, Ignore(...)]</code>.</li>
+    <li>Changing build governance (<code>Directory.Build.props</code>: <code>TreatWarningsAsErrors</code>, WarningLevel, Nullable), the RimWorld reference set, or the production project reference.</li>
+    <li>Editing persistent design docs (xUnit/coverlet tech-references, <code>stack.html</code>, ADR-0001) or project rules (<code>custom-coding-rules.md</code>, <code>custom-common-rules.md</code>) in place — those updates route through the normal design → design-promote flow and are tracked in the audit's documentation migration plan, not this PRD.</li>
+  </ul>
+</section>
+      </main>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>

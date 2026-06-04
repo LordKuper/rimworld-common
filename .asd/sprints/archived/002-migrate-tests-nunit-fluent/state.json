@@ -1,0 +1,117 @@
+{
+  "sprint_id": "002-migrate-tests-nunit-fluent",
+  "branch": "sprint/002-migrate-tests-nunit-fluent",
+  "phase": "done",
+  "archived_at": "2026-06-04T13:16:27Z",
+  "reviews": {
+    "design": {
+      "iteration": 4,
+      "verdicts": {
+        "iter-01": {
+          "documentation": "CONCERNS",
+          "simplification": "CONCERNS",
+          "external": "FAIL",
+          "ui": "N/A"
+        },
+        "iter-02": {
+          "documentation": "APPROVE",
+          "simplification": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-03": {
+          "documentation": "APPROVE",
+          "simplification": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-04": {
+          "documentation": "APPROVE",
+          "simplification": "APPROVE",
+          "external": "APPROVE",
+          "ui": "N/A"
+        }
+      }
+    },
+    "impl": {
+      "iteration": 5,
+      "verdicts": {
+        "iter-01": {
+          "quality": "CONCERNS",
+          "implementation": "APPROVE",
+          "testing": "APPROVE",
+          "simplification": "CONCERNS",
+          "documentation": "CONCERNS",
+          "performance": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-02": {
+          "quality": "CONCERNS",
+          "implementation": "FAIL",
+          "testing": "APPROVE",
+          "simplification": "CONCERNS",
+          "documentation": "CONCERNS",
+          "performance": "APPROVE",
+          "external": "APPROVE",
+          "ui": "N/A"
+        },
+        "iter-03": {
+          "quality": "APPROVE",
+          "implementation": "APPROVE",
+          "testing": "APPROVE",
+          "simplification": "APPROVE",
+          "documentation": "CONCERNS",
+          "performance": "APPROVE",
+          "external": "APPROVE",
+          "ui": "N/A"
+        },
+        "iter-04": {
+          "quality": "APPROVE",
+          "implementation": "APPROVE",
+          "testing": "APPROVE",
+          "simplification": "APPROVE",
+          "documentation": "INCOMPLETE",
+          "performance": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-05": {
+          "quality": "APPROVE",
+          "implementation": "APPROVE",
+          "testing": "APPROVE",
+          "simplification": "APPROVE",
+          "documentation": "APPROVE",
+          "performance": "APPROVE",
+          "external": "APPROVE",
+          "ui": "N/A"
+        }
+      }
+    }
+  },
+  "created_at": "2026-06-04T08:17:27Z",
+  "updated_at": "2026-06-04T13:08:30Z",
+  "review_fixes_pending": null,
+  "subsystems_touched": [],
+  "new_subsystems": [],
+  "escalations": [
+    {
+      "phase": "impl-review",
+      "iteration": 2,
+      "reviewer": "implementation",
+      "verdict": "FAIL",
+      "resolution": "overridden-by-user",
+      "recorded_at": "2026-06-04T12:24:37Z",
+      "detail": "Implementation FAIL adjudicated as false alarm. AC-28 coverage independently verified by orchestrator 3x at 41.08% (449/1093); reviewer cited a stale 37.05% figure from plan.md:107 (pre-recovery). AC-9 case-count delta is the user-authorized +24 StatLimit coverage-recovery tests, not a scope violation. User directed AC-28/AC-9 treated as SATISFIED; remaining doc-reconciliation CONCERNS routed to impl fix round (iter-03)."
+    },
+    {
+      "phase": "pr",
+      "iteration": null,
+      "reviewer": "user",
+      "verdict": "AUTHORIZED",
+      "resolution": "in-scope-production-fix",
+      "recorded_at": "2026-06-04T13:08:30Z",
+      "detail": "PR-gate user-authorized production change. The previously-deferred out-of-scope StatLimit infinite-recursion bug was pulled in as an in-scope production fix by user direction. Root cause: StatLimit.Initialize() override unconditionally called EnsureConfigured() -> Configure(Def) -> Def -> Initialize() -> EnsureConfigured() cycle; _isConfigured never set because outer Configure never returned (stuck resolving Def) -> StackOverflow for new StatLimit()/new StatLimit(string) before any external Def resolution. Fix: added a _configuring re-entry guard in StatLimit.EnsureConfigured() (try/finally) so the nested call short-circuits and the outer Configure completes. Siblings (PawnSkillLimit, PawnCapacityLimit, PawnTraitLimit) confirmed NOT affected (no EnsureConfigured/Configure/Initialize-override pattern; constant caps). +10 regression tests. AC-18 PRD non-goal 'production code unchanged except as required by the migration' explicitly SUPERSEDED for this one user-authorized fix; production code (StatLimit.cs) WAS changed by user direction. Orchestrator-verified: build 0/0 (Release), 176 pass / 0 fail / 3 ignored, AltCover coverage 42.21% (463/1097), above the >=37.2% floor; focused quality review of the fix APPROVE with zero findings. Phase remains impl-review (DoD already met); heading to pr."
+    }
+  ]
+}

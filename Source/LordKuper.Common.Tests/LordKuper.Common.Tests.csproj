@@ -13,10 +13,32 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
+    <PackageReference Include="NUnit" Version="4.6.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="6.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="7.2.2" />
+    <!-- NUnit3TestAdapter 6.x pulls Microsoft.Testing.Platform and its extensions as transitive
+         dependencies. On net472, those packages target netstandard2.1/net6+ and their DLLs land
+         in the test bin. When the NUnit engine worker AppDomain probes the bin dir it finds them,
+         fails to load them (netstandard 2.1 not available on net472), and marks the assembly
+         NotRunnable → 0 tests discovered.
+         Fix: override the transitives with ExcludeAssets=all so their runtime DLLs are not copied. -->
+    <PackageReference Include="Microsoft.Testing.Platform" Version="2.1.0">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Testing.Platform.MSBuild" Version="2.1.0">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Testing.Extensions.VSTestBridge" Version="2.1.0">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Testing.Extensions.Telemetry" Version="2.1.0">
+      <ExcludeAssets>all</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport.Abstractions" Version="2.1.0">
+      <ExcludeAssets>all</ExcludeAssets>
     </PackageReference>
   </ItemGroup>
 
@@ -25,7 +47,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <Using Include="NUnit.Framework" />
+    <Using Include="FluentAssertions" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,5 +70,27 @@
     </Reference>
   </ItemGroup>
 
+  <!-- Copy RimWorld DLLs that NUnit's worker AppDomain needs to load test-fixture types.
+       NUnit calls Assembly.GetTypes() and GetCustomAttributes(true) during discovery; both
+       require Assembly-CSharp and its netstandard 2.1 transitive chain to be resolvable in
+       the bin directory (the AssemblyResolve hook fires too late for reflection-only scanning).
+       Private=False on the <Reference> items above keeps them out of the normal copy step;
+       this target restores them explicitly so the test host finds them at runtime. -->
+  <Target Name="CopyRimWorldTestDeps" AfterTargets="Build">
+    <ItemGroup>
+      <_RimWorldTestDep Include="$(RimWorldManagedDir)\Assembly-CSharp.dll" />
+      <_RimWorldTestDep Include="$(RimWorldManagedDir)\Assembly-CSharp-firstpass.dll" />
+      <_RimWorldTestDep Include="$(RimWorldManagedDir)\UnityEngine.CoreModule.dll" />
+      <_RimWorldTestDep Include="$(RimWorldManagedDir)\UnityEngine.IMGUIModule.dll" />
+      <_RimWorldTestDep Include="$(RimWorldManagedDir)\UnityEngine.TextRenderingModule.dll" />
+      <!-- RimWorld ships netstandard.dll v2.1.0.0. On net472 only netstandard 2.0 is in the GAC;
+           Assembly-CSharp and all UnityEngine modules reference netstandard 2.1, so without this
+           copy GetCustomAttributes(true) fails with "netstandard, Version=2.1.0.0 not found". -->
+      <_RimWorldTestDep Include="$(RimWorldManagedDir)\netstandard.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_RimWorldTestDep)"
+          DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>
