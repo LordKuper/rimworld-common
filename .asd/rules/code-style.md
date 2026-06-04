@@ -54,6 +54,7 @@ Implementation-level rules for code-writing agents (Backend Dev, Frontend Dev, T
 
 - Code (comments, doc strings, string literals) must not reference project documents (rules, ADR, PRD, UX spec, decisions log, sprint files).
 - Code is the SSoT for behavior; in-code document references rot once those documents move.
+- Do not quote or paraphrase document text in code; replace with a brief standalone rationale (e.g. `not deterministic by design`).
 - Exception: `TODO` markers may carry a reference, since they are tracked and removed.
 
 ## 9. Types and Contracts
