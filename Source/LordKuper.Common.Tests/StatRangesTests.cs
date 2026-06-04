@@ -8,11 +8,10 @@ namespace LordKuper.Common.Tests;
 ///     Covers adaptive range expansion and order-dependence of NormalizeStatValue.
 ///     StatRanges maintains per-stat adaptive ranges and is cleared between tests via StaticStateFixture.
 /// </summary>
-[Collection("StaticState")]
+[NonParallelizable]
 public class StatRangesTests : StaticStateTestBase
 {
-
-    [Fact]
+    [Test]
     public void NormalizeStatValue_FirstValue_ExpandsRange()
     {
         // First call initializes the range [value, value], then normalizes
@@ -25,11 +24,11 @@ public class StatRangesTests : StaticStateTestBase
         // First call with any value expands range from [value, value]
         var result = StatRanges.NormalizeStatValue(statDef, 50f);
 
-        // Should not throw and return a valid float
-        Assert.True(!float.IsNaN(result) && !float.IsInfinity(result));
+        // Should not throw and return a valid float (preserve original compound check as value form)
+        (!float.IsNaN(result) && !float.IsInfinity(result)).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void NormalizeStatValue_LargeRanges_Supported()
     {
         // Large value ranges are handled without numeric overflow
@@ -41,12 +40,12 @@ public class StatRangesTests : StaticStateTestBase
         var small = StatRanges.NormalizeStatValue(statDef, 1000f);
         var large = StatRanges.NormalizeStatValue(statDef, 1_000_000f);
 
-        // Both should be valid (no overflow)
-        Assert.True(!float.IsNaN(small) && !float.IsInfinity(small));
-        Assert.True(!float.IsNaN(large) && !float.IsInfinity(large));
+        // Both should be valid (no overflow); compound validity check preserved as boolean form
+        (!float.IsNaN(small) && !float.IsInfinity(small)).Should().BeTrue();
+        (!float.IsNaN(large) && !float.IsInfinity(large)).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void NormalizeStatValue_MultipleStats_IndependentRanges()
     {
         // Each stat maintains its own independent range
@@ -66,12 +65,12 @@ public class StatRangesTests : StaticStateTestBase
         StatRanges.NormalizeStatValue(statDef2, 100f);
         var norm2200 = StatRanges.NormalizeStatValue(statDef2, 200f);
 
-        // Both should succeed independently
-        Assert.True(!float.IsNaN(norm120) && !float.IsInfinity(norm120));
-        Assert.True(!float.IsNaN(norm2200) && !float.IsInfinity(norm2200));
+        // Both should succeed independently; compound validity check preserved as boolean form
+        (!float.IsNaN(norm120) && !float.IsInfinity(norm120)).Should().BeTrue();
+        (!float.IsNaN(norm2200) && !float.IsInfinity(norm2200)).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void NormalizeStatValue_NegativeValues_Supported()
     {
         // Negative values are handled in range expansion
@@ -84,13 +83,13 @@ public class StatRangesTests : StaticStateTestBase
         var neg5 = StatRanges.NormalizeStatValue(statDef, -5f);
         var zero = StatRanges.NormalizeStatValue(statDef, 0f);
 
-        // All should be valid floats
-        Assert.True(!float.IsNaN(neg10) && !float.IsInfinity(neg10));
-        Assert.True(!float.IsNaN(neg5) && !float.IsInfinity(neg5));
-        Assert.True(!float.IsNaN(zero) && !float.IsInfinity(zero));
+        // All should be valid floats; compound validity check preserved as boolean form
+        (!float.IsNaN(neg10) && !float.IsInfinity(neg10)).Should().BeTrue();
+        (!float.IsNaN(neg5) && !float.IsInfinity(neg5)).Should().BeTrue();
+        (!float.IsNaN(zero) && !float.IsInfinity(zero)).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void NormalizeStatValue_SecondValue_UpdatesRange()
     {
         // Second call updates the range if value is outside [min, max]
@@ -103,13 +102,13 @@ public class StatRangesTests : StaticStateTestBase
         var second = StatRanges.NormalizeStatValue(statDef, 20f); // Range: [10, 20]
         var third = StatRanges.NormalizeStatValue(statDef, 15f); // Range: [10, 20]
 
-        // All should be valid normalized values
-        Assert.True(!float.IsNaN(first) && !float.IsInfinity(first));
-        Assert.True(!float.IsNaN(second) && !float.IsInfinity(second));
-        Assert.True(!float.IsNaN(third) && !float.IsInfinity(third));
+        // All should be valid normalized values; compound validity check preserved as boolean form
+        (!float.IsNaN(first) && !float.IsInfinity(first)).Should().BeTrue();
+        (!float.IsNaN(second) && !float.IsInfinity(second)).Should().BeTrue();
+        (!float.IsNaN(third) && !float.IsInfinity(third)).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void NormalizeStatValue_ZeroValue()
     {
         // Zero value is handled
@@ -119,6 +118,7 @@ public class StatRangesTests : StaticStateTestBase
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
         var result = StatRanges.NormalizeStatValue(statDef, 0f);
-        Assert.True(!float.IsNaN(result) && !float.IsInfinity(result));
+        // compound validity check preserved as boolean form
+        (!float.IsNaN(result) && !float.IsInfinity(result)).Should().BeTrue();
     }
 }

@@ -6,42 +6,41 @@ namespace LordKuper.Common.Tests;
 /// <summary>
 ///     Tests for <see cref="StatWeight" /> construction, weight math, and serialization.
 /// </summary>
-[Collection("StaticState")]
+[NonParallelizable]
 public class StatWeightTests : StaticStateTestBase
 {
-
-    [Fact]
+    [Test]
     public void Ctor_Parameterless_InitializesEmpty()
     {
         // Parameterless constructor for serialization
         var weight = new StatWeight();
-        Assert.Null(weight.StatDef);
-        Assert.Null(weight.StatDefName);
-        Assert.Equal(0f, weight.Weight);
-        Assert.False(weight.Protected);
+        weight.StatDef.Should().BeNull();
+        weight.StatDefName.Should().BeNull();
+        weight.Weight.Should().Be(0f);
+        weight.Protected.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Ctor_WithNameWeightAndProtection_StoresAll()
     {
         // Constructor with defName, weight and protection flag
         var weight = new StatWeight("TestStat", 1.0f, true);
-        Assert.Equal("TestStat", weight.StatDefName);
-        Assert.True(weight.Protected);
-        Assert.Equal(1.0f, weight.Weight);
+        weight.StatDefName.Should().Be("TestStat");
+        weight.Protected.Should().BeTrue();
+        weight.Weight.Should().Be(1.0f);
     }
 
-    [Fact]
+    [Test]
     public void Ctor_WithStatDefNameAndWeight_StoresAll()
     {
         // Constructor with defName, weight, and protection
         var weight = new StatWeight("TestStat", 1.5f, false);
-        Assert.Equal("TestStat", weight.StatDefName);
-        Assert.Equal(1.5f, weight.Weight);
-        Assert.False(weight.Protected);
+        weight.StatDefName.Should().Be("TestStat");
+        weight.Weight.Should().Be(1.5f);
+        weight.Protected.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void ExposeData_RoundTrip_PreservesState()
     {
         // ExposeData for serialization (simplified test without actual Scribe infrastructure)
@@ -49,49 +48,50 @@ public class StatWeightTests : StaticStateTestBase
 
         // In real scenarios, ExposeData would be called within a Scribe context.
         // Here we're just ensuring it doesn't throw and is implemented.
-        Assert.Null(Record.Exception(() => original.ExposeData()));
+        var act = () => original.ExposeData();
+        act.Should().NotThrow();
     }
 
-    [Fact]
+    [Test]
     public void MultipleInstances_IndependentState()
     {
         // Multiple StatWeight instances do not share state
         var weight1 = new StatWeight("Stat1", 1.0f, true);
         var weight2 = new StatWeight("Stat2", 2.0f, false);
-        Assert.Equal("Stat1", weight1.StatDefName);
-        Assert.Equal("Stat2", weight2.StatDefName);
-        Assert.Equal(1.0f, weight1.Weight);
-        Assert.Equal(2.0f, weight2.Weight);
-        Assert.True(weight1.Protected);
-        Assert.False(weight2.Protected);
+        weight1.StatDefName.Should().Be("Stat1");
+        weight2.StatDefName.Should().Be("Stat2");
+        weight1.Weight.Should().Be(1.0f);
+        weight2.Weight.Should().Be(2.0f);
+        weight1.Protected.Should().BeTrue();
+        weight2.Protected.Should().BeFalse();
         weight1.Weight = 3.0f;
-        Assert.Equal(3.0f, weight1.Weight);
-        Assert.Equal(2.0f, weight2.Weight);
+        weight1.Weight.Should().Be(3.0f);
+        weight2.Weight.Should().Be(2.0f);
     }
 
-    [Fact]
+    [Test]
     public void Protected_CanBeModified()
     {
         // Protected property getter/setter
         var weight = new StatWeight("TestStat", 0.0f, false);
-        Assert.False(weight.Protected);
+        weight.Protected.Should().BeFalse();
         weight.Protected = true;
-        Assert.True(weight.Protected);
+        weight.Protected.Should().BeTrue();
         weight.Protected = false;
-        Assert.False(weight.Protected);
+        weight.Protected.Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void StatDefName_ReturnsStoredName()
     {
         // StatDefName property returns the stored name
         var weight = new StatWeight("MyStat", 0.0f, false);
-        Assert.Equal("MyStat", weight.StatDefName);
+        weight.StatDefName.Should().Be("MyStat");
         var weight2 = new StatWeight();
-        Assert.Null(weight2.StatDefName);
+        weight2.StatDefName.Should().BeNull();
     }
 
-    [Fact]
+    [Test]
     public void StatDef_FromName_LazyInitialization()
     {
         // StatDef is lazily resolved from StatDefName via StatHelper
@@ -104,11 +104,11 @@ public class StatWeightTests : StaticStateTestBase
 
         // Should lazily resolve the StatDef via StatHelper.GetStatDef
         var resolved = weight.StatDef;
-        Assert.NotNull(resolved);
-        Assert.Equal("TestStat", resolved.defName);
+        resolved.Should().NotBeNull();
+        resolved!.defName.Should().Be("TestStat");
     }
 
-    [Fact]
+    [Test]
     public void StatDef_LazyInitialization_ResolvesByName()
     {
         // StatDef property resolves the def from the name on first access
@@ -123,11 +123,11 @@ public class StatWeightTests : StaticStateTestBase
 
         // First access to StatDef should resolve it
         var resolved = weight.StatDef;
-        Assert.NotNull(resolved);
-        Assert.Equal("TestStat", resolved.defName);
+        resolved.Should().NotBeNull();
+        resolved!.defName.Should().Be("TestStat");
     }
 
-    [Fact]
+    [Test]
     public void StatDef_NonExistentDef_ReturnsNull()
     {
         // Accessing StatDef for a non-existent def returns null
@@ -136,42 +136,43 @@ public class StatWeightTests : StaticStateTestBase
         StatHelper.Rebuild();
         var weight = new StatWeight("NonExistent", 0.5f, false);
         var resolved = weight.StatDef;
-        Assert.Null(resolved);
+        resolved.Should().BeNull();
     }
 
-    [Fact]
+    [Test]
     public void WeightCap_Constant_IsSet()
     {
         // WeightCap constant is defined (even if not enforced)
-        Assert.Equal(2f, StatWeight.WeightCap);
+        StatWeight.WeightCap.Should().Be(2f);
     }
 
-    [Fact]
+    [Test]
     public void Weight_CanBeModified()
     {
         // Weight property can be set independently
         var weight = new StatWeight("TestStat", 1.0f, false);
-        Assert.Equal(1.0f, weight.Weight);
+        weight.Weight.Should().Be(1.0f);
         weight.Weight = 0.5f;
-        Assert.Equal(0.5f, weight.Weight);
+        weight.Weight.Should().Be(0.5f);
         weight.Weight = 2.0f;
-        Assert.Equal(2.0f, weight.Weight);
+        weight.Weight.Should().Be(2.0f);
     }
 
-    [Fact]
+    [Test]
     public void Weight_ExceedsWeightCap_Stored()
     {
         // Weights > WeightCap are stored (cap is not enforced at construction)
         var weight = new StatWeight("TestStat", 5.0f, false);
-        Assert.Equal(5.0f, weight.Weight);
-        Assert.True(weight.Weight > StatWeight.WeightCap);
+        weight.Weight.Should().Be(5.0f);
+        // Explicit comparison kept as value form to preserve the diff
+        weight.Weight.Should().BeGreaterThan(StatWeight.WeightCap);
     }
 
-    [Fact]
+    [Test]
     public void Weight_NegativeValue_Stored()
     {
         // Negative weights are stored (though semantically unusual)
         var weight = new StatWeight("TestStat", -0.5f, false);
-        Assert.Equal(-0.5f, weight.Weight);
+        weight.Weight.Should().Be(-0.5f);
     }
 }

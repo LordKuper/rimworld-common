@@ -5,267 +5,273 @@ namespace LordKuper.Common.Tests;
 /// </summary>
 public class RimWorldTimeTests
 {
-    [Fact]
+    [Test]
     public void CompareTo_EarlierTime_ReturnsNegative()
     {
         var earlier = new RimWorldTime(0, 0, 0f);
         var later = new RimWorldTime(1, 0, 0f);
-        Assert.True(earlier.CompareTo(later) < 0);
+        // Preserve value-comparison form: CompareTo result < 0
+        earlier.CompareTo(later).Should().BeLessThan(0);
     }
 
-    [Fact]
+    [Test]
     public void CompareTo_LaterTime_ReturnsPositive()
     {
         var earlier = new RimWorldTime(1, 0, 0f);
         var later = new RimWorldTime(2, 0, 0f);
-        Assert.True(later.CompareTo(earlier) > 0);
+        // Preserve value-comparison form: CompareTo result > 0
+        later.CompareTo(earlier).Should().BeGreaterThan(0);
     }
 
-    [Fact]
+    [Test]
     public void CompareTo_Object_WithNonRimWorldTime_Throws()
     {
         var time = new RimWorldTime(1, 0, 0f);
-        Assert.Throws<ArgumentException>(() => time.CompareTo("not a rimworld time"));
+        var act = () => time.CompareTo("not a rimworld time");
+        act.Should().Throw<ArgumentException>();
     }
 
-    [Fact]
+    [Test]
     public void CompareTo_Object_WithNull_ReturnsPositive()
     {
         var time = new RimWorldTime(1, 0, 0f);
-        Assert.Equal(1, time.CompareTo(null));
+        time.CompareTo(null).Should().Be(1);
     }
 
-    [Fact]
+    [Test]
     public void CompareTo_SameValue_ReturnsZero()
     {
         var time1 = new RimWorldTime(1, 5, 10.5f);
         var time2 = new RimWorldTime(1, 5, 10.5f);
-        Assert.Equal(0, time1.CompareTo(time2));
+        time1.CompareTo(time2).Should().Be(0);
     }
 
-    [Fact]
+    [Test]
     public void CompareTo_SameYearDaySameDay_ComparesByHour()
     {
         var hour1 = new RimWorldTime(1, 5, 10f);
         var hour2 = new RimWorldTime(1, 5, 11f);
-        Assert.True(hour1.CompareTo(hour2) < 0);
+        // Preserve value-comparison form: CompareTo result < 0
+        hour1.CompareTo(hour2).Should().BeLessThan(0);
     }
 
-    [Fact]
+    [Test]
     public void CompareTo_SameYearDifferentDay_ComparesByDay()
     {
         var day1 = new RimWorldTime(1, 5, 10f);
         var day2 = new RimWorldTime(1, 6, 10f);
-        Assert.True(day1.CompareTo(day2) < 0);
+        // Preserve value-comparison form: CompareTo result < 0
+        day1.CompareTo(day2).Should().BeLessThan(0);
     }
 
-    [Fact]
+    [Test]
     public void Ctor_FromTotalHours_CalculatesYearDayHour()
     {
         // 1 year = 60 days * 24 hours = 1440 hours
         // 1 day = 24 hours
         // Total: 2 years + 3 days + 5 hours = 2*1440 + 3*24 + 5 = 2880 + 72 + 5 = 2957 hours
         var time = new RimWorldTime(2957f);
-        Assert.Equal(2, time.Year);
-        Assert.Equal(3, time.Day);
-        Assert.Equal(5f, time.Hour);
+        time.Year.Should().Be(2);
+        time.Day.Should().Be(3);
+        time.Hour.Should().Be(5f);
     }
 
-    [Fact]
+    [Test]
     public void Ctor_FromTotalHours_NegativeThrows()
     {
         // Negative total hours throws ArgumentOutOfRangeException
-        Assert.Throws<ArgumentOutOfRangeException>(() => new RimWorldTime(-1f));
+        var act = () => new RimWorldTime(-1f);
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    [Fact]
+    [Test]
     public void Ctor_FromTotalHours_Zero_ValidatesAtOrigin()
     {
         var time = new RimWorldTime(0f);
-        Assert.Equal(0, time.Year);
-        Assert.Equal(0, time.Day);
-        Assert.Equal(0f, time.Hour);
+        time.Year.Should().Be(0);
+        time.Day.Should().Be(0);
+        time.Hour.Should().Be(0f);
     }
 
-    [Fact]
+    [Test]
     public void Ctor_FromYearDayHour_CalculatesTotalHours()
     {
         // Constructor from year/day/hour components
         var time = new RimWorldTime(1, 5, 12.5f);
-        Assert.Equal(1, time.Year);
-        Assert.Equal(5, time.Day);
-        Assert.Equal(12.5f, time.Hour);
+        time.Year.Should().Be(1);
+        time.Day.Should().Be(5);
+        time.Hour.Should().Be(12.5f);
     }
 
-    [Fact]
+    [Test]
     public void Equals_DifferentValue_ReturnsFalse()
     {
         var time1 = new RimWorldTime(1, 5, 10.5f);
         var time2 = new RimWorldTime(1, 5, 11.5f);
-        Assert.False(time1.Equals(time2));
+        time1.Equals(time2).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Equals_Object_WithDifferentType_ReturnsFalse()
     {
         var time = new RimWorldTime(1, 5, 10.5f);
         object notATime = "not a time";
-        Assert.False(time.Equals(notATime));
+        time.Equals(notATime).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void Equals_Object_WithSameValue_ReturnsTrue()
     {
         var time1 = new RimWorldTime(1, 5, 10.5f);
         object time2 = new RimWorldTime(1, 5, 10.5f);
-        Assert.True(time1.Equals(time2));
+        time1.Equals(time2).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void Equals_SameValue_ReturnsTrue()
     {
         var time1 = new RimWorldTime(1, 5, 10.5f);
         var time2 = new RimWorldTime(1, 5, 10.5f);
-        Assert.True(time1.Equals(time2));
+        time1.Equals(time2).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void GetHashCode_SameValue_SameHash()
     {
         var time1 = new RimWorldTime(1, 5, 10.5f);
         var time2 = new RimWorldTime(1, 5, 10.5f);
-        Assert.Equal(time1.GetHashCode(), time2.GetHashCode());
+        time1.GetHashCode().Should().Be(time2.GetHashCode());
     }
 
-    [Fact]
+    [Test]
     public void OperatorEqual_DifferentValue_ReturnsFalse()
     {
         var time1 = new RimWorldTime(1, 5, 10f);
         var time2 = new RimWorldTime(1, 5, 11f);
-        Assert.False(time1 == time2);
+        (time1 == time2).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void OperatorEqual_SameValue_ReturnsTrue()
     {
         var time1 = new RimWorldTime(1, 5, 10f);
         var time2 = new RimWorldTime(1, 5, 10f);
-        Assert.True(time1 == time2);
+        (time1 == time2).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorGreaterThanOrEqual_LaterTime_ReturnsTrue()
     {
         var later = new RimWorldTime(1, 0, 0f);
         var earlier = new RimWorldTime(0, 0, 0f);
-        Assert.True(later >= earlier);
+        (later >= earlier).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorGreaterThanOrEqual_SameTime_ReturnsTrue()
     {
         var time1 = new RimWorldTime(1, 5, 10f);
         var time2 = new RimWorldTime(1, 5, 10f);
-        Assert.True(time1 >= time2);
+        (time1 >= time2).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorGreaterThan_EarlierTime_ReturnsFalse()
     {
         var earlier = new RimWorldTime(0, 0, 0f);
         var later = new RimWorldTime(1, 0, 0f);
-        Assert.False(earlier > later);
+        (earlier > later).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void OperatorGreaterThan_LaterTime_ReturnsTrue()
     {
         var later = new RimWorldTime(1, 0, 0f);
         var earlier = new RimWorldTime(0, 0, 0f);
-        Assert.True(later > earlier);
+        (later > earlier).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorLessThanOrEqual_EarlierTime_ReturnsTrue()
     {
         var earlier = new RimWorldTime(0, 0, 0f);
         var later = new RimWorldTime(1, 0, 0f);
-        Assert.True(earlier <= later);
+        (earlier <= later).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorLessThanOrEqual_SameTime_ReturnsTrue()
     {
         var time1 = new RimWorldTime(1, 5, 10f);
         var time2 = new RimWorldTime(1, 5, 10f);
-        Assert.True(time1 <= time2);
+        (time1 <= time2).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorLessThan_EarlierTime_ReturnsTrue()
     {
         var earlier = new RimWorldTime(0, 0, 0f);
         var later = new RimWorldTime(1, 0, 0f);
-        Assert.True(earlier < later);
+        (earlier < later).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorLessThan_LaterTime_ReturnsFalse()
     {
         var later = new RimWorldTime(1, 0, 0f);
         var earlier = new RimWorldTime(0, 0, 0f);
-        Assert.False(later < earlier);
+        (later < earlier).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void OperatorMinus_TwoTimes_ReturnsDifferenceInHours()
     {
         var time1 = new RimWorldTime(1, 0, 10f);
         var time2 = new RimWorldTime(1, 0, 5f);
         var diff = time1 - time2;
-        Assert.Equal(5f, diff);
+        diff.Should().Be(5f);
     }
 
-    [Fact]
+    [Test]
     public void OperatorNotEqual_DifferentValue_ReturnsTrue()
     {
         var time1 = new RimWorldTime(1, 5, 10f);
         var time2 = new RimWorldTime(1, 5, 11f);
-        Assert.True(time1 != time2);
+        (time1 != time2).Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void OperatorNotEqual_SameValue_ReturnsFalse()
     {
         var time1 = new RimWorldTime(1, 5, 10f);
         var time2 = new RimWorldTime(1, 5, 10f);
-        Assert.False(time1 != time2);
+        (time1 != time2).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void OperatorPlus_TimeAndHours_HandlesOverflow()
     {
         var time = new RimWorldTime(1, 0, 20f);
         var result = time + 10f; // 30 hours = 1 day + 6 hours
-        Assert.Equal(1, result.Day);
-        Assert.Equal(6f, result.Hour);
+        result.Day.Should().Be(1);
+        result.Hour.Should().Be(6f);
     }
 
-    [Fact]
+    [Test]
     public void OperatorPlus_TimeAndHours_ReturnsNewTime()
     {
         var time = new RimWorldTime(1, 0, 10f);
         var result = time + 5f;
-        Assert.Equal(15f, result.Hour);
+        result.Hour.Should().Be(15f);
     }
 
-    [Fact]
+    [Test]
     public void ToString_FormatsCorrectly()
     {
         var time = new RimWorldTime(1, 5, 10.5f);
         var str = time.ToString();
-        Assert.Contains("1", str); // year
-        Assert.Contains("5", str); // day
-        Assert.Contains("10", str); // hour
+        str.Should().Contain("1"); // year
+        str.Should().Contain("5"); // day
+        str.Should().Contain("10"); // hour
     }
 }

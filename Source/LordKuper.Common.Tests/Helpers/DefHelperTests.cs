@@ -10,12 +10,13 @@ namespace LordKuper.Common.Tests.Helpers;
 /// </summary>
 public class DefHelperTests
 {
-    [Fact]
+    [Test]
     public void GetLabel_NullDef_Throws()
     {
         // Null def throws ArgumentNullException
         Def? nullDef = null;
-        Assert.Throws<ArgumentNullException>(() => nullDef!.GetLabel());
+        var act = () => nullDef!.GetLabel();
+        act.Should().Throw<ArgumentNullException>();
     }
 
     // Note: Additional DefHelper tests (e.g., label caching, WorkTypeDef behavior)

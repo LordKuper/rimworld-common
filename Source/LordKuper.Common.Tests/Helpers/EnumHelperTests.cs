@@ -14,91 +14,94 @@ public enum TestFlags
 
 public class EnumHelperTests
 {
-    [Theory]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA, true)]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA | TestFlags.FlagB, true)]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagC, false)]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.None, false)]
-    public void HasAllFlags_ReturnsExpected(TestFlags value, TestFlags flags, bool expected)
-    {
-        Assert.Equal(expected, EnumHelper.HasAllFlags(value, flags));
-    }
-
-    [Theory]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA, true)]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagC, false)]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagB | TestFlags.FlagC, true)]
-    [InlineData(TestFlags.FlagA | TestFlags.FlagB, TestFlags.None, false)]
-    public void HasAnyFlag_ReturnsExpected(TestFlags value, TestFlags flags, bool expected)
-    {
-        Assert.Equal(expected, EnumHelper.HasAnyFlag(value, flags));
-    }
-
-    [Fact]
+    [Test]
     public void AbsentFlags_AllFlagsPresent_ReturnsNone()
     {
         const TestFlags value =
             TestFlags.FlagA | TestFlags.FlagB | TestFlags.FlagC | TestFlags.FlagD;
         var absent = EnumHelper.AbsentFlags(value);
-        Assert.Equal(TestFlags.None, absent);
+        absent.Should().Be(TestFlags.None);
     }
 
-    [Fact]
+    [Test]
     public void AbsentFlags_ReturnsAbsentFlags()
     {
         const TestFlags value = TestFlags.FlagA | TestFlags.FlagC;
         var absent = EnumHelper.AbsentFlags(value);
-        Assert.True(absent.HasFlag(TestFlags.FlagB));
-        Assert.True(absent.HasFlag(TestFlags.FlagD));
-        Assert.False(absent.HasFlag(TestFlags.FlagA));
-        Assert.False(absent.HasFlag(TestFlags.FlagC));
+        // Preserve value-comparison form: HasFlag checks as individual .Be() assertions
+        absent.HasFlag(TestFlags.FlagB).Should().BeTrue();
+        absent.HasFlag(TestFlags.FlagD).Should().BeTrue();
+        absent.HasFlag(TestFlags.FlagA).Should().BeFalse();
+        absent.HasFlag(TestFlags.FlagC).Should().BeFalse();
     }
 
-    [Fact]
+    [Test]
     public void GetUniqueFlags_ReturnsAllSetFlags()
     {
         const TestFlags value = TestFlags.FlagA | TestFlags.FlagC | TestFlags.FlagD;
         var unique = EnumHelper.GetUniqueFlags(value);
         var result = new HashSet<TestFlags>(unique);
-        Assert.Contains(TestFlags.FlagA, result);
-        Assert.Contains(TestFlags.FlagC, result);
-        Assert.Contains(TestFlags.FlagD, result);
-        Assert.DoesNotContain(TestFlags.FlagB, result);
-        Assert.DoesNotContain(TestFlags.None, result);
+        result.Should().Contain(TestFlags.FlagA);
+        result.Should().Contain(TestFlags.FlagC);
+        result.Should().Contain(TestFlags.FlagD);
+        result.Should().NotContain(TestFlags.FlagB);
+        result.Should().NotContain(TestFlags.None);
     }
 
-    [Fact]
+    [Test]
     public void GetUniqueFlags_ReturnsUniqueFlagsExcludingSpecified()
     {
         const TestFlags value = TestFlags.FlagA | TestFlags.FlagB | TestFlags.FlagC;
         const TestFlags excluded = TestFlags.FlagB;
         var unique = EnumHelper.GetUniqueFlags(value, excluded);
         var result = new HashSet<TestFlags>(unique);
-        Assert.Contains(TestFlags.FlagA, result);
-        Assert.Contains(TestFlags.FlagC, result);
-        Assert.DoesNotContain(TestFlags.FlagB, result);
+        result.Should().Contain(TestFlags.FlagA);
+        result.Should().Contain(TestFlags.FlagC);
+        result.Should().NotContain(TestFlags.FlagB);
     }
 
-    [Fact]
+    [Test]
     public void GetUniqueFlags_SingleFlag_ReturnsThatFlag()
     {
         var unique = EnumHelper.GetUniqueFlags(TestFlags.FlagB);
         var result = new List<TestFlags>(unique);
-        Assert.Single(result);
-        Assert.Equal(TestFlags.FlagB, result[0]);
+        result.Should().ContainSingle();
+        result[0].Should().Be(TestFlags.FlagB);
     }
 
-    [Fact]
+    [Test]
     public void GetUniqueFlags_ZeroValue_ReturnsEmpty()
     {
         var unique = EnumHelper.GetUniqueFlags(TestFlags.None, TestFlags.None);
-        Assert.Empty(unique);
+        unique.Should().BeEmpty();
     }
 
-    [Fact]
+    [Test]
     public void GetUniqueFlags_ZeroValue_ReturnsEmptyCollection()
     {
         var unique = EnumHelper.GetUniqueFlags(TestFlags.None);
-        Assert.Empty(unique);
+        unique.Should().BeEmpty();
+    }
+
+    // [TestCase] only — no standalone [Test] on this parameterized method (AC-6/AC-7).
+    // Enum-flag expressions like TestFlags.FlagA | TestFlags.FlagB are valid [TestCase] args
+    // because they are constant expressions.
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA, true)]
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA | TestFlags.FlagB, true)]
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagC, false)]
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.None, false)]
+    public void HasAllFlags_ReturnsExpected(TestFlags value, TestFlags flags, bool expected)
+    {
+        EnumHelper.HasAllFlags(value, flags).Should().Be(expected);
+    }
+
+    // [TestCase] only — no standalone [Test] on this parameterized method (AC-6/AC-7).
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA, true)]
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagC, false)]
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagB | TestFlags.FlagC, true)]
+    [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.None, false)]
+    public void HasAnyFlag_ReturnsExpected(TestFlags value, TestFlags flags, bool expected)
+    {
+        EnumHelper.HasAnyFlag(value, flags).Should().Be(expected);
     }
 }
