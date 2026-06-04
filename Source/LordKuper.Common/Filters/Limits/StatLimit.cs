@@ -38,6 +38,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
     public ToStringStyle ValueStyle;
 
     private bool _isConfigured;
+    private bool _configuring;
     private string? _maxValueBuffer;
     private string? _minValueBuffer;
 
@@ -273,10 +274,26 @@ public class StatLimit : DefCache<StatDef>, IExposable
         _isConfigured = true;
     }
 
+    /// <summary>
+    ///     Ensures caps and value style are configured before any property access.
+    ///     Guards against re-entrant calls: accessing <see cref="Def" /> inside
+    ///     <see cref="Configure" /> triggers <see cref="DefCache{T}.Initialize" />, which calls
+    ///     back into this method before the outer <c>Configure</c> completes. The
+    ///     <c>_configuring</c> flag short-circuits that nested call so the outer
+    ///     <c>Configure</c> can finish and set <c>_isConfigured = true</c>.
+    /// </summary>
     private void EnsureConfigured()
     {
-        if (_isConfigured) return;
-        Configure(Def);
+        if (_isConfigured || _configuring) return;
+        _configuring = true;
+        try
+        {
+            Configure(Def);
+        }
+        finally
+        {
+            _configuring = false;
+        }
     }
 
     /// <summary>

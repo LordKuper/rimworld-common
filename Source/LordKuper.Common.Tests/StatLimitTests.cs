@@ -1,4 +1,5 @@
 using LordKuper.Common.Filters.Limits;
+using LordKuper.Common.Helpers;
 using RimWorld;
 using Verse;
 
@@ -293,5 +294,111 @@ public class StatLimitTests : StaticStateTestBase
         // Buffers should also be empty after null reset.
         limit.MaxValueBuffer.Should().BeEmpty();
         limit.MinValueBuffer.Should().BeEmpty();
+    }
+
+    // -------------------------------------------------------------------------
+    // Regression: EnsureConfigured re-entrancy guard (parameterless / string ctors)
+    // Previously these paths triggered infinite recursion via
+    //   property → EnsureConfigured → Configure(Def) → Def → Initialize
+    //   → EnsureConfigured (again, _isConfigured still false) → StackOverflow.
+    // The parameterless ctor leaves _defName null so Def resolves to null and Configure(null)
+    // runs, producing caps ±1000. The string ctor with an unresolvable name also resolves Def
+    // to null (StatHelper.GetStatDef returns null) and follows the same Configure(null) path.
+    // Note: caps are populated lazily (the first property access triggers EnsureConfigured), so
+    // LimitMinCap/LimitMaxCap assertions must follow at least one property access.
+    // Note: string-ctor tests install a FakeDefProvider and call StatHelper.Rebuild() so that
+    // the _statDefsByName dictionary (nulled by TearDownStaticState in prior tests) is restored
+    // to a clean empty state before GetStatDef("SomeStat") is called.
+    // -------------------------------------------------------------------------
+
+    [Test]
+    public void Ctor_Parameterless_MinValue_DoesNotStackOverflow_AndReturnsNull()
+    {
+        // Configure(null) path: no StatDef resolved; caps default to ±1000.
+        // MinValue at LimitMinCap (-1000) with empty buffer → null.
+        var limit = new StatLimit();
+        limit.MinValue.Should().BeNull();
+    }
+
+    [Test]
+    public void Ctor_Parameterless_MaxValue_DoesNotStackOverflow_AndReturnsNull()
+    {
+        var limit = new StatLimit();
+        limit.MaxValue.Should().BeNull();
+    }
+
+    [Test]
+    public void Ctor_Parameterless_MinValueBuffer_DoesNotStackOverflow_AndReturnsEmpty()
+    {
+        var limit = new StatLimit();
+        limit.MinValueBuffer.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Ctor_Parameterless_MaxValueBuffer_DoesNotStackOverflow_AndReturnsEmpty()
+    {
+        var limit = new StatLimit();
+        limit.MaxValueBuffer.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Ctor_Parameterless_CapsDefaultToConfigureNull()
+    {
+        // Caps are populated lazily on first property access; access MinValue first to trigger
+        // EnsureConfigured, then assert the public cap fields reflect Configure(null) defaults.
+        var limit = new StatLimit();
+        _ = limit.MinValue; // trigger EnsureConfigured → Configure(null)
+        limit.LimitMinCap.Should().BeApproximately(-1000f, 0.001f);
+        limit.LimitMaxCap.Should().BeApproximately(1000f, 0.001f);
+    }
+
+    [Test]
+    public void Ctor_String_MinValue_DoesNotStackOverflow_AndReturnsNull()
+    {
+        // "SomeStat" is not registered → Def resolves to null → Configure(null) → caps ±1000.
+        // FakeDefProvider + Rebuild ensures _statDefsByName is non-null (restored from teardown).
+        DefProvider.Current = new FakeDefProvider();
+        StatHelper.Rebuild();
+        var limit = new StatLimit("SomeStat");
+        limit.MinValue.Should().BeNull();
+    }
+
+    [Test]
+    public void Ctor_String_MaxValue_DoesNotStackOverflow_AndReturnsNull()
+    {
+        DefProvider.Current = new FakeDefProvider();
+        StatHelper.Rebuild();
+        var limit = new StatLimit("SomeStat");
+        limit.MaxValue.Should().BeNull();
+    }
+
+    [Test]
+    public void Ctor_String_MinValueBuffer_DoesNotStackOverflow_AndReturnsEmpty()
+    {
+        DefProvider.Current = new FakeDefProvider();
+        StatHelper.Rebuild();
+        var limit = new StatLimit("SomeStat");
+        limit.MinValueBuffer.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Ctor_String_MaxValueBuffer_DoesNotStackOverflow_AndReturnsEmpty()
+    {
+        DefProvider.Current = new FakeDefProvider();
+        StatHelper.Rebuild();
+        var limit = new StatLimit("SomeStat");
+        limit.MaxValueBuffer.Should().BeEmpty();
+    }
+
+    [Test]
+    public void Ctor_String_CapsDefaultToConfigureNull()
+    {
+        // Caps are populated lazily; access MinValue first to trigger EnsureConfigured.
+        DefProvider.Current = new FakeDefProvider();
+        StatHelper.Rebuild();
+        var limit = new StatLimit("SomeStat");
+        _ = limit.MinValue; // trigger EnsureConfigured → Configure(null)
+        limit.LimitMinCap.Should().BeApproximately(-1000f, 0.001f);
+        limit.LimitMaxCap.Should().BeApproximately(1000f, 0.001f);
     }
 }
