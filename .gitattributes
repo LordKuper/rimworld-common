@@ -1,0 +1,15 @@
+# Deterministic line endings for every clone, independent of each developer's
+# core.autocrlf setting. Text files are stored and checked out as LF everywhere;
+# this matches what the build/test tooling writes, so there are no CRLF rewrites.
+* text=auto eol=lf
+
+# Binary assets — never normalize or diff as text.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.psd  binary
+*.dll  binary
+*.pdb  binary
+*.exe  binary
