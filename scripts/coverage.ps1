@@ -42,7 +42,7 @@ foreach ($d in $rimworldDlls) { Copy-Item (Join-Path $managed "$d.dll") $bin -Fo
 # 2. instrument LordKuper.Common only, excluding UI + game-bound types from the denominator
 Write-Host '== instrument =='
 altcover --inplace --save -i $bin `
-  --assemblyFilter Tests --assemblyFilter nunit --assemblyFilter coverlet --assemblyFilter Microsoft `
+  --assemblyFilter Tests --assemblyFilter nunit --assemblyFilter Microsoft `
   --assemblyFilter System --assemblyFilter mscorlib --assemblyFilter UnityEngine --assemblyFilter Assembly-CSharp --assemblyFilter netstandard `
   --typeFilter 'LordKuper\.Common\.UI' --typeFilter 'LordKuper\.Common\.Resources' --typeFilter 'WeaponStats' `
   --typeFilter 'ToolStats' --typeFilter 'CommonMod' --typeFilter 'Compatibility' --typeFilter 'Logger' `
