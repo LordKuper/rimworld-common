@@ -268,3 +268,12 @@ Append-only. Never edited or removed. New entries appended below.
 - **Decision**: Impl fix for iter-03 — the single HIGH documentation finding (static-touching `[NonParallelizable]` class count) resolved by the architect: corrected **three → four** classes (the fourth is `StatLimitTests`, added during the user-authorized +24 StatLimit coverage-recovery round) in ADR-0007 and the `nunit-4.6.1.md` tech-reference. No code changed, so the verification gate is unchanged: build 0 warnings / 0 errors, 166 passed / 3 ignored, AltCover coverage 41.08%. Phase returns to `impl-review`.
 - **Rationale**: The finding was a documentation↔as-built count drift only; reconciling the doc count to the four-class as-built suite closes the gap without touching test or production logic, preserving the green verification gate.
 - **Affected docs**: design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/nunit-4.6.1.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — impl-review iter 05: APPROVE — DoD met (sprint 002)
+
+- **Decision**: impl-review DoD met at iteration 05. All seven required reviewers APPROVE at the critical floor — quality, implementation, testing, simplification, documentation, performance, external; UI N/A. `review_fixes_pending` cleared; sprint advances to `pr`.
+- **Final verified state** (independent orchestrator verification): build 0 warnings / 0 errors (Release); 166 tests pass / 0 fail / 3 ignored under NUnit3; AltCover coverage 40.9% (447/1093), above the ≥37.2% floor.
+- **Resolved**: the iter-04 teardown BuildMap/Unity-ECall hazard resolved via reflection-null caches.
+- **Carried out of scope**: the StatLimit ctor-recursion bug remains logged as a separate out-of-scope task; not a blocker for this sprint.
+- **Rationale**: With all required reviewers at APPROVE and the green verification gate (clean Release build, full NUnit3 pass, coverage above floor), the impl⇄impl-review cycle terminates and the sprint proceeds to PR.
+- **Affected docs**: .asd/sprints/002-migrate-tests-nunit-fluent/state.json

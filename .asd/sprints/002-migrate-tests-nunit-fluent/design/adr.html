@@ -592,7 +592,12 @@ source: ""
             This ADR was updated to describe the <em>as-built</em> implementation. There is <strong>no
             <code>StaticStateFixture</code> type</strong> in the built code: the snapshot/restore logic is
             inlined directly into <code>StaticStateTestBase</code>'s <code>[SetUp]</code>/<code>[TearDown]</code>.
-            The captured-state set and the <code>[NonParallelizable]</code> serialization are unchanged.
+            <strong>Teardown-mechanism note — 2026-06-04 (sprint 002 impl-review):</strong> teardown does
+            <em>not</em> call <code>StatHelper.Rebuild()</code> or <code>WorkTypeStatMap.Rebuild()</code>; it
+            <strong>resets</strong> each cache by reflection-nulling its backing fields so the cache lazily
+            rebuilds under the next test's provider, which avoids triggering
+            <code>SkillStatMap.BuildMap()</code>'s game-context dependency during teardown. The captured /
+            reset-set membership and the <code>[NonParallelizable]</code> serialization are unchanged.
           </section>
 
           <h3 id="adr-0007-context">Context</h3>
@@ -624,12 +629,22 @@ source: ""
           </p>
           <ul>
             <li>
-              <strong>Snapshot/restore preserved verbatim</strong> (AC-22): the set of snapshotted/restored
+              <strong>Snapshot/reset preserved verbatim</strong> (AC-22): the set of snapshotted/reset
               statics — <code>DefProvider.Current</code> (captured in <code>[SetUp]</code>, restored in
-              <code>[TearDown]</code>); rebuild of <code>StatHelper</code> and <code>WorkTypeStatMap</code>;
-              reflection resets of <code>SkillStatMap._map</code>,
+              <code>[TearDown]</code>); <strong>reset</strong> of <code>StatHelper</code> (backing fields nulled
+              + <code>Stats</code> cleared) and <code>WorkTypeStatMap</code>
+              (<code>_autoSwitchStatsMap</code>/<code>_defaultStatsMap</code> nulled); reflection resets of
+              <code>SkillStatMap._map</code>,
               <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>, and
-              <code>StatRanges.Ranges</code> — is unchanged. This body is framework-agnostic and is the actual
+              <code>StatRanges.Ranges</code> — is unchanged as a <em>membership</em> contract. The
+              <strong>mechanism</strong> is uniform reflection-nulling of each cache's backing fields rather than
+              any <code>Rebuild()</code> call: teardown never invokes <code>StatHelper.Rebuild()</code> or
+              <code>WorkTypeStatMap.Rebuild()</code>, because those paths reach
+              <code>SkillStatMap.BuildMap()</code> / <code>DefProvider.Current.AllDefsListForReading()</code>,
+              which hit DefDatabase / Verse native calls unavailable in a headless test process. Nulling the
+              fields leaves each cache in its idle state so it lazily rebuilds under the next test's provider
+              (every test that needs a cache already calls the relevant <code>Rebuild()</code> in its own setup
+              after installing a <code>FakeDefProvider</code>). This body is framework-agnostic and is the actual
               isolation contract from ADR-0001 (and the <code>StatRanges.Ranges</code> entry exists because
               <a href="../../../design/architecture/adr/adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>
               keeps that cache mutable). The as-built form has <strong>no separate
@@ -641,8 +656,9 @@ source: ""
             <li>
               <strong>Per-test lifecycle remap</strong> (AC-23): <code>StaticStateTestBase</code>'s
               constructor → <code>[SetUp]</code> (capture <code>_originalProvider</code> = current provider);
-              its <code>Dispose()</code> → <code>[TearDown]</code> (restore the provider, then rebuild/reset
-              the dependent caches). NUnit <code>[SetUp]</code>/<code>[TearDown]</code> are per-test, matching
+              its <code>Dispose()</code> → <code>[TearDown]</code> (restore the provider first, then reset the
+              dependent caches by reflection-nulling their backing fields). NUnit
+              <code>[SetUp]</code>/<code>[TearDown]</code> are per-test, matching
               the original ctor+<code>Dispose</code> per-test granularity exactly — the deliberate ADR-0001
               choice over per-class <code>IClassFixture</code> is preserved.
             </li>
