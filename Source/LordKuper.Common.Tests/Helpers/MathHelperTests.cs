@@ -90,8 +90,8 @@ public class MathHelperTests
         result.Should().Be(0.5f);
     }
 
-    // [TestCase] only — no standalone [Test] on this parameterized method (AC-6/AC-7).
-    // Precision 4 → tolerance 1e-4 (xUnit decimal-places → FA absolute-band; AC-12).
+    // [TestCase] only — no standalone [Test] on this parameterized method.
+    // xUnit precision:4 rounds to 4 decimal places (band ±0.5e-4); faithful equivalent is 5e-5f.
     [TestCase(10f, 10f, 20f, 0f)]
     [TestCase(15f, 10f, 20f, 0.5f)]
     [TestCase(20f, 10f, 20f, 1f)]
@@ -101,8 +101,8 @@ public class MathHelperTests
     {
         var range = new FloatRange(min, max);
         var result = MathHelper.NormalizeValue(value, range);
-        // Precision 4 → absolute tolerance 1e-4 (AC-12 semantic-shift site)
-        result.Should().BeApproximately(expected, 1e-4f);
+        // Faithful equivalent of xUnit precision:4 (rounds to 4 decimal places, band ±0.5e-4)
+        result.Should().BeApproximately(expected, 5e-5f);
     }
 
     [Test]

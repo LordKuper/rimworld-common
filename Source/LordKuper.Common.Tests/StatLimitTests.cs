@@ -13,6 +13,7 @@ namespace LordKuper.Common.Tests;
 ///     <c>toStringStyle = FloatTwo</c> replicates the <c>Configure(null)</c> defaults exactly.
 /// </summary>
 [NonParallelizable]
+[SetCulture("en-US")]
 public class StatLimitTests : StaticStateTestBase
 {
     // ------------------------------------------------------------------
