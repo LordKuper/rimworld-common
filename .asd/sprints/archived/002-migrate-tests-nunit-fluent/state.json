@@ -1,7 +1,8 @@
 {
   "sprint_id": "002-migrate-tests-nunit-fluent",
   "branch": "sprint/002-migrate-tests-nunit-fluent",
-  "phase": "impl-review",
+  "phase": "done",
+  "archived_at": "2026-06-04T13:16:27Z",
   "reviews": {
     "design": {
       "iteration": 4,
