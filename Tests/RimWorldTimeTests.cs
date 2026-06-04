@@ -2,7 +2,6 @@ namespace LordKuper.Common.Tests;
 
 /// <summary>
 ///     Tests for <see cref="RimWorldTime" /> pure paths (arithmetic, comparison, equality, operators).
-///     AC-17: pure-path coverage for RimWorldTime.
 /// </summary>
 public class RimWorldTimeTests
 {
@@ -75,7 +74,7 @@ public class RimWorldTimeTests
     [Fact]
     public void Ctor_FromTotalHours_NegativeThrows()
     {
-        // AC-17: negative total hours throws ArgumentOutOfRangeException
+        // Negative total hours throws ArgumentOutOfRangeException
         Assert.Throws<ArgumentOutOfRangeException>(() => new RimWorldTime(-1f));
     }
 
@@ -91,7 +90,7 @@ public class RimWorldTimeTests
     [Fact]
     public void Ctor_FromYearDayHour_CalculatesTotalHours()
     {
-        // AC-17: constructor from year/day/hour components
+        // Constructor from year/day/hour components
         var time = new RimWorldTime(1, 5, 12.5f);
         Assert.Equal(1, time.Year);
         Assert.Equal(5, time.Day);

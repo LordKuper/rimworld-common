@@ -4,7 +4,7 @@ using Verse;
 namespace LordKuper.Common.Tests.Helpers;
 
 /// <summary>
-///     Tests for <see cref="DefHelper" /> label retrieval and caching (AC-17, AC-20).
+///     Tests for <see cref="DefHelper" /> label retrieval and caching.
 ///     Note: These tests exercise the pure logic of DefHelper.
 ///     Tests requiring live Def instantiation are skipped [ExcludeFromCodeCoverage].
 /// </summary>
@@ -13,7 +13,7 @@ public class DefHelperTests
     [Fact]
     public void GetLabel_NullDef_Throws()
     {
-        // AC-17: Null def throws ArgumentNullException
+        // Null def throws ArgumentNullException
         Def? nullDef = null;
         Assert.Throws<ArgumentNullException>(() => nullDef!.GetLabel());
     }

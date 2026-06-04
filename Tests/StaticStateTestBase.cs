@@ -6,7 +6,7 @@ namespace LordKuper.Common.Tests;
 ///     xUnit creates a fresh instance of the test class for every <c>[Fact]</c>, so
 ///     constructing a <see cref="StaticStateFixture" /> here and disposing it in
 ///     <see cref="Dispose" /> gives true <em>per-test</em> save/restore — matching the
-///     requirement in <c>custom-coding-rules.md §Testing</c> (AC-15, AC-16, AC-19).
+///     requirement for static-state isolation per test.
 /// </summary>
 /// <remarks>
 ///     Test classes that inherit this base must also carry

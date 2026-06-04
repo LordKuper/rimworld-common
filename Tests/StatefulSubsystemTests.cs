@@ -9,8 +9,7 @@ using PawnHealthState = LordKuper.Common.Filters.PawnHealthState;
 namespace LordKuper.Common.Tests;
 
 /// <summary>
-///     Task 10 stateful subsystem tests (AC-20).
-///     Tests that require FakeDefProvider and StaticStateFixture to isolate global state.
+///     Stateful subsystem tests that require FakeDefProvider and StaticStateFixture to isolate global state.
 ///     Covers: StatHelper, WorkTypeStatMap, SkillStatMap, StatRanges, StatWeight,
 ///     PawnFilter limits, caches, time+helpers, and WorkTypeThingRule.
 /// </summary>
@@ -27,7 +26,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void DefCache_InitializesLazily()
     {
-        // AC-20: DefCache lazy initialization
+        // DefCache lazy initialization
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -44,7 +43,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void PawnFilter_Combine_PreservesSemantics()
     {
-        // AC-20 / Task 7: verify Combine semantics preserved
+        // Verify Combine semantics preserved
         var main = new PawnFilter
         {
             FilterPawnTypes = true,
@@ -66,7 +65,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void PawnFilter_Copy_IsIndependent()
     {
-        // AC-20: PawnFilter.Copy creates independent instance
+        // PawnFilter.Copy creates independent instance
         var original = new PawnFilter
         {
             FilterPawnTypes = true,
@@ -88,7 +87,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void RimWorldTime_Constants_AreCorrect()
     {
-        // AC-20: time helper constants
+        // Time helper constants
         Assert.Equal(24, RimWorldTime.HoursInDay);
         Assert.Equal(15, RimWorldTime.DaysInQuadrum);
         Assert.Equal(4, RimWorldTime.QuadrumsInYear);
@@ -98,7 +97,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void StatHelper_Rebuild_ReinitializesCachesWithFakeProvider()
     {
-        // AC-20: StatHelper can be rebuilt with a fake provider
+        // StatHelper can be rebuilt with a fake provider
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -114,7 +113,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void StatLimit_Initializes_WithDefaultValues()
     {
-        // AC-20: StatLimit limit tracking
+        // StatLimit limit tracking
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -129,7 +128,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void StatRanges_ClearedBetweenTests()
     {
-        // AC-20 / ADR-0002: StatRanges is cleared by fixture (preventing cross-test leakage)
+        // StatRanges is cleared by fixture (preventing cross-test leakage)
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -145,7 +144,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
     [Fact]
     public void WorkTypeStatMap_Rebuild_ReinitializesWithFakeProvider()
     {
-        // AC-20: WorkTypeStatMap can be rebuilt with a fake provider
+        // WorkTypeStatMap can be rebuilt with a fake provider
         var fakeProvider = new FakeDefProvider();
         var workTypeDef = new WorkTypeDef { defName = "TestWork" };
         fakeProvider.SetWorkTypeDefsInPriorityOrder(workTypeDef);

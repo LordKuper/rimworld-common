@@ -7,7 +7,7 @@ namespace LordKuper.Common.Tests;
 
 /// <summary>
 ///     xUnit fixture that saves and restores global static state around each test.
-///     This ensures that tests do not leak state to one another and can run in any order (AC-15, AC-16, AC-19).
+///     This ensures that tests do not leak state to one another and can run in any order.
 /// </summary>
 /// <remarks>
 ///     Captured state includes:

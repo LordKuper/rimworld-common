@@ -5,7 +5,6 @@ namespace LordKuper.Common.Tests.Helpers;
 
 /// <summary>
 ///     Tests for <see cref="MathHelper" /> pure paths (normalization, clamping).
-///     AC-17: pure-path coverage for MathHelper.
 /// </summary>
 public class MathHelperTests
 {

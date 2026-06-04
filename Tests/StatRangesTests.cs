@@ -4,9 +4,9 @@ using RimWorld;
 namespace LordKuper.Common.Tests;
 
 /// <summary>
-///     Tests for <see cref="StatRanges" /> adaptive normalization behavior (ADR-0002, AC-20).
+///     Tests for <see cref="StatRanges" /> adaptive normalization behavior.
 ///     Covers adaptive range expansion and order-dependence of NormalizeStatValue.
-///     AC-20: StatRanges maintains per-stat adaptive ranges and is cleared between tests via StaticStateFixture.
+///     StatRanges maintains per-stat adaptive ranges and is cleared between tests via StaticStateFixture.
 /// </summary>
 [Collection("StaticState")]
 public class StatRangesTests : StaticStateTestBase
@@ -15,7 +15,7 @@ public class StatRangesTests : StaticStateTestBase
     [Fact]
     public void NormalizeStatValue_FirstValue_ExpandsRange()
     {
-        // AC-20 / ADR-0002: First call initializes the range [value, value], then normalizes
+        // First call initializes the range [value, value], then normalizes
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -32,7 +32,7 @@ public class StatRangesTests : StaticStateTestBase
     [Fact]
     public void NormalizeStatValue_LargeRanges_Supported()
     {
-        // AC-20: Large value ranges are handled without numeric overflow
+        // Large value ranges are handled without numeric overflow
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -49,7 +49,7 @@ public class StatRangesTests : StaticStateTestBase
     [Fact]
     public void NormalizeStatValue_MultipleStats_IndependentRanges()
     {
-        // AC-20: Each stat maintains its own independent range
+        // Each stat maintains its own independent range
         var fakeProvider = new FakeDefProvider();
         var statDef1 = new StatDef { defName = "Stat1", label = "Stat 1", category = null };
         var statDef2 = new StatDef { defName = "Stat2", label = "Stat 2", category = null };
@@ -74,7 +74,7 @@ public class StatRangesTests : StaticStateTestBase
     [Fact]
     public void NormalizeStatValue_NegativeValues_Supported()
     {
-        // AC-20 / ADR-0002: Negative values are handled in range expansion
+        // Negative values are handled in range expansion
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -93,7 +93,7 @@ public class StatRangesTests : StaticStateTestBase
     [Fact]
     public void NormalizeStatValue_SecondValue_UpdatesRange()
     {
-        // AC-20 / ADR-0002: Second call updates the range if value is outside [min, max]
+        // Second call updates the range if value is outside [min, max]
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);
@@ -112,7 +112,7 @@ public class StatRangesTests : StaticStateTestBase
     [Fact]
     public void NormalizeStatValue_ZeroValue()
     {
-        // AC-20: Zero value is handled
+        // Zero value is handled
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
         fakeProvider.AddDef(statDef);

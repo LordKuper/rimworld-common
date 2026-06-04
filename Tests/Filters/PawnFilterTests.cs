@@ -8,14 +8,14 @@ namespace LordKuper.Common.Tests.Filters;
 
 /// <summary>
 ///     Tests for <see cref="PawnFilter" /> pure paths (Combine, Copy, Validate, GetSummary).
-///     AC-17: pure-path coverage for PawnFilter. Verifies Task 7's Combine refactor preserved semantics.
+///     Verifies that Combine refactor preserved semantics.
 /// </summary>
 public class PawnFilterTests
 {
     [Fact]
     public void AllowedPawnTypes_ModifyingDoesNotAffectOtherCollections()
     {
-        // AC-17: AllowedPawnTypes is independent from other filter collections
+        // AllowedPawnTypes is independent from other filter collections
         var filter = new PawnFilter
         {
             AllowedPawnTypes = [PawnType.Colonist],
@@ -70,7 +70,7 @@ public class PawnFilterTests
     [Fact]
     public void Combine_MainHasPawnTypes_UsesMain()
     {
-        // AC-17: Combine uses main's values when set
+        // Combine uses main's values when set
         var main = new PawnFilter
         { FilterPawnTypes = true, AllowedPawnTypes = [PawnType.Colonist] };
         var fallback = new PawnFilter
@@ -185,7 +185,7 @@ public class PawnFilterTests
     [Fact]
     public void ForbiddenPawnTypes_Independent()
     {
-        // AC-17: ForbiddenPawnTypes is separate from AllowedPawnTypes
+        // ForbiddenPawnTypes is separate from AllowedPawnTypes
         var filter = new PawnFilter
         {
             AllowedPawnTypes = [PawnType.Colonist],
@@ -229,7 +229,7 @@ public class PawnFilterTests
     [Fact]
     public void PawnCapacityLimits_IsModifiable()
     {
-        // AC-17: PawnCapacityLimits list can be modified
+        // PawnCapacityLimits list can be modified
         var filter = new PawnFilter();
         Assert.Empty(filter.PawnCapacityLimits);
         var limit = new PawnCapacityLimit("Sight");
@@ -241,7 +241,7 @@ public class PawnFilterTests
     [Fact]
     public void TriStateMode_AffectsValidate()
     {
-        // AC-17: TriStateMode controls Validate behavior
+        // TriStateMode controls Validate behavior
         var filter1 = new PawnFilter { TriStateMode = true };
         var filter2 = new PawnFilter { TriStateMode = false };
         filter1.Validate();
@@ -256,7 +256,7 @@ public class PawnFilterTests
     [Fact]
     public void Validate_PreservesExistingBoolValues()
     {
-        // AC-17/AC-20: Validate preserves explicitly set bool values
+        // Validate preserves explicitly set bool values
         var filter = new PawnFilter
         {
             TriStateMode = false,
@@ -273,7 +273,7 @@ public class PawnFilterTests
     [Fact]
     public void Validate_WithTriStateModeFalse_SetsNullFlagsToFalse()
     {
-        // AC-17/AC-20: Validate sets null filter flags to false when TriStateMode is false
+        // Validate sets null filter flags to false when TriStateMode is false
         var filter = new PawnFilter
         {
             TriStateMode = false,
@@ -298,7 +298,7 @@ public class PawnFilterTests
     [Fact]
     public void Validate_WithTriStateModeTrue_PreservesNullFlags()
     {
-        // AC-17/AC-20: Validate preserves null flags when TriStateMode is true
+        // Validate preserves null flags when TriStateMode is true
         var filter = new PawnFilter
         {
             TriStateMode = true,
@@ -315,7 +315,7 @@ public class PawnFilterTests
     [Fact]
     public void WorkCapacityLimits_IsModifiable()
     {
-        // AC-17: WorkCapacityLimits dictionary can be modified
+        // WorkCapacityLimits dictionary can be modified
         var filter = new PawnFilter();
         Assert.Empty(filter.WorkCapacityLimits);
         filter.WorkCapacityLimits[WorkTags.ManualDumb] = true;
