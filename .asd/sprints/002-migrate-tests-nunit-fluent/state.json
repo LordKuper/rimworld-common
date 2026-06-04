@@ -89,7 +89,7 @@
     }
   },
   "created_at": "2026-06-04T08:17:27Z",
-  "updated_at": "2026-06-04T12:53:30Z",
+  "updated_at": "2026-06-04T13:08:30Z",
   "review_fixes_pending": null,
   "subsystems_touched": [],
   "new_subsystems": [],
@@ -102,6 +102,15 @@
       "resolution": "overridden-by-user",
       "recorded_at": "2026-06-04T12:24:37Z",
       "detail": "Implementation FAIL adjudicated as false alarm. AC-28 coverage independently verified by orchestrator 3x at 41.08% (449/1093); reviewer cited a stale 37.05% figure from plan.md:107 (pre-recovery). AC-9 case-count delta is the user-authorized +24 StatLimit coverage-recovery tests, not a scope violation. User directed AC-28/AC-9 treated as SATISFIED; remaining doc-reconciliation CONCERNS routed to impl fix round (iter-03)."
+    },
+    {
+      "phase": "pr",
+      "iteration": null,
+      "reviewer": "user",
+      "verdict": "AUTHORIZED",
+      "resolution": "in-scope-production-fix",
+      "recorded_at": "2026-06-04T13:08:30Z",
+      "detail": "PR-gate user-authorized production change. The previously-deferred out-of-scope StatLimit infinite-recursion bug was pulled in as an in-scope production fix by user direction. Root cause: StatLimit.Initialize() override unconditionally called EnsureConfigured() -> Configure(Def) -> Def -> Initialize() -> EnsureConfigured() cycle; _isConfigured never set because outer Configure never returned (stuck resolving Def) -> StackOverflow for new StatLimit()/new StatLimit(string) before any external Def resolution. Fix: added a _configuring re-entry guard in StatLimit.EnsureConfigured() (try/finally) so the nested call short-circuits and the outer Configure completes. Siblings (PawnSkillLimit, PawnCapacityLimit, PawnTraitLimit) confirmed NOT affected (no EnsureConfigured/Configure/Initialize-override pattern; constant caps). +10 regression tests. AC-18 PRD non-goal 'production code unchanged except as required by the migration' explicitly SUPERSEDED for this one user-authorized fix; production code (StatLimit.cs) WAS changed by user direction. Orchestrator-verified: build 0/0 (Release), 176 pass / 0 fail / 3 ignored, AltCover coverage 42.21% (463/1097), above the >=37.2% floor; focused quality review of the fix APPROVE with zero findings. Phase remains impl-review (DoD already met); heading to pr."
     }
   ]
 }

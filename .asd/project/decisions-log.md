@@ -277,3 +277,14 @@ Append-only. Never edited or removed. New entries appended below.
 - **Carried out of scope**: the StatLimit ctor-recursion bug remains logged as a separate out-of-scope task; not a blocker for this sprint.
 - **Rationale**: With all required reviewers at APPROVE and the green verification gate (clean Release build, full NUnit3 pass, coverage above floor), the impl⇄impl-review cycle terminates and the sprint proceeds to PR.
 - **Affected docs**: .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Sprint 002 PR-gate addition: StatLimit infinite-recursion bug fixed (user-authorized production change)
+
+- **Decision**: At the PR gate the user pulled in the previously-deferred **StatLimit ctor-recursion bug** (logged at impl assessment as a spawned, out-of-scope follow-up task) as an **in-scope production fix** by explicit user direction.
+  - **Root cause**: `StatLimit.Initialize()` override unconditionally called `EnsureConfigured()` → `Configure(Def)` → `Def` → `Initialize()` → `EnsureConfigured()` cycle; `_isConfigured` was never set because the outer `Configure` never returned (stuck resolving `Def`) → **StackOverflow** for `new StatLimit()` / `new StatLimit(string)` before any external `Def` resolution.
+  - **Fix**: added a `_configuring` re-entry guard in `StatLimit.EnsureConfigured()` (try/finally) so the nested call short-circuits and the outer `Configure` completes. Siblings (`PawnSkillLimit`, `PawnCapacityLimit`, `PawnTraitLimit`) confirmed **NOT affected** (no `EnsureConfigured`/`Configure`/`Initialize`-override pattern; constant caps).
+  - **Tests**: +10 regression tests (parameterless + string-ctor property access without overflow; correct `Configure(null)` defaults).
+  - **AC-18 supersession**: the PRD non-goal "production code unchanged except as required by the migration" is **explicitly superseded** for this one user-authorized fix — production code **WAS** changed (`StatLimit.cs`) by user direction.
+  - **Verified** (independent orchestrator verification): build **0 warnings / 0 errors** (Release); **176 tests pass / 0 fail / 3 ignored**; AltCover coverage **42.21% (463/1097)**, above the ≥37.2% floor; focused quality review of the fix **APPROVE** (zero findings).
+- **Rationale**: The recursion bug is a genuine production-crash hazard (`new StatLimit()` overflows the stack before any Def is involved); the user opted to land the small, guard-only fix plus regression tests now rather than defer it to a separate sprint. Phase remains `impl-review` (DoD already met); the change does not regress the green verification gate and the sprint proceeds to PR.
+- **Affected docs**: Source/LordKuper.Common/**/StatLimit.cs, Source/LordKuper.Common.Tests/**, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
