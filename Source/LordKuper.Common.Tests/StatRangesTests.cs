@@ -6,7 +6,7 @@ namespace LordKuper.Common.Tests;
 /// <summary>
 ///     Tests for <see cref="StatRanges" /> adaptive normalization behavior.
 ///     Covers adaptive range expansion and order-dependence of NormalizeStatValue.
-///     StatRanges maintains per-stat adaptive ranges and is cleared between tests via StaticStateFixture.
+///     StatRanges maintains per-stat adaptive ranges and is cleared between tests via StaticStateTestBase's [SetUp]/[TearDown].
 /// </summary>
 [NonParallelizable]
 public class StatRangesTests : StaticStateTestBase

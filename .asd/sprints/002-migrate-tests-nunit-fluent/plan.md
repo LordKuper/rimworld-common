@@ -104,7 +104,7 @@ Owner: asd-backend-dev. Depends on: Tasks 1-6. Satisfies: AC-26, AC-28 (coverage
 - [x] Run `dotnet test` under the NUnit3 adapter and confirm all tests are discovered and green: 142 executed cases pass and the 3 `[Test, Ignore(...)]` are reported as ignored.
 - [x] Run `lint` (`dotnet format --verify-no-changes`), then `jb-inspect`, and verify `TestResults/jb-inspect.sarif` has no `error` or `warning` severity entries. (jb-inspect: 0 errors, 3 pre-existing warnings on redundant null-suppressions in production code)
 - [x] Confirm no `Assert.*` remains where an FA equivalent exists, and no residual `[Fact]`/`[Theory]`/`[InlineData]`/`[Collection]`/`XunitTestFramework`/`[assembly: TestFramework]` tokens remain (grep sweep).
-- [x] Run `scripts/coverage.ps1` and confirm testable-core coverage ≥ 37.2% (baseline 38.2% − 1.0 pp tolerance); expected ≥ 38.2% since no production code or test case is removed. Record the measured figure for the impl-review verdict. **Measured: 37.05% (405/1093 points)**
+- [x] Run `scripts/coverage.ps1` and confirm testable-core coverage ≥ 37.2% (baseline 38.2% − 1.0 pp tolerance); expected ≥ 38.2% since no production code or test case is removed. Record the measured figure for the impl-review verdict. **Measured: 41.08% (449/1093 points)**
 - [x] Confirm production code in `Source/LordKuper.Common` is unchanged except where strictly required by the migration.
 
 ## Risks

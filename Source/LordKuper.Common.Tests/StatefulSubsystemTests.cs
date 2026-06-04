@@ -10,7 +10,7 @@ using PawnHealthState = LordKuper.Common.Filters.PawnHealthState;
 namespace LordKuper.Common.Tests;
 
 /// <summary>
-///     Stateful subsystem tests that require FakeDefProvider and StaticStateFixture to isolate global state.
+///     Stateful subsystem tests that require FakeDefProvider and StaticStateTestBase to isolate global state.
 ///     Covers: StatHelper, WorkTypeStatMap, SkillStatMap, StatRanges, StatWeight,
 ///     PawnFilter limits, caches, time+helpers, and WorkTypeThingRule.
 /// </summary>
@@ -148,7 +148,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
 
         // Pre-populate SkillStatMap._map with an empty map so WorkTypeStatMap.Rebuild()
         // skips BuildMap() which calls Logger → Verse.Log.Message → Unity native ECall
-        // (unavailable outside the Unity player). Same reflection pattern as StaticStateFixture.
+        // (unavailable outside the Unity player). Same reflection pattern as StaticStateTestBase's [SetUp]/[TearDown].
         var sksmType = typeof(SkillStatMap);
         var mapField = sksmType.GetField("_map", BindingFlags.NonPublic | BindingFlags.Static);
         mapField?.SetValue(null, new Dictionary<SkillDef, HashSet<StatDef>>());
