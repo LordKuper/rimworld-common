@@ -227,6 +227,14 @@ Append-only. Never edited or removed. New entries appended below.
 - **Rationale**: The implementation reviewer's FAIL rested on a stale coverage figure and a mischaracterized (user-authorized) test-count delta; independent verification clears both, so the FAIL is a false alarm and overridden. The genuine remaining findings are documentation/code drift between the as-built resolver+isolation design and the ADRs/PRD/plan/XML-doc comments, which warrant a doc-reconciliation fix round before DoD.
 - **Affected docs**: design/architecture/adr/adr-0006*.html, design/architecture/adr/adr-0007*.html, Source/LordKuper.Common.Tests/StatRangesTests.cs, Source/LordKuper.Common.Tests/StatefulSubsystemTests.cs, .asd/sprints/002-migrate-tests-nunit-fluent/plan.md, .asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
 
+## 2026-06-04 — Impl-review iter 03: 6 APPROVE, 1 documentation CONCERNS (HIGH) → doc fix (sprint 002)
+
+- **Decision**: Sprint 002 impl-review iteration 03 verdicts — quality=APPROVE, implementation=APPROVE, testing=APPROVE, simplification=APPROVE, documentation=**CONCERNS (1 HIGH)**, performance=APPROVE, external=APPROVE, ui=N/A. No FAIL; routed the single documentation finding back to **impl fix mode** (`review_fixes_pending=iter-03`) → iter-04.
+  - **Remaining finding (documentation, HIGH — doc-actuality count drift)**: ADR-0007 and the `nunit-4.6.1.md` tech-reference state **three** static-touching `[NonParallelizable]` classes, but the as-built has **four** — `StatLimitTests` is the uncounted fourth class, added during the coverage-recovery round (the user-authorized +24 StatLimit tests). Architect corrected the count to **four** to reconcile the docs with the as-built suite.
+- **Verified gates** (carried from iter-02 fix verification): coverage **41.08%**, build **0 warnings / 0 errors**, **166 passed / 3 ignored**.
+- **Rationale**: All six substantive reviewers APPROVE; the sole open item is a documentation count drift introduced when the StatLimit recovery tests added a fourth static-touching `[NonParallelizable]` class that the ADR-0007/tech-reference count never picked up. Correcting the count from three to four closes the doc↔as-built gap; no code change required.
+- **Affected docs**: design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/nunit-4.6.1.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
 ## 2026-06-04 — Impl fix for iter-02: doc-reconciliation resolved (sprint 002)
 
 - **Decision**: Impl-review iter-02 doc-reconciliation findings resolved in impl fix mode; phase returns to `impl-review`. Resolutions:

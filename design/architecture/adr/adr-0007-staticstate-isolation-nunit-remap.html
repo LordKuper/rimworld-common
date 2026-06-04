@@ -163,8 +163,8 @@ source: ""
 
           <h2 id="context">Context</h2>
           <p>
-            Three test classes (<code>StatWeightTests</code>, <code>StatefulSubsystemTests</code>,
-            <code>StatRangesTests</code>) touch shared static caches and isolate via the xUnit seam
+            Four test classes (<code>StatWeightTests</code>, <code>StatefulSubsystemTests</code>,
+            <code>StatRangesTests</code>, <code>StatLimitTests</code>) touch shared static caches and isolate via the xUnit seam
             introduced in <a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>:
             a <code>StaticStateFixture : IDisposable</code> snapshotted <code>DefProvider.Current</code> and
             restored it (rebuilding <code>StatHelper</code>, <code>WorkTypeStatMap</code>, and reflection
@@ -218,7 +218,7 @@ source: ""
               <code>[Collection("StaticState")]</code>. NUnit runs <strong>non-parallel by default</strong>
               (this project sets no <code>[Parallelizable]</code>/<code>[assembly: Parallelizable]</code>),
               so the static-touching classes are already serialized. Apply <code>[NonParallelizable]</code>
-              to the three classes anyway, as an explicit, self-documenting statement of intent (belt-and-
+              to the four classes anyway, as an explicit, self-documenting statement of intent (belt-and-
               suspenders against a future accidental opt-in to parallelism).
             </li>
             <li>
@@ -256,7 +256,7 @@ source: ""
               <h3>Negative</h3>
               <ul>
                 <li><strong>Approved-ADR remap:</strong> ADR-0001 (approved, persistent) described the seam in vocabulary the code no longer uses. The wording is remapped in place during this design-promote step, keeping the contract unchanged so only mechanism prose moves; the cross-link records the relationship.</li>
-                <li>Relying on NUnit's non-parallel default is implicit: if anyone later adds <code>[Parallelizable]</code> at assembly scope, the static-state suites would race and the snapshot/restore isolation would break. <code>[NonParallelizable]</code> on the three classes is the explicit guard, but a global parallel opt-in could still mis-order setup; the tech-reference notes "do not add <code>[assembly: Parallelizable]</code>".</li>
+                <li>Relying on NUnit's non-parallel default is implicit: if anyone later adds <code>[Parallelizable]</code> at assembly scope, the static-state suites would race and the snapshot/restore isolation would break. <code>[NonParallelizable]</code> on the four classes is the explicit guard, but a global parallel opt-in could still mis-order setup; the tech-reference notes "do not add <code>[assembly: Parallelizable]</code>".</li>
                 <li>The reflection-driven reset set is a maintained contract: if production adds a new static cache, the snapshot/restore set must be extended in lockstep or new cross-test bleed appears — same standing obligation as under xUnit, carried forward unchanged.</li>
                 <li>The <code>StaticStateTestBase</code> ctor→<code>[SetUp]</code> / <code>Dispose</code>→<code>[TearDown]</code> rewrite is behavior-sensitive (ordering of snapshot vs. test body); must be verified by repeated/random-order full runs (AC-25), not inspection.</li>
               </ul>
@@ -274,7 +274,7 @@ source: ""
           <ul>
             <li><strong>AC-22</strong> — the snapshot/restore set (DefProvider.Current; StatHelper/WorkTypeStatMap rebuild; reflection resets of SkillStatMap, PassionHelper, StatRanges.Ranges) is preserved verbatim.</li>
             <li><strong>AC-23</strong> — per-test ctor/Dispose remaps to per-test <code>[SetUp]</code>/<code>[TearDown]</code>, preserving per-test granularity.</li>
-            <li><strong>AC-24</strong> — xUnit <code>[Collection]</code> serialization drops to NUnit non-parallel default, made explicit with <code>[NonParallelizable]</code> on the three classes.</li>
+            <li><strong>AC-24</strong> — xUnit <code>[Collection]</code> serialization drops to NUnit non-parallel default, made explicit with <code>[NonParallelizable]</code> on the four classes.</li>
             <li><strong>AC-25</strong> — repeated/random-order full runs yield identical results; the 8 plain classes are unaffected.</li>
           </ul>
           <p class="lede" style="font-size:0.9rem;color:var(--muted)">
