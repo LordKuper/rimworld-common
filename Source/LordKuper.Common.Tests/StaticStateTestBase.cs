@@ -29,25 +29,67 @@ public abstract class StaticStateTestBase
     }
 
     /// <summary>Restores all static state saved before the test.</summary>
+    /// <remarks>
+    ///     All caches are reset by nulling their backing fields rather than calling any Rebuild()
+    ///     method. This avoids the Unity-ECall hazard: calling WorkTypeStatMap.Rebuild() or
+    ///     StatHelper.Rebuild() during teardown would eventually reach SkillStatMap.BuildMap() or
+    ///     DefProvider.Current.AllDefsListForReading(), which hit DefDatabase / Verse native calls
+    ///     that are unavailable in a headless test process. Nulling the fields is safe because each
+    ///     test that needs these caches already calls StatHelper.Rebuild() / WorkTypeStatMap.Rebuild()
+    ///     explicitly in its own setup after installing a FakeDefProvider.
+    /// </remarks>
     [TearDown]
     public void TearDownStaticState()
     {
-        // Restore the original provider before rebuilding caches
+        // Restore the original provider first; all cache resets below must not read it.
         if (_originalProvider != null)
             DefProvider.Current = _originalProvider;
         _originalProvider = null;
 
-        // Rebuild all dependent static caches to reset them with the production provider
-        StatHelper.Rebuild();
-        WorkTypeStatMap.Rebuild();
+        // Reset WorkTypeStatMap backing fields via reflection.
+        // Do NOT call WorkTypeStatMap.Rebuild(): it reads SkillStatMap.Map, which triggers
+        // SkillStatMap.BuildMap() when _map == null → DefDatabase access → Unity ECall.
+        var wtsmType = typeof(WorkTypeStatMap);
+        var autoSwitchField =
+            wtsmType.GetField("_autoSwitchStatsMap", BindingFlags.NonPublic | BindingFlags.Static);
+        var defaultStatsField =
+            wtsmType.GetField("_defaultStatsMap", BindingFlags.NonPublic | BindingFlags.Static);
+        if (autoSwitchField != null)
+            autoSwitchField.SetValue(null, null);
+        if (defaultStatsField != null)
+            defaultStatsField.SetValue(null, null);
 
-        // Reset SkillStatMap via reflection (it has lazy BuildMap but no public Rebuild)
+        // Reset StatHelper backing fields via reflection.
+        // Do NOT call StatHelper.Rebuild(): it calls DefProvider.Current.AllDefsListForReading()
+        // which hits DefDatabase when the restored provider is the production one (null or game).
+        // Tests that need StatHelper call StatHelper.Rebuild() themselves after installing
+        // a FakeDefProvider, so leaving these null is the correct idle state.
+        var shType = typeof(StatHelper);
+        var shFields = new[]
+        {
+            "_allMeleeWeaponStatDefs", "_allRangedWeaponStatDefs", "_allStatDefs",
+            "_allToolStatDefs", "_apparelCategories", "_customStatsDefs",
+            "_defaultApparelStatDefs", "_defaultPawnStatDefs", "_defaultWeaponStatDefs",
+            "_defaultWorkStatDefs", "_pawnCategories", "_statDefsByName",
+            "_weaponCategories", "_workCategories"
+        };
+        foreach (var fieldName in shFields)
+        {
+            var field = shType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
+            field?.SetValue(null, null);
+        }
+        // Stats is readonly (Dictionary instance is fixed); only the contents need clearing.
+        var statsField = shType.GetField("Stats", BindingFlags.NonPublic | BindingFlags.Static);
+        if (statsField?.GetValue(null) is IDictionary statsDict)
+            statsDict.Clear();
+
+        // Reset SkillStatMap._map via reflection (lazy BuildMap, no public Rebuild).
         var sksmType = typeof(SkillStatMap);
         var mapField = sksmType.GetField("_map", BindingFlags.NonPublic | BindingFlags.Static);
         if (mapField != null)
             mapField.SetValue(null, null);
 
-        // Reset PassionHelper via reflection since there's no public Rebuild
+        // Reset PassionHelper via reflection (no public Rebuild).
         var phType = typeof(PassionHelper);
         var isInitField =
             phType.GetField("_isInitialized", BindingFlags.NonPublic | BindingFlags.Static);
@@ -62,7 +104,7 @@ public abstract class StaticStateTestBase
         if (passionCacheField?.GetValue(null) is IDictionary cache)
             cache.Clear();
 
-        // Reset StatRanges.Ranges via reflection
+        // Reset StatRanges.Ranges via reflection.
         var srType = typeof(StatRanges);
         var rangesField = srType.GetField("Ranges", BindingFlags.NonPublic | BindingFlags.Static);
         if (rangesField?.GetValue(null) is IDictionary ranges)
