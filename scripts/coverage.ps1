@@ -22,10 +22,11 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $bin  = Join-Path $root 'Source\LordKuper.Common.Tests\bin\Release\net472'
 $managed = Join-Path $env:RIMWORLD_DIR 'RimWorldWin64_Data\Managed'
-$report  = Join-Path $root 'coverage.altcover.xml'
+$report  = Join-Path $root 'TestResults\coverage.altcover.xml'
 $rimworldDlls = @('Assembly-CSharp','UnityEngine','UnityEngine.CoreModule','UnityEngine.IMGUIModule','UnityEngine.TextRenderingModule')
 
 if (-not (Test-Path $managed)) { throw "RIMWORLD_DIR managed dir not found: $managed" }
+New-Item -ItemType Directory -Force (Split-Path $report) | Out-Null
 
 Write-Host '== build tests =='
 dotnet build (Join-Path $root 'Source\LordKuper.Common.Tests\LordKuper.Common.Tests.csproj') -c Release -v quiet -nologo | Out-Null
