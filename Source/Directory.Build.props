@@ -1,7 +1,28 @@
 <Project>
-	<PropertyGroup>
-		<RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
-		<RimWorldDir Condition="'$(RimWorldDir)' == ''">d:\Games\SteamLibrary\steamapps\common\RimWorld</RimWorldDir>
-		<RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
-	</PropertyGroup>
+  <!-- Single build-governance source of truth for the solution.
+       This is the only Directory.Build.props in the tree. MSBuild auto-imports the nearest
+       Directory.Build.props for each project; since neither LordKuper.Common/ nor
+       LordKuper.Common.Tests/ has its own, both auto-inherit this Source-level file directly.
+       Governance props and RimWorld path-resolution therefore apply to both projects from a
+       single place, with no duplication and no shadowing. -->
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>9999</WarningLevel>
+    <Nullable>enable</Nullable>
+    <!-- LangVersion intentionally not pinned; stays 'latest'. -->
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Resolve RimWorld install dir: prefer env-var RIMWORLD_DIR, then MSBuild property RimWorldDir.
+         The hardcoded machine-specific fallback has been removed (ADR-0003 / AC-2):
+         if neither variable resolves to an existing directory the build fails fast below. -->
+    <RimWorldDir Condition="'$(RimWorldDir)' == '' AND '$(RIMWORLD_DIR)' != ''">$(RIMWORLD_DIR)</RimWorldDir>
+    <RimWorldManagedDir>$(RimWorldDir)\RimWorldWin64_Data\Managed</RimWorldManagedDir>
+  </PropertyGroup>
+
+  <!-- Fail fast if RimWorld path is unresolved or does not exist on disk (AC-2). -->
+  <Target Name="CheckRimWorldDir" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(RimWorldDir)' == '' OR !Exists('$(RimWorldManagedDir)')"
+           Text="Set RIMWORLD_DIR (or RimWorldDir) to your RimWorld install path; '$(RimWorldManagedDir)' does not exist." />
+  </Target>
 </Project>

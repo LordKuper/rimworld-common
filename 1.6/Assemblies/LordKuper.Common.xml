@@ -194,6 +194,21 @@
                 Delegate type for retrieving all <see cref="T:RimWorld.Passion" /> values from VSE.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Compatibility.Vse.GetPassions">
+            <summary>
+                Delegate for retrieving all available passions from VSE.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Compatibility.Vse.PassionDefs">
+            <summary>
+                Cache for mapping <see cref="T:RimWorld.Passion" /> to their corresponding VSE passion definitions.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Compatibility.Vse.VanillaSkillsExpandedActive">
+            <summary>
+                Indicates whether the Vanilla Skills Expanded mod is active.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Compatibility.Vse._forgetRateFactorField">
             <summary>
                 FieldInfo for the 'forgetRateFactor' field in VSE's PassionDef.
@@ -217,21 +232,6 @@
         <member name="F:LordKuper.Common.Compatibility.Vse._passionToDef">
             <summary>
                 Delegate for converting a <see cref="T:RimWorld.Passion" /> to its corresponding <see cref="T:Verse.Def" /> in VSE.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Compatibility.Vse.GetPassions">
-            <summary>
-                Delegate for retrieving all available passions from VSE.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Compatibility.Vse.PassionDefs">
-            <summary>
-                Cache for mapping <see cref="T:RimWorld.Passion" /> to their corresponding VSE passion definitions.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Compatibility.Vse.VanillaSkillsExpandedActive">
-            <summary>
-                Indicates whether the Vanilla Skills Expanded mod is active.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Compatibility.Vse.GetDef(RimWorld.Passion)">
@@ -565,6 +565,43 @@
                 Updates stat labels and descriptions with translated strings.
                 Called from <see cref="T:LordKuper.Common.Helpers.StatHelper" /> post-init after language is loaded.
             </summary>
+        </member>
+        <member name="T:LordKuper.Common.DefProvider">
+            <summary>
+                Static injection point for <see cref="T:LordKuper.Common.IDefProvider" />.
+                Defaults to <see cref="T:LordKuper.Common.VerseDefProvider" /> (live <see cref="T:Verse.DefDatabase`1" /> access).
+                Tests swap <see cref="P:LordKuper.Common.DefProvider.Current" /> to a fake implementation and restore it after each test.
+            </summary>
+            <remarks>
+                This is the single seam through which Def lookups can be substituted in unit tests.
+                Only one global replacement is supported; no DI container.
+            </remarks>
+        </member>
+        <member name="P:LordKuper.Common.DefProvider.Current">
+            <summary>
+                Gets or sets the active <see cref="T:LordKuper.Common.IDefProvider" />.
+                Defaults to <see cref="T:LordKuper.Common.VerseDefProvider" />.
+                Test fixtures may replace this and MUST restore it after each test.
+            </summary>
+        </member>
+        <member name="T:LordKuper.Common.VerseDefProvider">
+            <summary>
+                Production implementation of <see cref="T:LordKuper.Common.IDefProvider" />: thin pass-through to
+                <see cref="T:Verse.DefDatabase`1" /> and <see cref="T:Verse.WorkTypeDefsUtility" />.
+                Runtime behavior is identical to the direct calls it replaces.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.AllDefs``1">
+            <inheritdoc />
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.AllDefsListForReading``1">
+            <inheritdoc />
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.GetNamedSilentFail``1(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:LordKuper.Common.VerseDefProvider.WorkTypeDefsInPriorityOrder">
+            <inheritdoc />
         </member>
         <member name="T:LordKuper.Common.Filters.Limits.PawnCapacityLimit">
             <summary>
@@ -1346,6 +1383,12 @@
                 Provides helper methods and caching for handling <see cref="T:RimWorld.Passion" /> values and their associated data.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Helpers.PassionHelper.PassionCache">
+            <summary>
+                Stores the mapping between <see cref="T:RimWorld.Passion" /> values and their corresponding <see cref="F:LordKuper.Common.Helpers.PassionHelper.PassionCache" />
+                entries.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Helpers.PassionHelper._cachedPassions">
             <summary>
                 Backing field for the cached list of <see cref="F:LordKuper.Common.Helpers.PassionHelper.PassionCache" /> entries.
@@ -1354,12 +1397,6 @@
         <member name="F:LordKuper.Common.Helpers.PassionHelper._isInitialized">
             <summary>
                 Indicates whether the passion cache has been initialized.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Helpers.PassionHelper.PassionCache">
-            <summary>
-                Stores the mapping between <see cref="T:RimWorld.Passion" /> values and their corresponding <see cref="F:LordKuper.Common.Helpers.PassionHelper.PassionCache" />
-                entries.
             </summary>
         </member>
         <member name="P:LordKuper.Common.Helpers.PassionHelper.Passions">
@@ -1479,6 +1516,16 @@
                 Prefix used for custom stat definitions.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Helpers.StatHelper.Comparer">
+            <summary>
+                Provides a comparer for sorting StatDefs by category and label.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Helpers.StatHelper.Stats">
+            <summary>
+                Stores stat definitions grouped by their category.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Helpers.StatHelper._allMeleeWeaponStatDefs">
             <summary>
                 Stores all melee weapon stat definitions.
@@ -1549,19 +1596,11 @@
                 Stores work category names.
             </summary>
         </member>
-        <member name="F:LordKuper.Common.Helpers.StatHelper.Comparer">
-            <summary>
-                Provides a comparer for sorting StatDefs by category and label.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.Helpers.StatHelper.Stats">
-            <summary>
-                Stores stat definitions grouped by their category.
-            </summary>
-        </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.#cctor">
             <summary>
                 Static constructor to initialize stat categories and definitions.
+                Delegates to <see cref="M:LordKuper.Common.Helpers.StatHelper.Rebuild" /> so test fixtures can re-initialize against a
+                swapped <see cref="P:LordKuper.Common.DefProvider.Current" /> without changing load-time behavior.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatDef(System.String)">
@@ -1570,13 +1609,6 @@
             </summary>
             <param name="defName">The defName of the stat to find.</param>
             <returns>The matching <see cref="T:RimWorld.StatDef" /> if found; otherwise, <c>null</c>.</returns>
-        </member>
-        <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatsByCategory(LordKuper.Common.StatCategory)">
-            <summary>
-                Gets the stat definitions for a given category.
-            </summary>
-            <param name="category">The stat category.</param>
-            <returns>A read-only collection of <see cref="T:RimWorld.StatDef" /> for the specified category.</returns>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatValue(Verse.Thing,RimWorld.StatDef)">
             <summary>
@@ -1609,6 +1641,13 @@
             <param name="thing">The thing.</param>
             <param name="statDef">The stat definition.</param>
             <returns>The deviation from the default base value.</returns>
+        </member>
+        <member name="M:LordKuper.Common.Helpers.StatHelper.GetStatsByCategory(LordKuper.Common.StatCategory)">
+            <summary>
+                Gets the stat definitions for a given category.
+            </summary>
+            <param name="category">The stat category.</param>
+            <returns>A read-only collection of <see cref="T:RimWorld.StatDef" /> for the specified category.</returns>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.InitializeApparelCategories">
             <summary>
@@ -1643,6 +1682,14 @@
         <member name="M:LordKuper.Common.Helpers.StatHelper.InitializeWorkCategories">
             <summary>
                 Initializes work category names.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.Helpers.StatHelper.Rebuild">
+            <summary>
+                Initializes (or re-initializes) all stat-helper state against the active
+                <see cref="P:LordKuper.Common.DefProvider.Current" />.
+                Called by the static constructor at game load and by test fixtures after swapping
+                the provider.  Produces the same state as the original static constructor.
             </summary>
         </member>
         <member name="M:LordKuper.Common.Helpers.StatHelper.ReinitializeLabels">
@@ -1696,6 +1743,42 @@
             <exception cref="T:System.ArgumentNullException">
                 Thrown if <paramref name="sb" /> is <c>null</c> or <paramref name="text" /> is <c>null</c> or empty.
             </exception>
+        </member>
+        <member name="T:LordKuper.Common.IDefProvider">
+            <summary>
+                Provides access to RimWorld <see cref="T:Verse.Def" /> databases.
+                The default implementation, <see cref="T:LordKuper.Common.VerseDefProvider" />, delegates to
+                <see cref="T:Verse.DefDatabase`1" /> and <see cref="T:Verse.WorkTypeDefsUtility" />.
+                Tests install a fake implementation via <see cref="P:LordKuper.Common.DefProvider.Current" />.
+            </summary>
+            <remarks>
+                This is the single seam through which Def lookups can be substituted in unit tests.
+                Keep the interface narrow: only add members that have real call sites in the library.
+            </remarks>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.AllDefs``1">
+            <summary>
+                Returns all defs of type <typeparamref name="T" /> as an enumerable.
+                Corresponds to <c>DefDatabase&lt;T&gt;.AllDefs</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.AllDefsListForReading``1">
+            <summary>
+                Returns all defs of type <typeparamref name="T" /> as a list.
+                Corresponds to <c>DefDatabase&lt;T&gt;.AllDefsListForReading</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.GetNamedSilentFail``1(System.String)">
+            <summary>
+                Looks up a def by <paramref name="defName" />, returning <c>null</c> on miss.
+                Corresponds to <c>DefDatabase&lt;T&gt;.GetNamedSilentFail(defName)</c>.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.IDefProvider.WorkTypeDefsInPriorityOrder">
+            <summary>
+                Returns work type defs in priority order.
+                Corresponds to <c>WorkTypeDefsUtility.WorkTypeDefsInPriorityOrder</c>.
+            </summary>
         </member>
         <member name="T:LordKuper.Common.Logger">
             <summary>
@@ -2014,6 +2097,16 @@
                 Gets the localized tooltip for pawn trait limits.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TooltipCache">
+            <summary>
+                Cache for two-state (on/off) filter tooltips, keyed by filter category name.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.TriStateTooltipCache">
+            <summary>
+                Cache for tri-state (on/off/partial) filter tooltips, keyed by filter category name.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.Resources.Strings.PawnFilter.UndefinedFilterTooltip">
             <summary>
                 Gets the localized tooltip text for an undefined filter.
@@ -2028,19 +2121,6 @@
             <summary>
                 Gets the localized tooltip for work capacity limits.
             </summary>
-        </member>
-        <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.AppendUndefinedFilterTooltip(System.String)">
-            <summary>
-                Appends a tooltip message indicating an undefined filter state to the specified tooltip text.
-            </summary>
-            <param name="tooltip">
-                The existing tooltip text to which the undefined filter message will be appended. Cannot be <see langword="null" />
-                .
-            </param>
-            <returns>
-                A new string that combines the original tooltip text with the undefined filter state message, separated by a
-                newline.
-            </returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnCapacitiesTooltip(System.Boolean)">
             <summary>
@@ -2058,22 +2138,10 @@
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnPrimaryWeaponTypesTooltip(System.Boolean)">
             <summary>
-                Generates a tooltip describing the filter states for pawn primary weapon types.
+                Gets the tooltip for pawn primary weapon types filter, optionally including the tri-state description.
             </summary>
-            <param name="triState">
-                A value indicating whether the tooltip should include a tri-state description. If
-                <see
-                    langword="true" />
-                , the tooltip includes an additional "undefined" state. If <see langword="false" />, the
-                tooltip describes only the "on" and "off" states.
-            </param>
-            <returns>
-                A string containing the tooltip text for the filter states. The tooltip includes descriptions for the
-                "on" and "off" states, and optionally the "undefined" state if <paramref name="triState" /> is
-                <see
-                    langword="true" />
-                .
-            </returns>
+            <param name="triState">If true, includes the partial state description.</param>
+            <returns>The tooltip string for pawn primary weapon types filter.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnSkillsTooltip(System.Boolean)">
             <summary>
@@ -2098,17 +2166,21 @@
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterPawnTypesTooltip(System.Boolean)">
             <summary>
-                Generates a tooltip string describing the filter states for pawn types.
+                Gets the tooltip for pawn types filter, optionally including the tri-state description.
             </summary>
-            <param name="triState">
-                A value indicating whether the filter supports a tri-state mode. If <see langword="true" />, the tooltip
-                includes descriptions for "On", "Off", and "Partial" states. If <see langword="false" />, the tooltip
-                includes descriptions for only "On" and "Off" states.
-            </param>
-            <returns>
-                A string containing the tooltip text for the filter states. The string includes state names and their
-                corresponding descriptions, separated by new lines.
-            </returns>
+            <param name="triState">If true, includes the partial state description.</param>
+            <returns>The tooltip string for pawn types filter.</returns>
+        </member>
+        <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterTooltip(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+                Builds and caches the tooltip string for a filter category, optionally appending the
+                partial/undefined tri-state line.
+            </summary>
+            <param name="key">Unique key identifying the filter category (used for caching).</param>
+            <param name="onTooltip">Localized description for the "On" state.</param>
+            <param name="offTooltip">Localized description for the "Off" state.</param>
+            <param name="triState">If <see langword="true" />, appends the partial/undefined state line.</param>
+            <returns>The cached tooltip string for the requested state.</returns>
         </member>
         <member name="M:LordKuper.Common.Resources.Strings.PawnFilter.GetFilterWorkCapacitiesTooltip(System.Boolean)">
             <summary>
@@ -2573,9 +2645,26 @@
                 Normalizes a stat value based on the observed range for the specified stat.
                 Updates the range if the value is outside the current bounds.
             </summary>
+            <remarks>
+                <para>
+                    <strong>Adaptive behavior (intentional, by design):</strong> the returned score
+                    is <em>not stable</em> across differing call sequences or sessions. The per-<see cref="T:RimWorld.StatDef" />
+                    min/max range in <see cref="F:LordKuper.Common.StatRanges.Ranges" /> expands as values are observed, so the normalized
+                    result for a given <paramref name="value" /> depends on the <em>set and order</em> of all
+                    values scored so far in the current process. Identical inputs can yield different outputs
+                    if the observation history differs.
+                </para>
+                <para>
+                    This order-dependence is intentional. Unit tests that exercise normalization must
+                    save and restore <see cref="F:LordKuper.Common.StatRanges.Ranges" /> to prevent state leaking between tests.
+                </para>
+            </remarks>
             <param name="stat">The stat definition to normalize.</param>
             <param name="value">The value to normalize.</param>
-            <returns>The normalized value in the range [0, 1].</returns>
+            <returns>
+                A normalized value in [0, 1] relative to the min/max range observed so far for
+                <paramref name="stat" />. Not reproducible across differing observation histories.
+            </returns>
         </member>
         <member name="M:LordKuper.Common.StatRanges.UpdateStatRange(RimWorld.StatDef,System.Single)">
             <summary>
@@ -2667,14 +2756,14 @@
                 Provides a cache for storing stat values of a <see cref="P:LordKuper.Common.ThingCache.Thing" /> and manages cache updates based on a timer.
             </summary>
         </member>
-        <member name="F:LordKuper.Common.ThingCache._updateTimer">
-            <summary>
-                The interval in hours between cache updates.
-            </summary>
-        </member>
         <member name="F:LordKuper.Common.ThingCache.StatValues">
             <summary>
                 Stores cached stat values for the associated <see cref="P:LordKuper.Common.ThingCache.Thing" />.
+            </summary>
+        </member>
+        <member name="F:LordKuper.Common.ThingCache._updateTimer">
+            <summary>
+                The interval in hours between cache updates.
             </summary>
         </member>
         <member name="F:LordKuper.Common.ThingCache._updateTime">
@@ -3485,6 +3574,21 @@
             <param name="remRect">The remaining rectangle above the bottom row.</param>
             <returns>The rectangle representing the bottom row.</returns>
         </member>
+        <member name="M:LordKuper.Common.UI.Layout.GetCenterRowRect(UnityEngine.Rect,System.Single,UnityEngine.Rect@,UnityEngine.Rect@)">
+            <summary>
+                Calculates and returns the centered row rectangle within the given rectangle, splitting the remaining space
+                into top and bottom rectangles.
+            </summary>
+            <param name="rect">The source rectangle from which the centered row and remaining areas are calculated.</param>
+            <param name="rowHeight">The height of the centered row to extract. Must be a positive value.</param>
+            <param name="topRect">When this method returns, contains the rectangle representing the area above the centered row.</param>
+            <param name="bottomRect">When this method returns, contains the rectangle representing the area below the centered row.</param>
+            <returns>
+                A <see cref="T:UnityEngine.Rect" /> representing the centered row within the given rectangle. If the height of the source
+                rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
+                <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="P:UnityEngine.Rect.zero" />.
+            </returns>
+        </member>
         <member name="M:LordKuper.Common.UI.Layout.GetCenteredRect(UnityEngine.Rect,System.Single,System.Single)">
             <summary>
                 Calculates a rectangle of the specified width and height, centered within the given rectangle.
@@ -3502,21 +3606,6 @@
                 A new <see cref="T:UnityEngine.Rect" /> that is centered within <paramref name="rect" /> and has the specified width and height.
                 If the specified width or height is greater than the dimensions of <paramref name="rect" />, the original
                 rectangle is returned.
-            </returns>
-        </member>
-        <member name="M:LordKuper.Common.UI.Layout.GetCenterRowRect(UnityEngine.Rect,System.Single,UnityEngine.Rect@,UnityEngine.Rect@)">
-            <summary>
-                Calculates and returns the centered row rectangle within the given rectangle, splitting the remaining space
-                into top and bottom rectangles.
-            </summary>
-            <param name="rect">The source rectangle from which the centered row and remaining areas are calculated.</param>
-            <param name="rowHeight">The height of the centered row to extract. Must be a positive value.</param>
-            <param name="topRect">When this method returns, contains the rectangle representing the area above the centered row.</param>
-            <param name="bottomRect">When this method returns, contains the rectangle representing the area below the centered row.</param>
-            <returns>
-                A <see cref="T:UnityEngine.Rect" /> representing the centered row within the given rectangle. If the height of the source
-                rectangle is less than or equal to <paramref name="rowHeight" />, the entire rectangle is returned, and both
-                <paramref name="topRect" /> and <paramref name="bottomRect" /> are set to <see cref="P:UnityEngine.Rect.zero" />.
             </returns>
         </member>
         <member name="M:LordKuper.Common.UI.Layout.GetLeftColumnRect(UnityEngine.Rect,System.Single,UnityEngine.Rect@)">
@@ -4248,6 +4337,11 @@
                 Used to determine which stats are important for each work type in the game.
             </summary>
         </member>
+        <member name="F:LordKuper.Common.WorkTypeStatMap.DefaultWorkTypeStats">
+            <summary>
+                Default stat weights for specific work types, keyed by work type defName and stat defName.
+            </summary>
+        </member>
         <member name="F:LordKuper.Common.WorkTypeStatMap._autoSwitchStatsMap">
             <summary>
                 Stores a mapping from <see cref="T:Verse.WorkTypeDef" /> to a set of <see cref="T:RimWorld.StatDef" />s that are used for
@@ -4258,11 +4352,6 @@
             <summary>
                 Stores a mapping from <see cref="T:Verse.WorkTypeDef" /> to a dictionary of <see cref="T:RimWorld.StatDef" /> and their associated
                 <see cref="T:LordKuper.Common.StatWeight" />.
-            </summary>
-        </member>
-        <member name="F:LordKuper.Common.WorkTypeStatMap.DefaultWorkTypeStats">
-            <summary>
-                Default stat weights for specific work types, keyed by work type defName and stat defName.
             </summary>
         </member>
         <member name="P:LordKuper.Common.WorkTypeStatMap.AutoSwitchStatsMap">
@@ -4280,8 +4369,17 @@
         </member>
         <member name="M:LordKuper.Common.WorkTypeStatMap.BuildMap">
             <summary>
-                Builds the mapping between work types and their relevant stats, including default weights,
-                skill-based stats, and recipe-based stats.
+                Builds the mapping between work types and their relevant stats on first access.
+                Delegates to <see cref="M:LordKuper.Common.WorkTypeStatMap.Rebuild" />.
+            </summary>
+        </member>
+        <member name="M:LordKuper.Common.WorkTypeStatMap.Rebuild">
+            <summary>
+                Builds (or rebuilds) the work-type → stat mappings against the active
+                <see cref="P:LordKuper.Common.DefProvider.Current" />.
+                Called on first access of <see cref="P:LordKuper.Common.WorkTypeStatMap.AutoSwitchStatsMap" /> / <see cref="P:LordKuper.Common.WorkTypeStatMap.DefaultStatsMap" />
+                and by test fixtures after swapping the provider.
+                Produces the same state as the original <c>BuildMap</c>.
             </summary>
         </member>
         <member name="T:LordKuper.Common.WorkTypeThingRule">
@@ -4379,8 +4477,24 @@
             <summary>
                 Calculates a score for the specified <see cref="T:Verse.ThingDef" /> based on the stat weights of this rule.
             </summary>
+            <remarks>
+                <para>
+                    <strong>Adaptive behavior (intentional, by design):</strong> the returned score
+                    is <em>not stable</em> across differing call sequences or sessions. Internally this method
+                    delegates to <see cref="M:LordKuper.Common.StatRanges.NormalizeStatValue(RimWorld.StatDef,System.Single)" />, which maintains a running
+                    min/max per <see cref="T:RimWorld.StatDef" /> that expands as values are observed. A given
+                    <see cref="T:Verse.ThingDef" />'s normalized score therefore depends on the <em>set and order</em>
+                    of all items scored in the current process; identical inputs can yield different outputs
+                    if the observation history differs.
+                </para>
+                <para>
+                    This order-dependence is intentional by design.
+                </para>
+            </remarks>
             <param name="def">The <see cref="T:Verse.ThingDef" /> to score.</param>
-            <returns>The calculated score.</returns>
+            <returns>
+                The calculated score. Not reproducible across differing observation histories.
+            </returns>
             <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
         </member>
         <member name="M:LordKuper.Common.WorkTypeThingRule.GetThingScore(Verse.Thing)">
@@ -4388,8 +4502,24 @@
                 Calculates a normalized [-1..1] score for the specified <see cref="T:Verse.Thing" /> based on the stat weights of this
                 rule.
             </summary>
+            <remarks>
+                <para>
+                    <strong>Adaptive behavior (intentional, by design):</strong> the returned score
+                    is <em>not stable</em> across differing call sequences or sessions. Internally this method
+                    delegates to <see cref="M:LordKuper.Common.StatRanges.NormalizeStatValue(RimWorld.StatDef,System.Single)" />, which maintains a running
+                    min/max per <see cref="T:RimWorld.StatDef" /> that expands as values are observed. A given
+                    <see cref="T:Verse.Thing" />'s normalized score therefore depends on the <em>set and order</em>
+                    of all items scored in the current process; identical inputs can yield different outputs
+                    if the observation history differs.
+                </para>
+                <para>
+                    This order-dependence is intentional by design.
+                </para>
+            </remarks>
             <param name="thing">The thing to score.</param>
-            <returns>The calculated score.</returns>
+            <returns>
+                The calculated score. Not reproducible across differing observation histories.
+            </returns>
             <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="thing" /> is null.</exception>
         </member>
         <member name="M:LordKuper.Common.WorkTypeThingRule.Initialize">

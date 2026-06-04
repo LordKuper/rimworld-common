@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <!-- Environment variables for test execution -->
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <Variable name="RIMWORLD_DIR" value="D:\Games\Steam\steamapps\common\RimWorld" />
+    </EnvironmentVariables>
+  </RunConfiguration>
+
+  <!-- Coverlet code coverage configuration -->
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <!-- Include only the LordKuper.Common assembly (Source) -->
+          <Include>[LordKuper.Common]*</Include>
+          <!-- Exclude UI namespace (untestable IMGUI rendering) -->
+          <ExcludeByFile>**/UI/**/*.cs</ExcludeByFile>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

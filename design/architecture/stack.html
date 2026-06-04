@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: current tech stack reference (languages, frameworks, runtime, infra)
+  excludes: build commands, architecture decisions, deployment ops
+  delegates_to: commands.yaml (commands), adr/ (decisions), runbooks (ops)
+provenance: reverse-engineered
+source: Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="Stack">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-03">
+  <meta name="responsibility" content="current tech stack reference (languages, frameworks, runtime, infra)">
+  <meta name="provenance" content="reverse-engineered">
+  <meta name="source" content="Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj">
+  <title>Stack — rimworld-common</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "\2298 "; color: var(--warn); }
+
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    /* Stack */
+    table.tech-table .ver { font-variant-numeric: tabular-nums; color: var(--muted); }
+    .principle-list { list-style: none; padding: 0; }
+    .principle-list li { background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--info); border-radius: 6px; padding: 8px 12px; margin: 6px 0; }
+    .principle-list li strong { color: var(--info); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#languages">Languages</a></li>
+        <li><a href="#frameworks">Frameworks / libraries</a></li>
+        <li><a href="#runtime-infrastructure">Runtime / infrastructure</a></li>
+        <li><a href="#versions">Version pinning &amp; lag</a></li>
+        <li><a href="#tooling">Tooling</a></li>
+        <li><a href="#constraints">Constraints</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>Stack</span>
+          <span>project</span>
+          <span class="status-draft">draft</span>
+          <span class="provenance-reverse-engineered">reverse-engineered (from Source/LordKuper.Common.csproj + Tests/LordKuper.Common.Tests.csproj)</span>
+        </div>
+        <h1>Stack — rimworld-common</h1>
+        <div class="stats">
+          <span class="chip">net472</span>
+          <span class="chip">RimWorld 1.5 + 1.6</span>
+          <span class="chip">updated 2026-06-03</span>
+        </div>
+      </header>
+      <main>
+
+<section id="languages">
+  <h2>Languages</h2>
+  <table class="tech-table">
+    <thead><tr><th>Language</th><th>Version</th><th>Used in</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>C#</strong></td>
+        <td class="ver">latest</td>
+        <td><span class="chip area">Source/ (library)</span> <span class="chip area">Tests/ (xUnit)</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p><code>&lt;LangVersion&gt;latest&lt;/LangVersion&gt;</code> is set literally in both csproj files — the compiler resolves it to the highest version the selected toolchain offers for the <code>net472</code> target. Nullable reference types are enabled (<code>enable</code> in the library, <code>enable</code> in tests).</p>
+</section>
+
+<section id="frameworks">
+  <h2>Frameworks / libraries</h2>
+  <p>Two acquisition models coexist. <strong>Harmony</strong> is a NuGet package referenced <em>compile-only</em> (it is excluded from runtime output and must be provided by the host environment at load time). <strong>RimWorld and Unity</strong> assemblies are <em>game-provided file references</em> resolved from the local install (<code>$(RimWorldManagedDir)</code>) and are never pulled from NuGet.</p>
+  <table class="tech-table">
+    <thead><tr><th>Name</th><th>Version</th><th>Provider</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Lib.Harmony</strong></td>
+        <td class="ver">2.4.2</td>
+        <td><span class="chip area">NuGet (compile-only)</span></td>
+        <td>Runtime patching of RimWorld methods. <code>PrivateAssets=all</code>, <code>ExcludeAssets=runtime</code> — compiled against but excluded from output; the host (RimWorld + HarmonyMod / loader) supplies the assembly at runtime.</td>
+      </tr>
+      <tr>
+        <td><strong>Assembly-CSharp</strong> (RimWorld / Verse)</td>
+        <td class="ver">1.5 + 1.6</td>
+        <td><span class="chip area">game-provided ref</span></td>
+        <td>The RimWorld game assembly. Core domain types (<code>Pawn</code>, <code>Def</code>, <code>StatDef</code>, <code>ThingDef</code>) and Verse infrastructure the library wraps. File reference, <code>Private=False</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>UnityEngine.CoreModule</strong></td>
+        <td class="ver">install-resolved</td>
+        <td><span class="chip area">game-provided ref</span></td>
+        <td>Core Unity types (<code>Rect</code>, <code>Color</code>, <code>Texture2D</code>, <code>Mathf</code>) used by helpers and UI. File reference, <code>Private=False</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>UnityEngine.IMGUIModule</strong></td>
+        <td class="ver">install-resolved</td>
+        <td><span class="chip area">game-provided ref</span></td>
+        <td>Immediate-mode GUI (<code>GUI</code>, <code>GUILayout</code>, <code>GUIStyle</code>) underpinning the widget toolkit in <code>Source/UI/**</code>. File reference, <code>Private=False</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>UnityEngine.TextRenderingModule</strong></td>
+        <td class="ver">install-resolved</td>
+        <td><span class="chip area">game-provided ref</span></td>
+        <td>Font / text rendering (<code>TextAnchor</code>, <code>Font</code>) for labels and field rendering. File reference, <code>Private=False</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="lede" style="font-size:0.95rem;">Unity module versions are resolved from the local RimWorld install at build time and are not pinned in source; they track whichever Unity build ships with the targeted RimWorld version.</p>
+
+  <h3 id="optional-integrations">Optional integrations</h3>
+  <table class="tech-table">
+    <thead><tr><th>Mod</th><th>packageId</th><th>Coupling</th><th>Integration point</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Vanilla Skills Expanded</strong> (VSE)</td>
+        <td class="ver">vanillaexpanded.skills</td>
+        <td><span class="chip area">optional soft-dependency</span></td>
+        <td>
+          <code>loadAfter</code> entry in <code>About/About.xml</code>; integration modeled in
+          <code>Source/Compatibility/Vse.cs</code>. <strong>Not</strong> a hard dependency — it is
+          <em>reflection-guarded</em> (Harmony <code>AccessTools</code> resolves the VSE
+          <code>PassionManager</code> / <code>PassionDef</code> members at runtime) and initialized
+          <em>all-or-nothing</em>: <code>Vse.Initialize()</code> first checks whether
+          <code>vanillaexpanded.skills</code> is in the running mod list and returns early when absent,
+          so the library functions fully without VSE installed. When VSE is present, the reflection
+          setup runs once inside a guarded <code>try/catch</code> that logs and disables the integration
+          on any binding failure rather than throwing into the host.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="runtime-infrastructure">
+  <h2>Runtime / infrastructure</h2>
+  <table class="tech-table">
+    <thead><tr><th>Component</th><th>Version</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>.NET Framework</strong></td>
+        <td class="ver">4.7.2 (<code>net472</code>)</td>
+        <td><span class="chip area">target runtime</span> — matches the framework RimWorld's Mono/CLR loads; newer TFMs cannot be adopted.</td>
+      </tr>
+      <tr>
+        <td><strong>RimWorld</strong></td>
+        <td class="ver">1.5 + 1.6</td>
+        <td><span class="chip area">host game</span> — both versions are active supported targets via version-specific folders (<code>1.5/</code>, <code>1.6/</code>); the build emits to the matching <code>&lt;version&gt;/Assemblies/</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Harmony</strong></td>
+        <td class="ver">host-provided</td>
+        <td><span class="chip area">runtime dependency</span> — supplied by the host environment at load time (not shipped by this library).</td>
+      </tr>
+      <tr>
+        <td><strong>Unity engine</strong></td>
+        <td class="ver">RimWorld-bundled</td>
+        <td><span class="chip area">host engine</span> — provides the IMGUI / rendering runtime the library calls into.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="versions">
+  <h2>Version pinning &amp; lag</h2>
+  <p>Pinned versions versus latest stable upstream, with the resulting lag/risk read. Game-provided references (RimWorld/Unity) are intentionally bound to the install and are excluded from upgrade-lag scoring.</p>
+  <table class="tech-table">
+    <thead><tr><th>Dependency</th><th>Pinned</th><th>Latest stable</th><th>Lag</th><th>Risk</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Lib.Harmony</strong></td>
+        <td class="ver">2.4.2</td>
+        <td class="ver">2.4.x (current)</td>
+        <td>none / minimal</td>
+        <td><span class="chip area">LOW</span></td>
+      </tr>
+      <tr>
+        <td><strong>.NET Framework</strong></td>
+        <td class="ver">4.7.2</td>
+        <td class="ver">4.8.1</td>
+        <td>fixed by host</td>
+        <td><span class="chip area">LOW</span> — pinned to RimWorld's runtime by design, not a free choice.</td>
+      </tr>
+      <tr>
+        <td><strong>xunit</strong></td>
+        <td class="ver">2.9.3</td>
+        <td class="ver">3.x line exists</td>
+        <td>major line behind (v2 vs v3)</td>
+        <td><span class="chip area">LOW–MEDIUM</span> — v2 is the legacy line but fully supported; no migration pressure.</td>
+      </tr>
+      <tr>
+        <td><strong>Microsoft.NET.Test.Sdk</strong></td>
+        <td class="ver">17.14.1</td>
+        <td class="ver">17.14.x (current)</td>
+        <td>none / minimal</td>
+        <td><span class="chip area">LOW</span></td>
+      </tr>
+      <tr>
+        <td><strong>xunit.runner.visualstudio</strong></td>
+        <td class="ver">2.8.2</td>
+        <td class="ver">3.x line exists</td>
+        <td>tracks xunit v2</td>
+        <td><span class="chip area">LOW</span> — paired with the pinned xunit v2.</td>
+      </tr>
+      <tr>
+        <td><strong>coverlet.collector</strong></td>
+        <td class="ver">6.0.4</td>
+        <td class="ver">10.0.1</td>
+        <td>several major versions behind</td>
+        <td><span class="chip area">MEDIUM</span> — largest upgrade gap; test-time only, so blast radius is contained to coverage collection.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="tooling">
+  <h2>Tooling</h2>
+  <table class="tech-table">
+    <thead><tr><th>Tool</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Microsoft.NET.Sdk</strong></td><td>SDK-style project build for both the library and the test project.</td></tr>
+      <tr><td><strong>xUnit 2.9.3</strong></td><td>Unit test framework (<code>[Fact]</code> / <code>[Theory]</code>); discovered via <code>Using Include="Xunit"</code>.</td></tr>
+      <tr><td><strong>Microsoft.NET.Test.Sdk 17.14.1</strong></td><td>Test host / VSTest adapter integration that makes the test project runnable under <code>dotnet test</code> and the IDE test runner.</td></tr>
+      <tr><td><strong>xunit.runner.visualstudio 2.8.2</strong></td><td>VSTest runner enabling xUnit discovery and execution in Visual Studio and CI.</td></tr>
+      <tr><td><strong>coverlet.collector 6.0.4</strong></td><td>Code-coverage data collector wired into the VSTest pipeline (collector form, runtime/build assets).</td></tr>
+      <tr><td><strong>Roslyn analyzers (built-in)</strong></td><td>Warnings-as-errors at <code>WarningLevel 9999</code> on all configurations; XML documentation generation enabled on the library.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="constraints" class="callout warn">
+  <h2>Constraints</h2>
+  <ul>
+    <li>Locked to <code>net472</code> to match the RimWorld runtime; newer target frameworks the game does not load cannot be adopted.</li>
+    <li>Builds require a local RimWorld install: game-managed assemblies (Assembly-CSharp, UnityEngine modules) resolve from <code>$(RimWorldManagedDir)</code> and are never sourced from NuGet.</li>
+    <li>Harmony is compile-only (<code>PrivateAssets=all</code>, <code>ExcludeAssets=runtime</code>) — it is excluded from output and the host environment must provide it at load time.</li>
+    <li>Both RimWorld <strong>1.5 and 1.6</strong> are active supported targets via version-specific folders; per-version assemblies ship under version-named directories (<code>1.5/</code>, <code>1.6/</code>) and the build emits into the matching <code>&lt;version&gt;/Assemblies/</code>. New versions are onboarded by adding a folder, not by breaking existing ones.</li>
+    <li>Warnings-as-errors at maximum warning level (<code>9999</code>) on Debug and Release — code must stay clean to compile.</li>
+    <li>No NuGet runtime dependencies ship with the library: the only NuGet package (Harmony) is excluded from output, so the assembly carries no third-party runtime payload.</li>
+    <li><strong>Vanilla Skills Expanded</strong> (<code>vanillaexpanded.skills</code>) is an <em>optional soft-dependency</em> only: a <code>loadAfter</code> entry, reflection-guarded and all-or-nothing (see <a href="#optional-integrations">Optional integrations</a>). It is never required to load, build, or run the library; the only hard mod dependency remains Harmony.</li>
+  </ul>
+</section>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-03 | sprint </footer>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>

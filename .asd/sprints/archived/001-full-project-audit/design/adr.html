@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (or multiple repeated blocks in sprint draft)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), ux-spec.html (ux), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="sprint">
+  <meta name="sprint-id" content="001-full-project-audit">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-03">
+  <meta name="responsibility" content="single architecture decision (or multiple repeated blocks in sprint draft)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR — Sprint 001 · full-project-audit</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#intro">Scope &amp; dropped decisions</a></li>
+        <li><a href="#adr-0001">ADR-0001 · RimWorld-context isolation seam</a></li>
+        <li><a href="#adr-0002">ADR-0002 · StatRanges adaptive contract</a></li>
+        <li><a href="#adr-0003">ADR-0003 · Solution-wide build governance</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>sprint</span>
+          <span class="status-draft">draft</span>
+        </div>
+        <h1>ADR — Sprint 001 · full-project-audit</h1>
+        <div class="stats">
+          <span class="chip">3 decisions</span>
+          <span class="chip">all accepted</span>
+          <span class="chip">subsystem: sprint</span>
+          <span class="chip">updated 2026-06-03</span>
+        </div>
+      </header>
+      <main>
+
+        <section id="intro" class="hero">
+          <h2 style="border-bottom:none;margin-top:0">Scope &amp; dropped decisions</h2>
+          <p class="lede">
+            This sprint draft records three accepted architecture decisions arising from the full-project
+            audit of <code>LordKuper.Common</code>. They establish a testability seam around RimWorld
+            <code>Verse</code> access (ADR-0001), pin down the contract of the adaptive stat-range
+            normalization (ADR-0002), and consolidate build governance across the solution (ADR-0003).
+          </p>
+          <p>
+            No new external technology is introduced by any decision in this document
+            (no provider library, no test framework change beyond the already-present xUnit, no new
+            runtime or service). <strong>Therefore no <code>tech-reference/</code> additions or updates
+            are required.</strong>
+          </p>
+          <h3 style="color:var(--muted)">Considered and not pursued</h3>
+          <p>
+            An earlier draft proposed a fourth ADR (former ADR-A) to make the
+            <code>WorkType→Stat</code> default-weight surface data-driven, on the theory that the
+            hardcoded weights in <code>WorkTypeStatMap</code> were a prohibited hardcoded-balance
+            violation. <strong>This was dropped.</strong> The user determined that those default weights
+            are intentional <em>seed defaults</em>: consuming mods override them through their own
+            persisted settings (the <code>IExposable</code> <code>StatWeight</code> /
+            <code>WorkTypeThingRule</code> objects), so the seeds are configuration starting points,
+            not fixed balance baked into the library. They are not an architectural concern and need
+            no ADR.
+          </p>
+          <p>
+            The only change retained for that area is a non-architectural code fix, recorded here for
+            traceability but requiring no decision record:
+            <code>WorkTypeStatMap</code> will emit <code>Logger.LogWarning</code> (including worktype
+            and stat context) when a referenced <code>StatDef</code> resolves to <code>null</code>
+            through <code>GetNamedSilentFail</code>, instead of silently no-op'ing. This is captured as
+            an audit/implementation item, not an ADR.
+          </p>
+        </section>
+
+        <!-- ============================ ADR-0001 ============================ -->
+        <article class="adr" id="adr-0001">
+          <div class="meta">
+            <span class="status-chip status-accepted">accepted</span>
+            <span class="chip area">subsystem: sprint</span>
+            <span class="chip">ADR-0001</span>
+          </div>
+
+          <h2 id="adr-0001-title">ADR-0001 · RimWorld-context isolation seam</h2>
+
+          <h2 id="adr-0001-context">Context</h2>
+          <p>
+            <code>LordKuper.Common</code> reaches directly into RimWorld's <code>Verse</code> layer
+            through static <code>DefDatabase&lt;T&gt;</code> lookups and
+            <code>WorkTypeDefsUtility</code> from numerous call sites
+            (<code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>WorkTypeThingRule</code>,
+            <code>DefCache</code>, <code>StatWeight</code>, <code>PassionHelper</code>). Several of these
+            sites run inside static constructors, building caches at type-load time. Because the data
+            source is a global static owned by the running game, the library is effectively impossible
+            to unit-test in isolation: there is no seam at which a test can supply controlled defs, and
+            the load-time caches retain process-global state that leaks between tests. This blocks the
+            sprint's coverage goal (≥80%) and its static-isolation acceptance criteria.
+          </p>
+
+          <h2 id="adr-0001-decision">Decision</h2>
+          <p class="lede">
+            Introduce a single <code>IDefProvider</code> abstraction with a static
+            <code>DefProvider.Current</code> injection point, and route all direct <code>Verse</code>
+            def access through it.
+          </p>
+          <ul>
+            <li>
+              Define <code>IDefProvider</code> as the one seam for def/worktype resolution. The default
+              implementation, <code>VerseDefProvider</code>, delegates to
+              <code>DefDatabase&lt;T&gt;</code> and <code>WorkTypeDefsUtility</code> exactly as today.
+              Tests install a <code>FakeDefProvider</code>.
+            </li>
+            <li>
+              Reroute the direct <code>DefDatabase&lt;T&gt;</code> call sites
+              (<code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>,
+              <code>WorkTypeThingRule</code>, <code>DefCache</code>, <code>StatWeight</code>,
+              <code>PassionHelper</code>) through <code>DefProvider.Current</code>.
+              <code>SkillStatMap</code> is listed here for consistency with the PRD static-cache
+              snapshot set (<a href="#AC-15">AC-15</a>/<a href="#AC-16">AC-16</a>): any
+              <code>DefDatabase</code> resolution it performs goes through the same seam; if a given
+              build of <code>SkillStatMap</code> performs no direct <code>DefDatabase</code> call,
+              its only obligation is snapshot/restore, but it remains in this list so the ADR and PRD
+              agree on the surface.
+            </li>
+            <li>
+              Extract the static-constructor bodies of <code>StatHelper</code> and
+              <code>WorkTypeStatMap</code> into <code>internal static Rebuild()</code> methods, called by
+              both the static constructor (preserving load-time behavior <em>exactly</em>) and by test
+              fixtures that need to rebuild against a fake provider.
+            </li>
+            <li>
+              <strong>Documented exception to the &ldquo;no static constructors with heavy side
+              effects&rdquo; rule</strong>
+              (<a href="../../../project/custom-design-rules.md"><code>.asd/project/custom-design-rules.md</code></a>
+              &middot; Modding &amp; patchability). The <code>Rebuild()</code> extraction keeps the
+              <code>DefDatabase</code>-walking work invoked from the static constructors; the heavy
+              load-time initialization is therefore retained, not removed. This is a deliberate,
+              bounded exception, recorded here for traceability:
+              <ul>
+                <li>Load-time <code>DefDatabase</code> initialization is idiomatic RimWorld — static-ctor
+                  / <code>[StaticConstructorOnStartup]</code> init is the canonical way mods hook game
+                  load, so the work belongs at type-load by design.</li>
+                <li>It is guarded and runs exactly once per process, and it satisfies the project's
+                  Fail-Fast-on-Load expectation (see <a href="#AC-24">AC-24</a>: static-init paths emit
+                  clear <code>Logger</code> context on failure).</li>
+                <li>The <code>Rebuild()</code> extraction adds a <em>test-time</em> re-init path
+                  <strong>without</strong> changing load-time behavior; no new heavy static work is
+                  introduced.</li>
+                <li>The exception is intentional and bounded to these existing init paths
+                  (<code>StatHelper</code>, <code>WorkTypeStatMap</code>); it does not license any new
+                  heavy static initialization elsewhere in the codebase.</li>
+              </ul>
+            </li>
+            <li>
+              Add <code>[assembly: InternalsVisibleTo]</code> for the Tests assembly, exposing the
+              internal reset/snapshot/<code>Rebuild()</code> hooks.
+            </li>
+            <li>
+              Add an xUnit <code>StaticStateFixture</code> (used via <code>IClassFixture</code> plus a
+              <code>[Collection]</code> to serialize across classes that touch shared statics). It
+              snapshots and restores the static caches:
+              <code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>,
+              <code>PassionHelper</code>, the <code>DefCache</code> statics, <strong>and
+              <code>StatRanges.Ranges</code></strong> — the latter explicitly, because ADR-0002 keeps
+              that cache mutable (see <a href="#adr-0002">ADR-0002</a>).
+            </li>
+            <li>
+              The new <code>IDefProvider</code> abstraction and the <code>InternalsVisibleTo</code> grant
+              were approved by the user under Complication Approval, granted 2026-06-03.
+            </li>
+          </ul>
+
+          <h2 id="adr-0001-consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Creates the single test seam that unblocks unit testing of the core helpers and gates the ≥80% coverage goal.</li>
+                <li>Production behavior is unchanged: <code>VerseDefProvider</code> is a thin pass-through and remains the default.</li>
+                <li>Centralizes all <code>Verse</code> def access behind one interface, simplifying future changes to def resolution.</li>
+                <li>The snapshot/restore fixture makes static-state leakage between tests deterministic and explicit.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li>Adds a new abstraction (<code>IDefProvider</code>) and a mutable global injection point (<code>DefProvider.Current</code>) — a global the rest of the codebase must respect.</li>
+                <li><code>InternalsVisibleTo</code> widens the internal surface to the Tests assembly; internal reset/snapshot hooks become a maintained contract.</li>
+                <li>Static-ctor extraction into <code>Rebuild()</code> is behavior-sensitive: it MUST reproduce load-time ordering exactly, or load-time semantics drift.</li>
+                <li>Cross-class test serialization via <code>[Collection]</code> reduces test parallelism for the affected suites.</li>
+                <li><strong>Behavioral/API note:</strong> no public-API break in production paths; the new public/injectable seam is additive. The reset/snapshot hooks are <code>internal</code>, not part of the public mod API.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="adr-0001-alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Per-class constructor injection of a provider</strong> — rejected: the affected statics build caches at type-load time with no instance to inject into; a static injection point is the minimal seam that fits the existing static design.</li>
+            <li><strong>Wrapping <code>DefDatabase&lt;T&gt;</code> only at test time via a shim/mocking framework</strong> — rejected: would not give a stable production seam and would still leave load-time static caches un-resettable between tests.</li>
+          </ul>
+
+          <h3>Acceptance criteria satisfied</h3>
+          <ul>
+            <li><strong><a href="prd.html#AC-13">AC-13</a></strong> — provides the RimWorld-context isolation seam that lets stateful subsystems run without a live <code>DefDatabase</code>/game context.</li>
+            <li><strong><a href="prd.html#AC-14">AC-14</a></strong>, <strong><a href="prd.html#AC-15">AC-15</a></strong> — the <code>StaticStateFixture</code> save/restores the shared static caches (<code>StatHelper</code>, <code>WorkTypeStatMap</code>, <code>SkillStatMap</code>, <code>StatRanges</code>, <code>PassionHelper</code>, and the <code>DefCache</code> statics) around each test.</li>
+            <li><strong><a href="prd.html#AC-16">AC-16</a></strong> — the snapshot set explicitly includes the adaptive <code>StatRanges.Ranges</code> cache retained under ADR-0002.</li>
+            <li><strong><a href="prd.html#AC-18">AC-18</a></strong> — records the isolation-seam approach in an ADR before broad test build-out.</li>
+            <li><strong><a href="prd.html#AC-19">AC-19</a></strong> — the snapshot/restore makes the suite pass order-independently with no inter-test state leakage.</li>
+            <li><strong><a href="prd.html#AC-24">AC-24</a></strong> — the retained static-init paths walking the <code>DefDatabase</code> emit clear <code>Logger</code> context on failure, consistent with Fail-Fast-on-Load.</li>
+            <li>Gates <strong><a href="prd.html#AC-20">AC-20</a></strong> and <strong><a href="prd.html#AC-21">AC-21</a></strong> — the seam is the prerequisite that enables the comprehensive stateful-subsystem tests and the ≥80% Coverlet line-coverage floor.</li>
+          </ul>
+
+          <h2 id="adr-0001-related">Related ADRs</h2>
+          <ul>
+            <li><a href="#adr-0002">ADR-0002</a>: ADR-0002 keeps <code>StatRanges.Ranges</code> mutable, which is exactly why this ADR's fixture must snapshot/restore it.</li>
+          </ul>
+        </article>
+
+        <!-- ============================ ADR-0002 ============================ -->
+        <article class="adr" id="adr-0002">
+          <div class="meta">
+            <span class="status-chip status-accepted">accepted</span>
+            <span class="chip area">subsystem: sprint</span>
+            <span class="chip">ADR-0002</span>
+          </div>
+
+          <h2 id="adr-0002-title">ADR-0002 · StatRanges normalization — documented adaptive contract</h2>
+
+          <h2 id="adr-0002-context">Context</h2>
+          <p>
+            <code>StatRanges.NormalizeStatValue</code> normalizes a stat value against a running
+            min/max range maintained per <code>StatDef</code> in the static
+            <code>StatRanges.Ranges</code> cache. Because the range adapts as values are observed, the
+            normalized score for a given item depends on the <em>set and order</em> of items scored so
+            far in the current process. This propagates into
+            <code>WorkTypeThingRule.GetThingScore</code> and
+            <code>WorkTypeThingRule.GetThingDefScore</code>. The audit flagged this as a
+            reproducibility/observation-order concern: identical inputs can yield different scores
+            depending on history. A decision was needed on whether to make normalization deterministic
+            or to keep — and formally bless — the adaptive behavior.
+          </p>
+
+          <h2 id="adr-0002-decision">Decision</h2>
+          <p class="lede">
+            Keep the running min/max adaptive normalization (option b). Do <em>not</em> make it
+            deterministic. Instead, document the observation-order dependence as the intended contract.
+          </p>
+          <p>
+            <strong>User-approved deviation from a named project rule.</strong> Keeping the order- and
+            history-dependent scoring is an explicit, user-approved exception to the
+            <a href="../../../project/custom-design-rules.md"><code>.asd/project/custom-design-rules.md</code></a>
+            &middot; <em>Determinism</em> rule (&ldquo;same inputs → same outputs; no time- or
+            order-dependent behavior in core logic unless explicitly required&rdquo;) and to
+            code-style &sect;11. The deviation is recorded here against that named rule: the
+            order-dependence is the <em>explicitly required</em> behavior for this stat normalization,
+            and is made discoverable via XML docs rather than removed.
+          </p>
+          <ul>
+            <li>
+              <code>StatRanges.NormalizeStatValue</code> continues to mutate the per-<code>StatDef</code>
+              <code>Ranges</code> cache as values are observed. No behavioral change.
+            </li>
+            <li>
+              Add explicit XML doc comments to the affected public members
+              (<code>StatRanges.NormalizeStatValue</code>,
+              <code>WorkTypeThingRule.GetThingScore</code>,
+              <code>WorkTypeThingRule.GetThingDefScore</code>) stating that the returned scores are
+              <strong>adaptive</strong> and depend on the set and order of items scored within the
+              current process. This makes the order-dependence a documented, intentional contract rather
+              than a latent surprise.
+            </li>
+            <li>
+              No reproducibility test is required: the adaptive behavior <em>is</em> the documented
+              contract, so there is nothing deterministic to assert.
+            </li>
+          </ul>
+
+          <h2 id="adr-0002-consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Zero behavioral change — existing mods relying on current scoring behavior are unaffected.</li>
+                <li>The order-dependence becomes explicit and discoverable in the public API docs.</li>
+                <li>Avoids the risk and churn of redesigning normalization for determinism.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li>Scores remain non-reproducible across differing observation histories; consumers must understand the documented adaptive contract.</li>
+                <li>The static <code>StatRanges.Ranges</code> cache stays — process-global mutable state that <strong>must</strong> be saved/restored by <a href="#adr-0001">ADR-0001</a>'s <code>StaticStateFixture</code> for tests to remain isolated. This cross-cutting obligation is the cost of keeping the cache.</li>
+                <li><strong>Behavioral/API note:</strong> only XML documentation changes; no signature or runtime-behavior change to any public member.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="adr-0002-alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Option (a): deterministic normalization</strong> — making <code>NormalizeStatValue</code> order-independent (e.g. precomputed or fixed ranges) — <strong>explicitly rejected by the user</strong> in favor of preserving existing runtime behavior. Determinism would have changed observable scores for current consumers and was judged not worth the behavioral break.</li>
+          </ul>
+
+          <h3>Acceptance criteria satisfied</h3>
+          <ul>
+            <li><strong><a href="prd.html#AC-9">AC-9</a></strong> — documents the observation-order dependence on the affected public members' XML docs (<code>StatRanges.NormalizeStatValue</code>, <code>WorkTypeThingRule.GetThingScore</code>, <code>GetThingDefScore</code>), with the adaptive behavior retained by design (no behavioral change).</li>
+            <li><strong><a href="prd.html#AC-16">AC-16</a></strong> — formally requires the retained adaptive <code>StatRanges.Ranges</code> cache to be in ADR-0001's snapshot/restore set, so order-independence (<a href="prd.html#AC-19">AC-19</a>) holds despite the documented order-dependent scoring.</li>
+          </ul>
+
+          <h2 id="adr-0002-related">Related ADRs</h2>
+          <ul>
+            <li><a href="#adr-0001">ADR-0001</a>: mandates that the retained <code>StatRanges.Ranges</code> cache be snapshot/restored by the test fixture.</li>
+          </ul>
+        </article>
+
+        <!-- ============================ ADR-0003 ============================ -->
+        <article class="adr" id="adr-0003">
+          <div class="meta">
+            <span class="status-chip status-accepted">accepted</span>
+            <span class="chip area">subsystem: sprint</span>
+            <span class="chip">ADR-0003</span>
+          </div>
+
+          <h2 id="adr-0003-title">ADR-0003 · Solution-wide build governance</h2>
+
+          <h2 id="adr-0003-context">Context</h2>
+          <p>
+            Build governance was applied only at <code>Source/Directory.Build.props</code>, which also
+            carried RimWorld-path resolution. As a result the Tests project did not inherit the strict
+            policy (<code>TreatWarningsAsErrors</code>, elevated warning level, nullable), leaving a
+            governance gap. Additionally, RimWorld path resolution fell back to a hardcoded
+            <code>d:\Games\...</code> default, which silently masks misconfiguration on machines where
+            that path does not exist. The audit required a single source of truth for build policy that
+            covers <em>both</em> Source and Tests, plus fail-fast behavior when the game directory cannot
+            be resolved.
+          </p>
+
+          <h2 id="adr-0003-decision">Decision</h2>
+          <p class="lede">
+            Introduce a repo-root <code>Directory.Build.props</code> as the single governance SSoT, and
+            make RimWorld path resolution fail fast.
+          </p>
+          <ul>
+            <li>
+              Add <code>Directory.Build.props</code> at the repository root hoisting
+              <code>TreatWarningsAsErrors=true</code>, <code>WarningLevel=9999</code>, and
+              <code>Nullable=enable</code> so <strong>both</strong> Source and Tests inherit them
+              (closing the Tests-project policy gap).
+            </li>
+            <li>
+              <code>Source/Directory.Build.props</code> keeps <strong>only</strong> the RimWorld-path
+              resolution and must inherit the root props via an <strong>explicit import</strong>.
+              MSBuild auto-imports only the <em>nearest</em> <code>Directory.Build.props</code>, so
+              <code>Source/Directory.Build.props</code> would otherwise <strong>shadow</strong> the
+              repo-root file rather than chain to it. Add an explicit import near the top of
+              <code>Source/Directory.Build.props</code>:
+              <pre><code>&lt;Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" /&gt;</code></pre>
+              so the root governance props (<code>TreatWarningsAsErrors</code>,
+              <code>WarningLevel</code>, <code>Nullable</code>) are actually inherited by the Source
+              project. The Tests project has <strong>no</strong> child
+              <code>Directory.Build.props</code>, so it inherits the repo-root file automatically via
+              the standard nearest-file auto-import and needs no explicit import.
+            </li>
+            <li>
+              <strong>No <code>LangVersion</code> pin.</strong> The user explicitly rejected pinning to
+              <code>13.0</code>; <code>LangVersion</code> stays <code>latest</code>.
+            </li>
+            <li>
+              RimWorld path fail-fast: remove the hardcoded <code>d:\Games\...</code> default. If neither
+              <code>RIMWORLD_DIR</code> nor <code>RimWorldDir</code> resolves to an existing directory,
+              emit a clear MSBuild build <em>error</em>. <code>RIMWORLD_DIR</code> is the documented
+              override.
+            </li>
+            <li>
+              Verify MSBuild import precedence so that Source-specific props (path resolution) still
+              apply correctly on top of the inherited root governance, and that the explicit import
+              above actually pulls the root file in (rather than the auto-import silently selecting only
+              the nearest file).
+            </li>
+            <li>
+              <strong>Verification note:</strong> after the change, confirm that <em>both</em> the Source
+              and Tests projects observe <code>TreatWarningsAsErrors</code>,
+              <code>WarningLevel</code>, and <code>Nullable</code> from the root file — e.g. inspect the
+              evaluated values via <code>dotnet build -bl</code> / the MSBuild binlog or a preprocessed
+              project (<code>msbuild /pp</code>) — so the governance props are provably inherited and not
+              shadowed.
+            </li>
+          </ul>
+
+          <h2 id="adr-0003-consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Single SSoT for build policy; Tests now inherit the same strict governance as Source. The Tests project (no child <code>Directory.Build.props</code>) picks up the root file automatically; Source inherits it via the one explicit import.</li>
+                <li>Misconfigured environments fail loudly at build time instead of silently binding to a non-existent default path.</li>
+                <li><code>RIMWORLD_DIR</code> gives a clear, documented override for any machine.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Accepted risk (LangVersion):</strong> with <code>LangVersion=latest</code> and no pin, an SDK bump could shift language semantics — notably <code>field</code>-keyword behavior — under the project. The pin was considered and declined by the user; this drift risk is accepted.</li>
+                <li>Developers must now set <code>RIMWORLD_DIR</code> (or <code>RimWorldDir</code>) before first build; there is no longer a silent default to fall back on.</li>
+                <li>Stricter inherited policy may surface previously tolerated warnings in the Tests project, requiring cleanup before it builds clean.</li>
+                <li><strong>Explicit-import requirement:</strong> because MSBuild auto-imports only the nearest <code>Directory.Build.props</code>, <code>Source/Directory.Build.props</code> must carry the explicit <code>GetPathOfFileAbove</code> import or it will shadow the root and silently re-open the governance gap for Source. This import is now a maintained line that must not be dropped; the verification note (both projects see <code>TreatWarningsAsErrors</code>/<code>WarningLevel</code>/<code>Nullable</code>) guards against regression.</li>
+                <li><strong>Build/behavioral note:</strong> no source-code API change; this is a build-configuration change. The removed default path is a deliberate behavioral change to the build (fail instead of fall back).</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="adr-0003-alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Pin <code>LangVersion</code> to <code>13.0</code></strong> — rejected by the user; keeping <code>latest</code> was preferred despite the accepted SDK-drift risk noted above.</li>
+            <li><strong>Keep governance only in <code>Source/Directory.Build.props</code> and duplicate into the Tests project</strong> — rejected: duplication violates SSoT and is exactly the drift that left Tests ungoverned in the first place.</li>
+          </ul>
+
+          <h3>Acceptance criteria satisfied</h3>
+          <ul>
+            <li><strong><a href="prd.html#AC-3">AC-3</a></strong> — brings the Tests project under zero-warnings + <code>Nullable=enable</code> governance via the repo-root <code>Directory.Build.props</code> (auto-inherited by Tests).</li>
+            <li><strong><a href="prd.html#AC-2">AC-2</a></strong> — removes the machine-specific RimWorld path fallback; <code>RIMWORLD_DIR</code>/<code>RimWorldDir</code> is the documented override and absence fails fast with a clear MSBuild error.</li>
+            <li><strong><a href="prd.html#AC-5">AC-5</a></strong> — establishes the single, consistent <code>TreatWarningsAsErrors</code> + <code>WarningLevel 9999</code> policy across both Source and Tests required for the zero-warning clean rebuild.</li>
+            <li>Supports <strong><a href="prd.html#AC-1">AC-1</a></strong> / <strong><a href="prd.html#AC-4">AC-4</a></strong> (Cluster A clean-build closure) by consolidating governance so warning/coverage runs are not misled by drift.</li>
+            <li><em>Not</em> the <code>LangVersion</code>-pin item — IMP-03 is won't-do per the user's decision (<code>LangVersion=latest</code> retained, SDK-drift risk accepted); no AC requires the pin.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-03 | sprint 001-full-project-audit</footer>
+    </div>
+  </div>
+</body>
+</html>
