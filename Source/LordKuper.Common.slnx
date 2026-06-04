@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LordKuper.Common/LordKuper.Common.csproj" />
+  <Project Path="LordKuper.Common.Tests/LordKuper.Common.Tests.csproj" />
+</Solution>

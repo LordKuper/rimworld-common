@@ -4,16 +4,16 @@
 # .NET Framework (net472) RimWorld mod library. Building requires the
 # RimWorldManagedDir env var / MSBuild property pointing at RimWorld's Managed dir.
 
-test: "dotnet test Tests\\LordKuper.Common.Tests.csproj"
-lint: "dotnet format Source\\LordKuper.Common.sln --verify-no-changes --severity warn"
-build: "dotnet build Source\\LordKuper.Common.sln -c Release"
+test: "dotnet test Source\\LordKuper.Common.Tests\\LordKuper.Common.Tests.csproj"
+lint: "dotnet format Source\\LordKuper.Common.slnx --verify-no-changes --severity warn"
+build: "dotnet build Source\\LordKuper.Common.slnx -c Release"
 run: ""
 
 custom:
   # JetBrains ReSharper CLI (jetbrains.resharper.globaltools, command `jb`).
   # Run jb-cleanup before build; run jb-inspect after lint and verify the sarif has no error/warning.
-  jb-cleanup:       "jb cleanupcode Source\\LordKuper.Common.sln"
-  jb-inspect:       "jb inspectcode Source\\LordKuper.Common.sln -o=\".\\TestResults\\jb-inspect.sarif\" --build"
+  jb-cleanup:       "jb cleanupcode Source\\LordKuper.Common.slnx"
+  jb-inspect:       "jb inspectcode Source\\LordKuper.Common.slnx -o=\".\\TestResults\\jb-inspect.sarif\" --build"
 
   # Coverage for LordKuper.Common via AltCover (altcover.global tool required; RIMWORLD_DIR must be set).
   # Measures only the LordKuper.Common assembly, excluding UI + game-bound types (Resources, *WeaponStats,

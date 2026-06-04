@@ -1,14 +1,15 @@
 <Project>
-  <!-- Repo-root build governance SSoT (ADR-0003).
-       This is the only Directory.Build.props in the repo. MSBuild auto-imports the nearest
-       Directory.Build.props for each project; since neither Source/ nor Tests/ has its own,
-       both auto-inherit this root file directly. Governance props and RimWorld path-resolution
-       therefore apply to both projects from a single place, with no duplication and no shadowing. -->
+  <!-- Single build-governance source of truth for the solution.
+       This is the only Directory.Build.props in the tree. MSBuild auto-imports the nearest
+       Directory.Build.props for each project; since neither LordKuper.Common/ nor
+       LordKuper.Common.Tests/ has its own, both auto-inherit this Source-level file directly.
+       Governance props and RimWorld path-resolution therefore apply to both projects from a
+       single place, with no duplication and no shadowing. -->
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
     <Nullable>enable</Nullable>
-    <!-- LangVersion intentionally not pinned; stays 'latest' per ADR-0003 / IMP-03 won't-do. -->
+    <!-- LangVersion intentionally not pinned; stays 'latest'. -->
   </PropertyGroup>
 
   <PropertyGroup>

@@ -5,7 +5,7 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Nullable, TreatWarningsAsErrors, WarningLevel, and RimWorldManagedDir are governed by
-         the repo-root Directory.Build.props (ADR-0003); do not re-declare them here. -->
+         the Directory.Build.props in the Source folder; do not re-declare them here. -->
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Source\LordKuper.Common.csproj" />
+    <ProjectReference Include="..\LordKuper.Common\LordKuper.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

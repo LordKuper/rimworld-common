@@ -9,5 +9,6 @@ responsibility:
 
 ## Project layout
 
-- **Production**: `LordKuper.Common` (`Source/`). Target framework `net472`. References RimWorld `Assembly-CSharp` + Unity modules (via `$(RimWorldManagedDir)`) and `Lib.Harmony` 2.4.2 (compile-only: `PrivateAssets=all`, `ExcludeAssets=runtime`).
-- **Tests**: `LordKuper.Common.Tests` (`Tests/`). xUnit, `net472`.
+- All source lives under `Source/`: the solution `Source/LordKuper.Common.slnx`, the shared `Source/Directory.Build.props`, and one folder per project.
+- **Production**: `Source/LordKuper.Common/` (`LordKuper.Common.csproj`). Target framework `net472`. References RimWorld `Assembly-CSharp` + Unity modules (via `$(RimWorldManagedDir)`) and `Lib.Harmony` 2.4.2 (compile-only: `PrivateAssets=all`, `ExcludeAssets=runtime`). Build output goes to `1.6/Assemblies/`.
+- **Tests**: `Source/LordKuper.Common.Tests/` (`LordKuper.Common.Tests.csproj`). xUnit, `net472`.

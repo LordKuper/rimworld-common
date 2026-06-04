@@ -20,7 +20,7 @@
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
-$bin  = Join-Path $root 'Tests\bin\Release\net472'
+$bin  = Join-Path $root 'Source\LordKuper.Common.Tests\bin\Release\net472'
 $managed = Join-Path $env:RIMWORLD_DIR 'RimWorldWin64_Data\Managed'
 $report  = Join-Path $root 'coverage.altcover.xml'
 $rimworldDlls = @('Assembly-CSharp','UnityEngine','UnityEngine.CoreModule','UnityEngine.IMGUIModule','UnityEngine.TextRenderingModule')
@@ -28,7 +28,7 @@ $rimworldDlls = @('Assembly-CSharp','UnityEngine','UnityEngine.CoreModule','Unit
 if (-not (Test-Path $managed)) { throw "RIMWORLD_DIR managed dir not found: $managed" }
 
 Write-Host '== build tests =='
-dotnet build (Join-Path $root 'Tests\LordKuper.Common.Tests.csproj') -c Release -v quiet -nologo | Out-Null
+dotnet build (Join-Path $root 'Source\LordKuper.Common.Tests\LordKuper.Common.Tests.csproj') -c Release -v quiet -nologo | Out-Null
 
 # 1. copy RimWorld assemblies for instrument-time resolution
 foreach ($d in $rimworldDlls) { Copy-Item (Join-Path $managed "$d.dll") $bin -Force -ErrorAction SilentlyContinue }
@@ -48,7 +48,7 @@ foreach ($d in $rimworldDlls) { Remove-Item (Join-Path $bin "$d.dll") -Force -Er
 
 # 4. run tests against the instrumented assembly
 Write-Host '== test =='
-dotnet test (Join-Path $root 'Tests\LordKuper.Common.Tests.csproj') -c Release --no-build --nologo
+dotnet test (Join-Path $root 'Source\LordKuper.Common.Tests\LordKuper.Common.Tests.csproj') -c Release --no-build --nologo
 
 # 5. collect + report
 Write-Host '== coverage =='
