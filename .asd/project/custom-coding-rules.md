@@ -28,6 +28,12 @@ responsibility:
 - Prefer attribute-based suppression (`[SuppressMessage]`, `[UsedImplicitly]`, `[Pure]`) over comment pragmas (`#pragma warning disable`, `// ReSharper disable`). Use comments only when no attribute applies.
 - Every suppression MUST carry a real reason saying *why*. "false positive" / "by design" alone is not enough.
 
+## Self-contained code — no design-doc references
+
+- The codebase (Source AND Tests) MUST be self-sufficient without the ASD design docs. Code and comments MUST NOT reference or quote ASD artifacts: ADR, PRD, acceptance criteria (`AC-N`), improvement items (`IMP-N`), `Task N`, sprint ids, or rule-doc filenames (`custom-*-rules.md`).
+- Explain the *why* directly in the comment instead of citing a doc (e.g. "adaptive by design", not "see ADR-0002").
+- The only exception: forward-looking `TODO`/`FIXME` comments MAY reference a sprint/issue for future work.
+
 ## Logging
 
 - Use the project `Logger` (`Source/Logger.cs`). Actionable, gated, no spam.

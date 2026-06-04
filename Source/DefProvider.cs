@@ -11,7 +11,7 @@ namespace LordKuper.Common;
 ///     Tests swap <see cref="Current" /> to a fake implementation and restore it after each test.
 /// </summary>
 /// <remarks>
-///     This is the single test-isolation seam introduced by ADR-0001.
+///     This is the single seam through which Def lookups can be substituted in unit tests.
 ///     Only one global replacement is supported; no DI container.
 /// </remarks>
 [PublicAPI]

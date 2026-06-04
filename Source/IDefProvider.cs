@@ -11,7 +11,7 @@ namespace LordKuper.Common;
 ///     Tests install a fake implementation via <see cref="DefProvider.Current" />.
 /// </summary>
 /// <remarks>
-///     This is the single test-isolation seam introduced by ADR-0001.
+///     This is the single seam through which Def lookups can be substituted in unit tests.
 ///     Keep the interface narrow: only add members that have real call sites in the library.
 /// </remarks>
 [PublicAPI]

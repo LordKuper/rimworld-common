@@ -180,7 +180,7 @@ public class WorkTypeThingRule : IExposable
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+    ///         <strong>Adaptive behavior (intentional, by design):</strong> the returned score
     ///         is <em>not stable</em> across differing call sequences or sessions. Internally this method
     ///         delegates to <see cref="StatRanges.NormalizeStatValue" />, which maintains a running
     ///         min/max per <see cref="StatDef" /> that expands as values are observed. A given
@@ -189,8 +189,7 @@ public class WorkTypeThingRule : IExposable
     ///         if the observation history differs.
     ///     </para>
     ///     <para>
-    ///         This order-dependence is the explicitly documented, user-approved contract.
-    ///         See ADR-0002 for the rationale.
+    ///         This order-dependence is intentional by design.
     ///     </para>
     /// </remarks>
     /// <param name="def">The <see cref="ThingDef" /> to score.</param>
@@ -215,7 +214,7 @@ public class WorkTypeThingRule : IExposable
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+    ///         <strong>Adaptive behavior (intentional, by design):</strong> the returned score
     ///         is <em>not stable</em> across differing call sequences or sessions. Internally this method
     ///         delegates to <see cref="StatRanges.NormalizeStatValue" />, which maintains a running
     ///         min/max per <see cref="StatDef" /> that expands as values are observed. A given
@@ -224,8 +223,7 @@ public class WorkTypeThingRule : IExposable
     ///         if the observation history differs.
     ///     </para>
     ///     <para>
-    ///         This order-dependence is the explicitly documented, user-approved contract.
-    ///         See ADR-0002 for the rationale.
+    ///         This order-dependence is intentional by design.
     ///     </para>
     /// </remarks>
     /// <param name="thing">The thing to score.</param>

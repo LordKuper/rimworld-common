@@ -21,7 +21,7 @@ internal static class StatRanges
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+    ///         <strong>Adaptive behavior (intentional, by design):</strong> the returned score
     ///         is <em>not stable</em> across differing call sequences or sessions. The per-<see cref="StatDef" />
     ///         min/max range in <see cref="Ranges" /> expands as values are observed, so the normalized
     ///         result for a given <paramref name="value" /> depends on the <em>set and order</em> of all
@@ -29,9 +29,8 @@ internal static class StatRanges
     ///         if the observation history differs.
     ///     </para>
     ///     <para>
-    ///         This order-dependence is the explicitly documented, user-approved contract.
-    ///         See ADR-0002 for the rationale. Tests must save/restore <see cref="Ranges" /> (via
-    ///         <c>StaticStateFixture</c>) to prevent cross-test leakage (ADR-0001).
+    ///         This order-dependence is intentional. Unit tests that exercise normalization must
+    ///         save and restore <see cref="Ranges" /> to prevent state leaking between tests.
     ///     </para>
     /// </remarks>
     /// <param name="stat">The stat definition to normalize.</param>
