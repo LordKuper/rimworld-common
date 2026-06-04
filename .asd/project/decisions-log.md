@@ -235,6 +235,21 @@ Append-only. Never edited or removed. New entries appended below.
 - **Rationale**: All six substantive reviewers APPROVE; the sole open item is a documentation count drift introduced when the StatLimit recovery tests added a fourth static-touching `[NonParallelizable]` class that the ADR-0007/tech-reference count never picked up. Correcting the count from three to four closes the doc↔as-built gap; no code change required.
 - **Affected docs**: design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/nunit-4.6.1.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
 
+## 2026-06-04 — Impl-review iter 04: external CONCERNS (HIGH teardown BuildMap hazard) + documentation reviewer incomplete (API overload) → fix (sprint 002)
+
+- **Decision**: Sprint 002 impl-review iteration 04 verdicts — quality=APPROVE, implementation=APPROVE, testing=APPROVE, simplification=APPROVE, performance=APPROVE, external=**CONCERNS (1 HIGH)**, documentation=**INCOMPLETE**, ui=N/A. No FAIL; routed to **impl fix mode** → iter-05 re-review.
+  - **documentation reviewer INCOMPLETE**: the reviewer agent failed with an API-overload error and produced no verdict. Recorded as `INCOMPLETE` (not a substantive finding); to be re-dispatched and re-reviewed at iter-05.
+  - **external CONCERNS (HIGH — new latent-fragility finding)**: `StaticStateTestBase.TearDownStaticState` called `WorkTypeStatMap.Rebuild()`, which reaches `SkillStatMap.Map`→`BuildMap`→a Verse/Unity ECall. The hazard was masked only by a `#if DEBUG` guard plus a swallowing `try/catch`; in a non-DEBUG run or if the guard were removed, teardown would touch the game-bound native path. Latent fragility in test isolation, not a current failure.
+- **Rationale**: Five substantive reviewers APPROVE; the external reviewer surfaced a real latent test-isolation hazard (teardown reaching the uncoverable BuildMap/DefDatabase native path, masked by DEBUG + swallow), which warrants a fix round before DoD. The documentation reviewer's INCOMPLETE is an infrastructure failure (API overload), not a finding — it is simply re-run at iter-05.
+- **Affected docs**: Source/LordKuper.Common.Tests/**, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl fix for iter-04: teardown hazard resolved (sprint 002)
+
+- **Decision**: Impl-review iter-04 external HIGH finding resolved in impl fix mode; phase returns to `impl-review` for iter-05 re-review (which also re-runs the documentation reviewer that errored out at iter-04). `StaticStateTestBase.TearDownStaticState` was reworked to reset all static caches by **reflection-nulling their backing fields** — `StatHelper`'s 14 fields + `Stats.Clear()`; `WorkTypeStatMap._autoSwitchStatsMap`/`_defaultStatsMap`; `SkillStatMap._map`; `PassionHelper` statics; `StatRanges.Ranges` — with **no `Rebuild()`/getter access during teardown**, eliminating the `BuildMap`/`DefDatabase` native-ECall path entirely. The prior `#if DEBUG` + swallowing `try/catch` mask is gone. Committed as `daf6746`.
+- **Verified gates** (independent orchestrator verification): build 0 warnings / 0 errors; **166 passed / 0 failed / 3 ignored**; AltCover coverage **40.9% (447/1093)** — still above the 37.2% floor (−0.18pp vs prior because the `Rebuild` bodies are no longer exercised during teardown).
+- **Rationale**: Resetting static state by nulling backing fields removes any teardown-time call into the Verse/Unity ECall path, closing the latent-fragility hazard without the DEBUG-guarded swallow; the minor coverage drop is expected (teardown no longer executes `Rebuild` bodies) and remains comfortably above the floor. The fix is re-reviewed at iter-05.
+- **Affected docs**: Source/LordKuper.Common.Tests/**, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
 ## 2026-06-04 — Impl fix for iter-02: doc-reconciliation resolved (sprint 002)
 
 - **Decision**: Impl-review iter-02 doc-reconciliation findings resolved in impl fix mode; phase returns to `impl-review`. Resolutions:
@@ -247,3 +262,9 @@ Append-only. Never edited or removed. New entries appended below.
 - **Verified gates** (independent orchestrator verification): build 0 warnings / 0 errors; 166 passed / 0 failed / 3 ignored; AltCover coverage **41.08%** (unchanged — only comments/docs edited).
 - **Rationale**: The remaining iter-02 findings were documentation↔code drift between the as-built resolver+isolation design and the ADRs/PRD/plan/XML-doc comments; reconciling the docs to the as-built state (MSBuild-target-primary discovery, no `StaticStateFixture` type, recovered coverage figures) closes the drift without touching test or production logic, so the green verification gate is preserved.
 - **Affected docs**: design/architecture/adr/adr-0006*.html, design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/*.md, Source/LordKuper.Common.Tests/StatRangesTests.cs, Source/LordKuper.Common.Tests/StatefulSubsystemTests.cs, .asd/sprints/002-migrate-tests-nunit-fluent/plan.md, .asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
+
+## 2026-06-04 — Impl fix for iter-03: doc count corrected (sprint 002)
+
+- **Decision**: Impl fix for iter-03 — the single HIGH documentation finding (static-touching `[NonParallelizable]` class count) resolved by the architect: corrected **three → four** classes (the fourth is `StatLimitTests`, added during the user-authorized +24 StatLimit coverage-recovery round) in ADR-0007 and the `nunit-4.6.1.md` tech-reference. No code changed, so the verification gate is unchanged: build 0 warnings / 0 errors, 166 passed / 3 ignored, AltCover coverage 41.08%. Phase returns to `impl-review`.
+- **Rationale**: The finding was a documentation↔as-built count drift only; reconciling the doc count to the four-class as-built suite closes the gap without touching test or production logic, preserving the green verification gate.
+- **Affected docs**: design/architecture/adr/adr-0007*.html, design/architecture/tech-reference/nunit-4.6.1.md, .asd/sprints/002-migrate-tests-nunit-fluent/state.json
