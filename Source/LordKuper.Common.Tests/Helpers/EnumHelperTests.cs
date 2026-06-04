@@ -83,7 +83,7 @@ public class EnumHelperTests
         unique.Should().BeEmpty();
     }
 
-    // [TestCase] only — no standalone [Test] on this parameterized method (AC-6/AC-7).
+    // [TestCase] only — no standalone [Test] on this parameterized method.
     // Enum-flag expressions like TestFlags.FlagA | TestFlags.FlagB are valid [TestCase] args
     // because they are constant expressions.
     [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA, true)]
@@ -95,7 +95,7 @@ public class EnumHelperTests
         EnumHelper.HasAllFlags(value, flags).Should().Be(expected);
     }
 
-    // [TestCase] only — no standalone [Test] on this parameterized method (AC-6/AC-7).
+    // [TestCase] only — no standalone [Test] on this parameterized method.
     [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagA, true)]
     [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagC, false)]
     [TestCase(TestFlags.FlagA | TestFlags.FlagB, TestFlags.FlagB | TestFlags.FlagC, true)]

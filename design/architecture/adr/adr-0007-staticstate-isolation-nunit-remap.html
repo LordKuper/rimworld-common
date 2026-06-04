@@ -118,6 +118,7 @@ source: ""
     <nav class="toc" aria-label="Table of contents">
       <p class="toc-title">Contents</p>
       <ol>
+        <li><a href="#reconciliation">Reconciliation note</a></li>
         <li><a href="#context">Context</a></li>
         <li><a href="#decision">Decision</a></li>
         <li><a href="#consequences">Consequences</a></li>
@@ -149,18 +150,29 @@ source: ""
             <span class="chip">ADR-0007</span>
           </div>
 
+          <section class="callout" id="reconciliation" style="border-left:4px solid var(--info);padding:8px 14px;background:var(--card-bg);border-radius:4px;margin:14px 0;">
+            <p style="margin:0;">
+              <strong>Reconciliation note — 2026-06-04 (sprint 002 impl-review iter-02).</strong>
+              This ADR was updated to describe the <em>as-built</em> implementation. There is <strong>no
+              <code>StaticStateFixture</code> type</strong> in the built code: the snapshot/restore logic is
+              inlined directly into <code>StaticStateTestBase</code>'s <code>[SetUp]</code>/<code>[TearDown]</code>
+              methods. The captured-state set and the <code>[NonParallelizable]</code> serialization are
+              unchanged. Status remains <strong>approved</strong>.
+            </p>
+          </section>
+
           <h2 id="context">Context</h2>
           <p>
             Three test classes (<code>StatWeightTests</code>, <code>StatefulSubsystemTests</code>,
             <code>StatRangesTests</code>) touch shared static caches and isolate via the xUnit seam
             introduced in <a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>:
-            <code>StaticStateFixture : IDisposable</code> snapshots <code>DefProvider.Current</code> and
-            restores it (rebuilding <code>StatHelper</code>, <code>WorkTypeStatMap</code>, and reflection
+            a <code>StaticStateFixture : IDisposable</code> snapshotted <code>DefProvider.Current</code> and
+            restored it (rebuilding <code>StatHelper</code>, <code>WorkTypeStatMap</code>, and reflection
             resets of <code>SkillStatMap._map</code>,
             <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>,
-            <code>StatRanges.Ranges</code>); <code>StaticStateTestBase</code> drives it per-test via ctor +
+            <code>StatRanges.Ranges</code>); <code>StaticStateTestBase</code> drove it per-test via ctor +
             <code>Dispose</code>; and a <code>[CollectionDefinition("StaticState", DisableParallelization=true)]</code>
-            + <code>[Collection("StaticState")]</code> serializes the classes. ADR-0001 was deliberate that
+            + <code>[Collection("StaticState")]</code> serialized the classes. ADR-0001 was deliberate that
             per-test ctor+<code>Dispose</code> (not per-class <code>IClassFixture</code>) gives true per-test
             isolation. The migration must preserve the isolation <em>contract</em> (the exact snapshot/restore
             set) while re-expressing the xUnit lifecycle vocabulary in NUnit (PRD AC-22 … AC-25). This makes
@@ -170,29 +182,35 @@ source: ""
 
           <h2 id="decision">Decision</h2>
           <p class="lede">
-            Re-express the ADR-0001 isolation seam in NUnit: keep the snapshot/restore body verbatim, drive
-            it from per-test <code>[SetUp]</code> (snapshot) / <code>[TearDown]</code> (restore), and replace
-            the xUnit collection-serialization with NUnit's default non-parallel execution (made explicit via
+            Re-express the ADR-0001 isolation seam in NUnit: keep the snapshot/restore body verbatim,
+            <strong>inline it directly into</strong> <code>StaticStateTestBase</code>, drive it from per-test
+            <code>[SetUp]</code> (snapshot) / <code>[TearDown]</code> (restore), and replace the xUnit
+            collection-serialization with NUnit's default non-parallel execution (made explicit via
             <code>[NonParallelizable]</code>).
           </p>
           <ul>
             <li>
               <strong>Snapshot/restore preserved verbatim</strong> (AC-22): the set of snapshotted/restored
-              statics — <code>DefProvider.Current</code>; rebuild of <code>StatHelper</code> and
-              <code>WorkTypeStatMap</code>; reflection resets of <code>SkillStatMap._map</code>,
+              statics — <code>DefProvider.Current</code> (captured in <code>[SetUp]</code>, restored in
+              <code>[TearDown]</code>); rebuild of <code>StatHelper</code> and <code>WorkTypeStatMap</code>;
+              reflection resets of <code>SkillStatMap._map</code>,
               <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>, and
               <code>StatRanges.Ranges</code> — is unchanged. This body is framework-agnostic and is the actual
               isolation contract from ADR-0001 (and the <code>StatRanges.Ranges</code> entry exists because
               <a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>
-              keeps that cache mutable). The reusable logic stays in the renamed <code>StaticStateFixture</code>
-              type; only its <em>invocation</em> mechanism changes.
+              keeps that cache mutable). The as-built form has <strong>no separate
+              <code>StaticStateFixture</code> type</strong>: the snapshot/restore logic lives inline in
+              <code>StaticStateTestBase</code>'s <code>[SetUp]</code>/<code>[TearDown]</code> methods, which is
+              simpler than carrying a dedicated disposable fixture type and is sufficient because the base
+              class is the only consumer.
             </li>
             <li>
               <strong>Per-test lifecycle remap</strong> (AC-23): <code>StaticStateTestBase</code>'s
-              constructor → <code>[SetUp]</code> (build the fixture / snapshot); its <code>Dispose()</code> →
-              <code>[TearDown]</code> (restore). NUnit <code>[SetUp]</code>/<code>[TearDown]</code> are
-              per-test, matching the original ctor+<code>Dispose</code> per-test granularity exactly — the
-              deliberate ADR-0001 choice over per-class <code>IClassFixture</code> is preserved.
+              constructor → <code>[SetUp]</code> (capture <code>_originalProvider</code> = current provider);
+              its <code>Dispose()</code> → <code>[TearDown]</code> (restore the provider, then rebuild/reset
+              the dependent caches). NUnit <code>[SetUp]</code>/<code>[TearDown]</code> are per-test, matching
+              the original ctor+<code>Dispose</code> per-test granularity exactly — the deliberate ADR-0001
+              choice over per-class <code>IClassFixture</code> is preserved.
             </li>
             <li>
               <strong>Serialization remap</strong> (AC-24): drop

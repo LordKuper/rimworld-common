@@ -1,7 +1,7 @@
 {
   "sprint_id": "002-migrate-tests-nunit-fluent",
   "branch": "sprint/002-migrate-tests-nunit-fluent",
-  "phase": "plan",
+  "phase": "impl",
   "reviews": {
     "design": {
       "iteration": 4,
@@ -32,12 +32,46 @@
         }
       }
     },
-    "impl": { "iteration": 0, "verdicts": {} }
+    "impl": {
+      "iteration": 2,
+      "verdicts": {
+        "iter-01": {
+          "quality": "CONCERNS",
+          "implementation": "APPROVE",
+          "testing": "APPROVE",
+          "simplification": "CONCERNS",
+          "documentation": "CONCERNS",
+          "performance": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-02": {
+          "quality": "CONCERNS",
+          "implementation": "FAIL",
+          "testing": "APPROVE",
+          "simplification": "CONCERNS",
+          "documentation": "CONCERNS",
+          "performance": "APPROVE",
+          "external": "APPROVE",
+          "ui": "N/A"
+        }
+      }
+    }
   },
   "created_at": "2026-06-04T08:17:27Z",
-  "updated_at": "2026-06-04T10:00:00Z",
+  "updated_at": "2026-06-04T12:30:54Z",
   "review_fixes_pending": null,
   "subsystems_touched": [],
   "new_subsystems": [],
-  "escalations": []
+  "escalations": [
+    {
+      "phase": "impl-review",
+      "iteration": 2,
+      "reviewer": "implementation",
+      "verdict": "FAIL",
+      "resolution": "overridden-by-user",
+      "recorded_at": "2026-06-04T12:24:37Z",
+      "detail": "Implementation FAIL adjudicated as false alarm. AC-28 coverage independently verified by orchestrator 3x at 41.08% (449/1093); reviewer cited a stale 37.05% figure from plan.md:107 (pre-recovery). AC-9 case-count delta is the user-authorized +24 StatLimit coverage-recovery tests, not a scope violation. User directed AC-28/AC-9 treated as SATISFIED; remaining doc-reconciliation CONCERNS routed to impl fix round (iter-03)."
+    }
+  ]
 }

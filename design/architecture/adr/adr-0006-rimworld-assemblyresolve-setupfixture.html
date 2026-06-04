@@ -120,9 +120,10 @@ source: ""
     <nav class="toc" aria-label="Table of contents">
       <p class="toc-title">Contents</p>
       <ol>
+        <li><a href="#reconciliation">Reconciliation note</a></li>
         <li><a href="#context">Context</a></li>
         <li><a href="#decision">Decision</a></li>
-        <li><a href="#accepted-risk">Accepted risk</a></li>
+        <li><a href="#ordering-resolved">Ordering resolved</a></li>
         <li><a href="#consequences">Consequences</a></li>
         <li><a href="#alternatives">Alternatives considered</a></li>
         <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
@@ -152,101 +153,124 @@ source: ""
             <span class="chip">ADR-0006</span>
           </div>
 
+          <section class="callout" id="reconciliation" style="border-left:4px solid var(--info);">
+            <p style="margin:0;">
+              <strong>Reconciliation note — 2026-06-04 (sprint 002 impl-review iter-02).</strong>
+              This ADR was updated to describe the <em>as-built</em> implementation. The discovery-time
+              ordering risk previously recorded as "asserted, not proven" was resolved in practice by making
+              the RimWorld/Unity DLLs <strong>present in the test <code>bin</code> at discovery time</strong>
+              via an MSBuild copy-local target (<code>CopyRimWorldTestDeps</code>), so resolver-registration
+              <em>timing</em> is no longer the load-bearing guarantee. The phantom "idempotency guard
+              retained" claim and the "delete copied DLLs after instrumentation" coverage step were removed
+              (neither exists in the built code), and the <code>[ModuleInitializer]</code> "anticipated
+              fallback" framing was demoted to a considered-and-rejected alternative. Status remains
+              <strong>approved</strong>.
+            </p>
+          </section>
+
           <h2 id="context">Context</h2>
           <p>
-            Most of the suite references RimWorld/Unity types. The library does not ship those assemblies;
-            instead an <code>AppDomain.CurrentDomain.AssemblyResolve</code> handler resolves them at runtime
-            from the RimWorld install (<code>%RIMWORLD_DIR%</code>/<code>%RimWorldDir%</code> →
-            <code>RimWorldWin64_Data\Managed\&lt;name&gt;.dll</code> via <code>Assembly.LoadFrom</code>).
-            Under xUnit this handler is wired through the framework-swap hook
-            (<code>[assembly: TestFramework("…RimWorldTestFramework", …)]</code> in
+            Most of the suite references RimWorld/Unity types. The library does not ship those assemblies; it
+            references them with <code>&lt;Private&gt;False&lt;/Private&gt;</code>, so they are not normally
+            copied to the test output. Under xUnit, resolution was wired entirely through the framework-swap
+            hook (<code>[assembly: TestFramework("…RimWorldTestFramework", …)]</code> in
             <code>AssemblyInfo.cs</code> + <code>RimWorldTestFramework : XunitTestFramework</code>, whose
-            constructor calls <code>InitializeRimWorldResolver()</code> before any discovery). NUnit has
-            <strong>no analog</strong> to <code>[assembly: TestFramework]</code>. The
-            load-bearing constraint is timing: the resolver MUST be registered <em>before any RimWorld-typed
-            test class is JIT-resolved</em>, or those tests fail at discovery/first-touch with
-            <code>FileNotFoundException</code>/<code>TypeLoadException</code> — which presents as mass test
-            failure, not a wiring bug (audit risk; PRD AC-19 … AC-21). The coverage harness depends on this
-            too: <code>scripts/coverage.ps1</code> step 3 deletes the copied RimWorld DLLs precisely so the
-            runtime resolver reloads them lazily.
+            constructor calls <code>InitializeRimWorldResolver()</code> before any discovery) which registered
+            an <code>AppDomain.CurrentDomain.AssemblyResolve</code> handler that loaded the DLLs from the
+            RimWorld install at runtime. NUnit has <strong>no analog</strong> to
+            <code>[assembly: TestFramework]</code>. The load-bearing constraint is timing: NUnit's engine
+            reflects over the test assembly at <em>discovery</em> time — it calls
+            <code>Assembly.GetTypes()</code> and <code>GetCustomAttributes(true)</code> while building its
+            fixture model — and a runtime <code>AssemblyResolve</code> handler registered by any NUnit
+            lifecycle hook fires too late for that reflection-only scan. If the RimWorld/Unity dependency chain
+            (including <code>netstandard</code> 2.1, which RimWorld ships but net472 lacks in the GAC) is not
+            present in the test <code>bin</code> at discovery time, the test assembly is marked
+            <em>NotRunnable</em> and zero tests are discovered, presenting as mass test failure rather than a
+            wiring bug (audit risk; PRD AC-19 … AC-21). The coverage harness
+            (<code>scripts/coverage.ps1</code>) reads from the same test <code>bin</code> when AltCover
+            instruments and when NUnit re-scans during the instrumented test run, so it depends on the same
+            DLLs being present.
           </p>
 
           <h2 id="decision">Decision</h2>
           <p class="lede">
-            Replace the xUnit framework-swap hook with a <strong>namespace-less (global)
-            <code>[SetUpFixture]</code> whose <code>[OneTimeSetUp]</code></strong> registers the same
-            <code>AssemblyResolve</code> handler, preserving the resolution contract verbatim.
+            Replace the xUnit framework-swap hook with a <strong>two-part as-built mechanism</strong>:
+            (1) a PRIMARY <code>CopyRimWorldTestDeps</code> MSBuild target that copies the RimWorld/Unity
+            managed DLLs into the test output so they are present (copy-local) when NUnit reflects over the
+            assembly at discovery time, and (2) a FALLBACK runtime <code>AssemblyResolve</code> handler
+            registered by a namespace-less (global) <code>[SetUpFixture]</code> / <code>[OneTimeSetUp]</code>,
+            preserving the resolution contract verbatim.
           </p>
           <ul>
             <li>
-              Delete the <code>[assembly: TestFramework(...)]</code> attribute from
-              <code>AssemblyInfo.cs</code> and the <code>RimWorldTestFramework : XunitTestFramework</code>
-              type. Rename <code>XunitExtensions.cs</code> (no longer "Xunit") and re-house the resolver in
-              a <strong>namespace-less</strong> <code>[SetUpFixture]</code> class. A <code>[SetUpFixture]</code>
-              declared outside any namespace applies to the <em>whole assembly</em>; its
-              <code>[OneTimeSetUp]</code> runs once before any test in the assembly is executed — the timing
-              guarantee that replaces the xUnit framework-constructor hook (AC-19).
+              <strong>Primary — copy-local at build time (<code>CopyRimWorldTestDeps</code>).</strong>
+              The RimWorld <code>&lt;Reference&gt;</code> items in <code>LordKuper.Common.Tests.csproj</code>
+              carry <code>&lt;Private&gt;False&lt;/Private&gt;</code>, which keeps them out of the normal copy
+              step. An MSBuild target <code>CopyRimWorldTestDeps</code> (<code>AfterTargets="Build"</code>)
+              explicitly copies <code>Assembly-CSharp.dll</code>, <code>Assembly-CSharp-firstpass.dll</code>,
+              <code>UnityEngine.CoreModule.dll</code>, <code>UnityEngine.IMGUIModule.dll</code>,
+              <code>UnityEngine.TextRenderingModule.dll</code>, and <code>netstandard.dll</code> (RimWorld's
+              v2.1.0.0 — needed because net472 only has netstandard 2.0 in the GAC) from
+              <code>$(RimWorldManagedDir)</code> into <code>$(OutputPath)</code>. These DLLs are then present
+              in <code>bin</code> when NUnit's engine calls <code>Assembly.GetTypes()</code> /
+              <code>GetCustomAttributes(true)</code> during discovery — the load-bearing guarantee that the
+              assembly is <em>Runnable</em> and its fixtures are discovered (AC-19, AC-20).
             </li>
             <li>
-              <strong>Chosen timing guarantee.</strong> NUnit invokes the global
-              <code>[SetUpFixture]</code>'s <code>[OneTimeSetUp]</code> before constructing or running any
-              test fixture. Registering the <code>AssemblyResolve</code> handler there is asserted to make it
-              live before the first RimWorld-typed test type is resolved at execution time.
+              <strong>Fallback — runtime resolver via global <code>[SetUpFixture]</code>.</strong>
+              Delete the <code>[assembly: TestFramework(...)]</code> attribute and the
+              <code>RimWorldTestFramework : XunitTestFramework</code> type; re-house the resolver in a
+              <strong>namespace-less</strong> <code>[SetUpFixture]</code> (<code>RimWorldResolverSetup</code>).
+              A <code>[SetUpFixture]</code> declared outside any namespace applies to the <em>whole
+              assembly</em>; its <code>[OneTimeSetUp]</code> runs once before any test in the assembly is
+              executed. It fails fast with an actionable message if neither <code>RIMWORLD_DIR</code> nor
+              <code>RimWorldDir</code> is set (or the <code>RimWorldWin64_Data\Managed</code> dir is missing),
+              then registers an <code>AppDomain.CurrentDomain.AssemblyResolve</code> handler. This is the
+              secondary path: it covers any RimWorld/Unity assembly needed at <em>execution</em> time that the
+              copy-local set does not already place in <code>bin</code> (AC-19).
             </li>
             <li>
-              <strong>Resolution contract preserved verbatim</strong> (AC-20): the assembly-name match set
-              (<code>Assembly-CSharp</code>, <code>Assembly-CSharp-firstpass</code>, <code>UnityEngine*</code>,
-              <code>Unity.Burst</code>, <code>Unity.Collections</code>, <code>Unity.Mathematics</code>,
-              <code>com.rlabrecque.steamworks.net</code>); the env-var lookup
-              (<code>RIMWORLD_DIR</code>/<code>RimWorldDir</code>) with the existing fallback behavior; the
+              <strong>Resolution contract preserved verbatim</strong> (AC-20): the fallback handler's
+              assembly-name match set (<code>Assembly-CSharp</code>, <code>Assembly-CSharp-firstpass</code>,
+              <code>UnityEngine*</code>, <code>Unity.Burst</code>, <code>Unity.Collections</code>,
+              <code>Unity.Mathematics</code>, <code>com.rlabrecque.steamworks.net</code>); the env-var lookup
+              (<code>RIMWORLD_DIR</code>/<code>RimWorldDir</code>); the
               <code>Managed\&lt;name&gt;.dll</code> <code>Assembly.LoadFrom</code> resolution; and the
-              null-for-everything-else contract. None of these change — only the registration mechanism does.
+              null-for-everything-else contract are unchanged from the prior implementation. There is
+              <strong>no <code>AppDomain.GetData/SetData</code> idempotency guard</strong> and
+              <strong>no <code>[ModuleInitializer]</code></strong> — the <code>[OneTimeSetUp]</code> hook runs
+              once per process, so no cross-path guard is needed.
             </li>
             <li>
-              <strong>Idempotency guard retained — justified by the contingency.</strong> The previous
-              <code>AppDomain.GetData/SetData("RimWorldResolverInitialized")</code> guard is
-              <strong>kept</strong>. Its rationale is no longer "redundant but harmless / in case we need it":
-              the accepted-risk contingency below makes a <em>second</em> registration path a concrete
-              anticipated case — if the <code>[ModuleInitializer]</code> fallback is added later, both it and
-              the <code>[OneTimeSetUp]</code> could attempt registration in the same process, so a guard that
-              makes registration once-only across <em>any</em> path is justified defensive code, not a smell.
-            </li>
-            <li>
-              <strong>Verification.</strong> Confirm the resolver is live before type load by running the
+              <strong>Verification.</strong> Confirm fixtures are discovered and resolve cleanly by running the
               RimWorld-typed suites (<code>StatWeightTests</code>, <code>RimWorldTimeTests</code>,
-              <code>PawnFilterTests</code>) and confirming no <code>FileNotFoundException</code>/
-              <code>TypeLoadException</code> at discovery/execution (AC-21), and by re-running
-              <code>scripts/coverage.ps1</code> end-to-end so the step-3 DLL-removal + lazy-resolve path
-              still cooperates (AC-27).
+              <code>PawnFilterTests</code>) with no <code>FileNotFoundException</code>/
+              <code>TypeLoadException</code> and a non-zero discovered-test count (AC-21), and by re-running
+              <code>scripts/coverage.ps1</code> end-to-end. The coverage script keeps the copied RimWorld DLLs
+              in <code>bin</code> throughout (the earlier post-instrument delete step was removed) because both
+              AltCover instrumentation and NUnit's instrumented re-scan need them present (AC-27).
             </li>
             <li>
-              The <code>[SetUpFixture]</code> seam is not a new <em>abstraction</em> — it is the
+              Neither the <code>CopyRimWorldTestDeps</code> target nor the <code>[SetUpFixture]</code> is a new
+              <em>abstraction</em> — the target is a standard MSBuild copy step and the fixture is the
               NUnit-idiomatic replacement for an existing seam; the resolver logic is reused. No Complication
               Approval beyond the framework swap (<a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>)
               is required.
             </li>
           </ul>
 
-          <section class="callout warn" id="accepted-risk">
-            <h2 style="border:none;margin-top:0;">Accepted risk (external review, design-phase decision)</h2>
+          <section class="callout" id="ordering-resolved" style="border-left:4px solid var(--ok);">
+            <h2 style="border:none;margin-top:0;">Discovery-time ordering — resolved in practice</h2>
             <p>
-              The external (Codex) review flagged that <code>[OneTimeSetUp]</code> runs at NUnit
-              <em>execution</em> time and does <em>not</em> provably precede <em>discovery</em>-time type
-              loading: NUnit can JIT-resolve a test type while building its fixture model before any
-              <code>[OneTimeSetUp]</code> body has run. The AC-20 "resolver-before-type-load" ordering
-              guarantee is therefore <strong>asserted, not proven</strong>. The user accepted this risk for
-              the design phase and chose to keep the <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code>
-              mechanism, revisiting only if the problem actually manifests in impl.
-            </p>
-            <p>
-              <strong>Documented contingency (anticipated fallback path):</strong> if discovery-time RimWorld
-              type resolution fails during implementation, fall back to an earlier registration mechanism —
-              e.g. a <code>[ModuleInitializer]</code> (with a <code>net472</code>
-              <code>IsExternalInit</code>/attribute polyfill) that registers the resolver at module load,
-              before NUnit touches any test type. This is now an anticipated path, not a contingency invented
-              on failure. The retained idempotency guard (above) is what makes the
-              <code>[ModuleInitializer]</code> + <code>[OneTimeSetUp]</code> coexistence safe should the
-              fallback be adopted.
+              An earlier draft recorded an accepted risk: the external (Codex) review flagged that
+              <code>[OneTimeSetUp]</code> runs at NUnit <em>execution</em> time and does <em>not</em> provably
+              precede <em>discovery</em>-time type loading, so the resolver-before-type-load ordering was
+              "asserted, not proven." The as-built design closes that gap by construction: because the
+              copy-local DLLs are already in <code>bin</code> at discovery time, the <em>timing</em> of
+              resolver registration is no longer load-bearing for discovery. The <code>[OneTimeSetUp]</code>
+              handler remains only as a runtime fallback. A <code>[ModuleInitializer]</code> earlier-registration
+              path was considered and rejected as unnecessary — the copy-local approach already guarantees
+              discovery-time presence, so an earlier registration buys nothing and would add a net472 polyfill.
             </p>
           </section>
 
@@ -255,35 +279,36 @@ source: ""
             <div class="pros">
               <h3>Positive</h3>
               <ul>
-                <li>Restores the load-bearing "resolver-before-type-load" guarantee using a documented NUnit lifecycle hook, with a contract verbatim-identical to the xUnit version.</li>
-                <li>Removes the xUnit-only <code>[assembly: TestFramework]</code> coupling; the seam is now expressed in plain NUnit constructs that any maintainer can read.</li>
-                <li>The coverage harness's lazy-resolve dependency keeps working unchanged because the resolution contract is preserved.</li>
+                <li>Makes test discovery deterministic: the copy-local DLLs are present in <code>bin</code> before NUnit reflects over the assembly, so the discovery-time ordering gap the external review flagged is closed by construction rather than asserted.</li>
+                <li>Removes the xUnit-only <code>[assembly: TestFramework]</code> coupling; the fallback resolver is now expressed in plain NUnit constructs (<code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code>) that any maintainer can read, and the runtime resolution contract is preserved verbatim.</li>
+                <li>The coverage harness works because the same copied DLLs stay in <code>bin</code> for both AltCover instrumentation and NUnit's instrumented re-scan.</li>
               </ul>
             </div>
             <div class="cons">
               <h3>Negative</h3>
               <ul>
-                <li><strong>Highest-risk piece of the migration.</strong> If the global <code>[SetUpFixture]</code> is accidentally placed inside a namespace, it scopes to that namespace only and runs too late for tests elsewhere — re-introducing the JIT-resolution failures as apparent mass test failure. The namespace-less placement is a hard requirement, not a style choice.</li>
-                <li><strong>Ordering is asserted, not proven (accepted risk).</strong> The external review noted that <code>[OneTimeSetUp]</code> runs at execution time and does not provably precede discovery-time type loading, so the AC-20 ordering guarantee is asserted. The user accepted this for the design phase; the anticipated fallback is an earlier registration via <code>[ModuleInitializer]</code> (net472 attribute polyfill) if discovery-time resolution actually fails in impl. Pinning NUnit 4.6.1 (<a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>) further bounds any future ordering drift.</li>
-                <li>The handler mutates process-global <code>AppDomain</code> state; the retained idempotency guard is justified defensive code (not overhead) because the accepted-risk contingency makes a second registration path — the <code>[ModuleInitializer]</code> fallback alongside <code>[OneTimeSetUp]</code> — a concrete anticipated case.</li>
-                <li>Supersedes the <code>XunitExtensions.cs</code>/<code>AssemblyInfo.cs</code> wiring; the rename + attribute deletion is a behavior-sensitive edit that must be verified by actually running the RimWorld-typed suites, not by inspection alone.</li>
+                <li><strong>Two coupled mechanisms to maintain.</strong> The copy-local set in <code>CopyRimWorldTestDeps</code> must stay in sync with what NUnit's discovery actually needs (it currently includes <code>netstandard.dll</code> 2.1 because Assembly-CSharp and the UnityEngine modules reference it and net472 lacks it in the GAC). If a future test references a RimWorld/Unity assembly not in the copy list and not caught by the fallback handler's name match, discovery can regress to <em>NotRunnable</em>.</li>
+                <li><strong>Namespace placement of the fallback fixture is still a hard requirement.</strong> If the global <code>[SetUpFixture]</code> is accidentally placed inside a namespace, it scopes to that namespace only; the fallback would then not cover the whole assembly. The namespace-less placement is required, not a style choice.</li>
+                <li>The fallback handler mutates process-global <code>AppDomain</code> state. It is registered exactly once via <code>[OneTimeSetUp]</code> (which NUnit runs once per assembly per process), so no idempotency guard is needed; there is none in the as-built code.</li>
+                <li>The copy-local DLLs increase the test <code>bin</code> footprint and are kept there for the whole coverage run (no post-instrument delete), which AltCover must be told to ignore via <code>--assemblyFilter</code> entries for <code>UnityEngine</code>, <code>Assembly-CSharp</code>, and <code>netstandard</code>.</li>
+                <li>Supersedes the <code>XunitExtensions.cs</code>/<code>AssemblyInfo.cs</code> wiring; the rename + attribute deletion plus the new MSBuild target are behavior-sensitive edits that must be verified by actually running the RimWorld-typed suites and the coverage script, not by inspection alone.</li>
               </ul>
             </div>
           </div>
 
           <h2 id="alternatives">Alternatives considered</h2>
           <ul class="alt-list">
-            <li><strong>Module initializer (<code>[ModuleInitializer]</code>)</strong> — not chosen now, but retained as the <em>anticipated fallback</em> (see Accepted-risk note). It registers the resolver at module load, earlier than <code>[OneTimeSetUp]</code>, so it would address the discovery-time ordering gap the external review flagged; it needs a <code>net472</code> attribute polyfill and is harder to verify than an explicit <code>[OneTimeSetUp]</code>. The global <code>[SetUpFixture]</code> is the NUnit-sanctioned hook and is preferred while the asserted ordering holds; the user accepted the risk of keeping it and moving to <code>[ModuleInitializer]</code> only if discovery-time resolution actually fails in impl.</li>
-            <li><strong>Per-fixture <code>[OneTimeSetUp]</code> on each RimWorld-typed test class</strong> — rejected: duplicative, easy to forget on a new test class (silent regression), and still per-class rather than assembly-global; the single global fixture is the minimal, centralized seam.</li>
-            <li><strong>Copy the RimWorld DLLs next to the test output instead of resolving at runtime</strong> — rejected: changes the coverage harness's deliberate step-3 DLL-removal design and bloats the output; the runtime resolver is the established, intentional approach.</li>
+            <li><strong>Runtime <code>AssemblyResolve</code> alone (no copy-local DLLs)</strong> — rejected: a handler registered by any NUnit lifecycle hook fires too late for the reflection-only scan NUnit performs at discovery (<code>GetTypes()</code>/<code>GetCustomAttributes(true)</code>), so the assembly is marked <em>NotRunnable</em> and zero tests are discovered. Copy-local at build time is what actually makes discovery succeed; the runtime handler is retained only as an execution-time fallback.</li>
+            <li><strong>Module initializer (<code>[ModuleInitializer]</code> + net472 attribute polyfill)</strong> — considered and rejected as unnecessary. It would register the resolver at module load, earlier than <code>[OneTimeSetUp]</code>, but the copy-local approach already guarantees the DLLs are present at discovery, so the earlier registration buys nothing; it would add a net472 polyfill and is harder to verify. Not adopted.</li>
+            <li><strong>Per-fixture <code>[OneTimeSetUp]</code> on each RimWorld-typed test class</strong> — rejected: duplicative, easy to forget on a new test class (silent regression), and still per-class rather than assembly-global; the single global fallback fixture is the minimal, centralized seam.</li>
           </ul>
 
           <h2 id="acceptance">Acceptance criteria satisfied</h2>
           <ul>
-            <li><strong>AC-19</strong> — the resolver is wired through a namespace-less global <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code> that runs once before any test executes.</li>
-            <li><strong>AC-20</strong> — the resolution contract (assembly-name match set, env-var lookup + fallback, <code>Managed\&lt;name&gt;.dll</code> <code>LoadFrom</code>, null-for-others) is preserved verbatim; the ordering guarantee is asserted (see Accepted risk).</li>
-            <li><strong>AC-21</strong> — verified by running the RimWorld-typed suites with no <code>FileNotFoundException</code>/<code>TypeLoadException</code>.</li>
-            <li><strong>AC-27</strong> — the coverage harness's step-3 DLL-removal + lazy-resolve path still cooperates after the resolver port.</li>
+            <li><strong>AC-19</strong> — RimWorld/Unity DLLs are made present at discovery time by the <code>CopyRimWorldTestDeps</code> copy-local target; a namespace-less global <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code> registers the runtime fallback resolver once before any test executes.</li>
+            <li><strong>AC-20</strong> — the runtime resolution contract (assembly-name match set, env-var lookup, <code>Managed\&lt;name&gt;.dll</code> <code>LoadFrom</code>, null-for-others) is preserved verbatim; the discovery-time ordering is no longer asserted but resolved by the copy-local DLLs (see "Discovery-time ordering — resolved in practice").</li>
+            <li><strong>AC-21</strong> — verified by running the RimWorld-typed suites with no <code>FileNotFoundException</code>/<code>TypeLoadException</code> and a non-zero discovered-test count.</li>
+            <li><strong>AC-27</strong> — the coverage harness keeps the copied DLLs in <code>bin</code> throughout (no post-instrument delete) so AltCover instrumentation and the instrumented NUnit re-scan both cooperate after the resolver port.</li>
           </ul>
           <p class="lede" style="font-size:0.9rem;color:var(--muted)">
             AC references resolve against the sprint PRD:
