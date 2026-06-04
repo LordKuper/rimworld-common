@@ -182,17 +182,16 @@ source: ""
               Source and Tests projects inherit identical policy and path logic from a single place.
             </li>
             <li>
-              <code>Source/Directory.Build.props</code> and <code>Tests/Directory.Build.props</code> are
-              <strong>thin wrappers</strong>: each contains <em>only</em> an explicit import of the
-              repo-root file and nothing else. The explicit import is required because MSBuild
-              auto-imports only the <em>nearest</em> <code>Directory.Build.props</code>; a child file
-              would otherwise <strong>shadow</strong> the repo-root file rather than chain to it. Each
-              child therefore carries the explicit import near its top:
-              <pre><code>&lt;Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" /&gt;</code></pre>
-              so the root governance <em>and</em> RimWorld path resolution are actually inherited rather
-              than shadowed. The RimWorld path-resolution block that was previously duplicated in both
-              child files has been <strong>removed</strong> from them — it now lives only in the root,
-              resolving the SSoT-duplication concern raised in the Alternatives section below.
+              <strong>No child <code>Directory.Build.props</code>.</strong> Neither <code>Source/</code>
+              nor <code>Tests/</code> carries its own <code>Directory.Build.props</code>. MSBuild
+              auto-imports the <em>nearest</em> <code>Directory.Build.props</code> for each project by
+              walking up the directory tree; with no file in the project folders, the nearest one is the
+              repo-root file, so both projects inherit it <strong>automatically</strong> — no explicit
+              import is needed. (Earlier iterations kept thin per-project import wrappers; they were
+              redundant — a child file only exists to re-import the root it would otherwise shadow — so
+              they were removed.) The RimWorld path-resolution block previously duplicated per project now
+              lives only in the root, resolving the SSoT-duplication concern raised in the Alternatives
+              section below.
             </li>
             <li>
               <strong>No <code>LangVersion</code> pin.</strong> The user explicitly rejected pinning to
@@ -205,10 +204,9 @@ source: ""
               override.
             </li>
             <li>
-              Verify MSBuild import precedence so that the explicit import in each thin wrapper actually
-              pulls the root file in (rather than the auto-import silently selecting only the nearest
-              child file), and that the inherited root governance and RimWorld path resolution apply
-              correctly in both the Source and Tests projects.
+              Verify that, with no child <code>Directory.Build.props</code> in either project folder,
+              MSBuild auto-imports the repo-root file for both the Source and Tests projects, so the
+              inherited governance and RimWorld path resolution apply correctly to each.
             </li>
             <li>
               <strong>Verification note:</strong> after the change, confirm that <em>both</em> the Source
@@ -225,7 +223,7 @@ source: ""
             <div class="pros">
               <h3>Positive</h3>
               <ul>
-                <li>Single SSoT for build policy <em>and</em> RimWorld path resolution; Source and Tests inherit identical governance and path logic from the one repo-root file. Both child <code>Directory.Build.props</code> are minimal explicit-import wrappers, so neither can drift from the root.</li>
+                <li>Single SSoT for build policy <em>and</em> RimWorld path resolution; Source and Tests auto-inherit identical governance and path logic from the one repo-root file. There are no child <code>Directory.Build.props</code> files to drift from the root or to maintain.</li>
                 <li>Misconfigured environments fail loudly at build time instead of silently binding to a non-existent default path.</li>
                 <li><code>RIMWORLD_DIR</code> gives a clear, documented override for any machine.</li>
               </ul>
@@ -236,7 +234,7 @@ source: ""
                 <li><strong>Accepted risk (LangVersion):</strong> with <code>LangVersion=latest</code> and no pin, an SDK bump could shift language semantics — notably <code>field</code>-keyword behavior — under the project. The pin was considered and declined by the user; this drift risk is accepted.</li>
                 <li>Developers must now set <code>RIMWORLD_DIR</code> (or <code>RimWorldDir</code>) before first build; there is no longer a silent default to fall back on.</li>
                 <li>Stricter inherited policy may surface previously tolerated warnings in the Tests project, requiring cleanup before it builds clean.</li>
-                <li><strong>Explicit-import requirement:</strong> because MSBuild auto-imports only the nearest <code>Directory.Build.props</code>, each child wrapper (<code>Source/Directory.Build.props</code> and <code>Tests/Directory.Build.props</code>) must carry the explicit <code>GetPathOfFileAbove</code> import or it will shadow the root and silently re-open the governance gap for that project. These imports are now maintained lines that must not be dropped; the verification note (both projects see <code>TreatWarningsAsErrors</code>/<code>WarningLevel</code>/<code>Nullable</code>) guards against regression.</li>
+                <li><strong>Inheritance is positional:</strong> the auto-import works only because no project introduces its own <code>Directory.Build.props</code>. If a future project folder adds one, it would shadow the root for that project and silently re-open the governance gap unless it explicitly re-imports the root (<code>GetPathOfFileAbove</code>). The verification note (both projects see <code>TreatWarningsAsErrors</code>/<code>WarningLevel</code>/<code>Nullable</code>) guards against that regression.</li>
                 <li><strong>Build/behavioral note:</strong> no source-code API change; this is a build-configuration change. The removed default path is a deliberate behavioral change to the build (fail instead of fall back).</li>
               </ul>
             </div>
@@ -250,7 +248,7 @@ source: ""
 
           <h2 id="acceptance">Acceptance criteria satisfied</h2>
           <ul>
-            <li><strong>AC-3</strong> — brings the Tests project under zero-warnings + <code>Nullable=enable</code> governance via the repo-root <code>Directory.Build.props</code> (inherited through the Tests thin-wrapper's explicit import).</li>
+            <li><strong>AC-3</strong> — brings the Tests project under zero-warnings + <code>Nullable=enable</code> governance via the repo-root <code>Directory.Build.props</code> (auto-inherited; the Tests project has no <code>Directory.Build.props</code> of its own).</li>
             <li><strong>AC-2</strong> — removes the machine-specific RimWorld path fallback; <code>RIMWORLD_DIR</code>/<code>RimWorldDir</code> is the documented override and absence fails fast with a clear MSBuild error.</li>
             <li><strong>AC-5</strong> — establishes the single, consistent <code>TreatWarningsAsErrors</code> + <code>WarningLevel 9999</code> policy across both Source and Tests required for the zero-warning clean rebuild.</li>
             <li>Supports <strong>AC-1</strong> / <strong>AC-4</strong> (Cluster A clean-build closure) by consolidating governance so warning/coverage runs are not misled by drift.</li>

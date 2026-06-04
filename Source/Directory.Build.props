@@ -1,9 +1,0 @@
-<Project>
-    <!-- Explicitly import the repo-root Directory.Build.props so its governance props and
-         RimWorld path-resolution (TreatWarningsAsErrors, WarningLevel, Nullable,
-         RimWorldDir/RimWorldManagedDir, CheckRimWorldDir) are inherited here.
-         MSBuild auto-imports only the NEAREST Directory.Build.props; without this import
-         the Source subdirectory file would shadow the root and silently reopen the
-         governance gap for the Source project. (ADR-0003) -->
-    <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
-</Project>

@@ -1,9 +1,9 @@
 <Project>
   <!-- Repo-root build governance SSoT (ADR-0003).
-       Both Source/ and Tests/ carry a child Directory.Build.props that imports this file
-       explicitly via GetPathOfFileAbove so that neither shadows the root.
-       RimWorld path-resolution lives here (single SSoT) and is therefore available to
-       both projects without duplication. -->
+       This is the only Directory.Build.props in the repo. MSBuild auto-imports the nearest
+       Directory.Build.props for each project; since neither Source/ nor Tests/ has its own,
+       both auto-inherit this root file directly. Governance props and RimWorld path-resolution
+       therefore apply to both projects from a single place, with no duplication and no shadowing. -->
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>9999</WarningLevel>
