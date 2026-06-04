@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (assertion library FluentAssertions 7.2.2 Apache-2.0, not 8.x)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="002-migrate-tests-nunit-fluent">
+  <meta name="status" content="approved">
+  <meta name="updated" content="2026-06-04">
+  <meta name="responsibility" content="single architecture decision (assertion library FluentAssertions 7.2.2 Apache-2.0, not 8.x)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0005 · Assertion library: FluentAssertions 7.2.2</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">approved</span>
+        </div>
+        <h1>ADR-0005 · Assertion library: FluentAssertions 7.2.2 (Apache-2.0), not 8.x</h1>
+        <div class="stats">
+          <span class="chip">approved</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-04</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0005">
+          <div class="meta">
+            <span class="status-chip status-accepted">approved</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0005</span>
+          </div>
+
+          <h2 id="context">Context</h2>
+          <p>
+            The suite holds 236 <code>Xunit.Assert.*</code> calls (12 distinct methods) across 11 files. The
+            sprint converts them to FluentAssertions <code>.Should()</code> form for readable, diff-rich
+            failures (PRD G2; AC-10 … AC-16). Two forces shape the decision: (1) the FluentAssertions license
+            split — version 8.0 moved commercial use to a paid license, while 7.x stays Apache-2.0 — and (2)
+            one xUnit assertion (<code>Assert.Equal(exp, act, precision)</code>) has no 1:1 FluentAssertions
+            equivalent because xUnit's <code>precision</code> is decimal-places while FluentAssertions
+            <code>BeApproximately</code> takes an absolute tolerance.
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Adopt <strong>FluentAssertions 7.2.2</strong> (latest 7.x, Apache-2.0) as the sole assertion
+            library, pinned to the 7.x line, and convert every <code>Assert.*</code> per the PRD's
+            assertion-mapping table.
+          </p>
+          <ul>
+            <li>
+              <strong>Pin to 7.x; reject 8.x.</strong> FluentAssertions 8.0+ requires a paid commercial
+              license for commercial use; 7.x "will remain fully open-source indefinitely" under Apache-2.0.
+              Pin <code>FluentAssertions</code> <code>7.2.2</code> (latest 7.x, 2026-03-16) and never float
+              to 8.x (AC-1, AC-2). 7.x supports <code>net472</code>.
+            </li>
+            <li>
+              Add the global <code>&lt;Using Include="FluentAssertions" /&gt;</code> so <code>.Should()</code>
+              is implicitly available (mirrors the NUnit/Xunit global-using convention, AC-4).
+            </li>
+            <li>
+              <strong>Mapping policy.</strong> The per-method <code>Assert.*</code> → <code>.Should()</code>
+              conversion table in the PRD
+              (<a href="../../../.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html">prd.html §Assertion mapping reference</a>, AC-16)
+              is the single authoritative conversion contract; this ADR does <em>not</em> restate those rows.
+              The ADR owns only the conversion <em>policy</em> that the table does not capture: the FA 7.x pin
+              rationale (below), the <code>Assert.Equal(…, precision)</code> → <code>BeApproximately</code>
+              semantic-shift nuance (next bullet), and the <code>Assert.True/False</code>-over-comparison
+              diff-preservation rule (further below). Collection vs substring overload selection, and the
+              preservation of exception type and any message/inner-exception assertion on
+              <code>Assert.Throws&lt;T&gt;</code> → <code>action.Should().Throw&lt;T&gt;()</code>, follow the
+              PRD table per site (AC-11, AC-14, AC-15).
+            </li>
+            <li>
+              <strong>Semantic-shift site — <code>Assert.Equal(exp, act, precision)</code> →
+              <code>act.Should().BeApproximately(exp, tolerance)</code> with <code>tolerance = 10^-precision</code></strong>
+              (e.g. MathHelper precision <code>4</code> → tolerance <code>1e-4</code>). This is <em>not</em> a
+              1:1 swap: xUnit precision rounds to N decimal places; FA tolerance is an absolute band. Each
+              such site is converted explicitly with the chosen tolerance documented, and boundary/clamp
+              cases (MathHelper normalization) are spot-checked to confirm equivalent pass/fail behavior
+              (AC-12). Any site that cannot map 1:1 is flagged as a reviewable edit (AC-16).
+            </li>
+            <li>
+              <strong>Diff-preservation policy (refactor+cleanup mode).</strong> When
+              <code>Assert.True/False</code> wraps a value comparison, prefer the value-comparing FA form
+              (<code>x.Should().Be(y)</code>) over the weaker <code>.Should().BeTrue()</code> so the failure
+              diff is preserved; plain boolean checks use <code>.Should().BeTrue()/.BeFalse()</code> (AC-13).
+              Any assertion-strength change (tightening/pruning a weak or redundant assertion, permitted by
+              the approved refactor+cleanup mode) is an explicit, individually reviewable edit — never an
+              accidental side effect of mechanical conversion (AC-17).
+            </li>
+            <li>
+              Introducing <code>FluentAssertions</code> is a new dependency under <strong>Complication
+              Approval</strong>, approved at the design-review/promote gate; it is the approved scope of
+              sprint 002 (decisions-log 2026-06-04, "FluentAssertions version pinned to 7.x").
+            </li>
+          </ul>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Readable, diff-rich assertion failures; intent-revealing <code>.Should()</code> syntax across the suite.</li>
+                <li>Apache-2.0 7.x avoids any commercial-license obligation; the pin is explicit and documented so accidental 8.x adoption is guarded.</li>
+                <li>The mapping table makes the conversion mechanical and reviewable for 11 of 12 assert methods; only one method (the precision case) needs judgment, and that judgment is isolated and documented.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>The <code>BeApproximately</code> tolerance is a behavioral risk:</strong> a wrong tolerance silently loosens or tightens a float assertion, masking or inventing failures. Mitigated by the <code>10^-precision</code> rule + boundary spot-checks (AC-12), but it is the one place mechanical conversion is unsafe.</li>
+                <li>Version pin is a standing maintenance constraint: dependabot/NuGet auto-update to 8.x must be actively prevented; 7.x receives only bugfixes, so the suite forgoes future 8.x assertion features.</li>
+                <li>New dependency surface (one package) the team must keep warning-clean under <a href="adr-0003-build-governance.html">ADR-0003</a>; any FA analyzer/obsolete warning fails the build under <code>WarningLevel 9999</code> and must be resolved, not blanket-suppressed.</li>
+                <li>Refactor+cleanup mode widens the diff beyond a pure mechanical swap, raising review effort — the AC-13/AC-17 "explicit reviewable edit" rule is the control that keeps it auditable.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>FluentAssertions 8.x (latest)</strong> — rejected: commercial license for commercial use; 7.x is the last Apache-2.0 major and is the explicit user decision (decisions-log 2026-06-04).</li>
+            <li><strong>NUnit's built-in constraint model (<code>Assert.That(...)</code>)</strong> — rejected: would re-introduce the NUnit <code>Assert</code>/<code>TestDelegate</code> surface this migration deliberately avoids, and offers a less diff-rich failure message than FluentAssertions for the equality-heavy suite (~108 <code>Assert.Equal</code> sites).</li>
+            <li><strong>Shouldly</strong> — rejected: another new dependency with no advantage over FluentAssertions for this suite; not the project's chosen standard.</li>
+            <li><strong>Keep <code>Xunit.Assert</code> alongside NUnit</strong> — rejected: would retain a transitive xUnit reference purely for assertions, defeating the framework swap and the stack simplification.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-1, AC-2</strong> — <code>FluentAssertions</code> pinned to 7.2.2 (7.x line, Apache-2.0); never floats to 8.x.</li>
+            <li><strong>AC-4</strong> — global <code>&lt;Using Include="FluentAssertions" /&gt;</code> added.</li>
+            <li><strong>AC-10, AC-11, AC-14, AC-15, AC-16</strong> — all 236 <code>Assert.*</code> calls convert to <code>.Should()</code> per the PRD mapping table; overload selection and exception-assertion preservation follow the table per site.</li>
+            <li><strong>AC-12</strong> — <code>Assert.Equal(…, precision)</code> → <code>BeApproximately(…, 10^-precision)</code> with documented tolerance and boundary spot-checks.</li>
+            <li><strong>AC-13, AC-17</strong> — value-comparing form preferred over boolean; any assertion-strength change is an explicit reviewable edit.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html"><code>.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>: the framework half of the same migration; together they define the full new test stack.</li>
+            <li><a href="adr-0003-build-governance.html">ADR-0003</a>: the warning-clean build gate the FA usings and converted asserts must pass.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
+    </div>
+  </div>
+</body>
+</html>

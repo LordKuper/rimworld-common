@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (test framework swap xUnit 2.9.3 -> NUnit 4.6.1 + NUnit3TestAdapter 6.2.0)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="002-migrate-tests-nunit-fluent">
+  <meta name="status" content="approved">
+  <meta name="updated" content="2026-06-04">
+  <meta name="responsibility" content="single architecture decision (test framework swap xUnit 2.9.3 to NUnit 4.6.1 + NUnit3TestAdapter 6.2.0)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0004 · Test framework: xUnit 2.9.3 → NUnit 4.6.1</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">approved</span>
+        </div>
+        <h1>ADR-0004 · Test framework: xUnit 2.9.3 → NUnit 4.6.1 + NUnit3TestAdapter 6.2.0</h1>
+        <div class="stats">
+          <span class="chip">approved</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-04</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0004">
+          <div class="meta">
+            <span class="status-chip status-accepted">approved</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0004</span>
+          </div>
+
+          <h2 id="context">Context</h2>
+          <p>
+            <code>Source/LordKuper.Common.Tests</code> (net472) runs on xUnit 2.9.3 with
+            <code>xunit.runner.visualstudio</code> 2.8.2 and a custom xUnit-specific framework seam
+            (<code>[assembly: TestFramework]</code> + <code>RimWorldTestFramework : XunitTestFramework</code>).
+            The audit inventoried 132 <code>[Fact]</code> — 129 executed plus 3 <code>[Fact(Skip=…)]</code> —
+            and 3 <code>[Theory]</code> with 13 <code>[InlineData]</code> rows, plus 236 <code>Assert.*</code>
+            calls across 11 files. The sprint standardizes the suite on NUnit + FluentAssertions for more
+            expressive, diff-rich assertions and a maintainable runner setup (PRD G1, G2; AC-1 … AC-9). The
+            framework choice is the foundational decision: it fixes the attribute model, the runner package,
+            the lifecycle hooks every other ADR in this sprint builds on, and the exact major/minor versions,
+            which interact with the project's <code>net472</code> target and <code>LangVersion=latest</code>
+            build governance (<a href="adr-0003-build-governance.html">ADR-0003</a>).
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Replace the xUnit 2.9.3 stack with <strong>NUnit 4.6.1</strong> +
+            <strong>NUnit3TestAdapter 6.2.0</strong>, keeping <code>Microsoft.NET.Test.Sdk</code> 17.14.1,
+            and map the attribute model 1:1.
+          </p>
+          <ul>
+            <li>
+              <strong>Package swap</strong> in <code>LordKuper.Common.Tests.csproj</code>: remove
+              <code>xunit</code> 2.9.3 and <code>xunit.runner.visualstudio</code> 2.8.2; add
+              <code>NUnit</code> 4.6.1 and <code>NUnit3TestAdapter</code> 6.2.0. Keep
+              <code>Microsoft.NET.Test.Sdk</code> 17.14.1 (the NUnit adapter needs the same VSTest host).
+              <code>NUnit3TestAdapter</code> carries the existing runner convention verbatim
+              (<code>PrivateAssets=all</code>; <code>IncludeAssets=runtime; build; native; contentfiles; analyzers; buildtransitive</code>).
+              Swap the global <code>&lt;Using Include="Xunit" /&gt;</code> to
+              <code>&lt;Using Include="NUnit.Framework" /&gt;</code> (FluentAssertions using is added by
+              <a href="adr-0005-fluentassertions-7x.html">ADR-0005</a>). The RimWorld <code>&lt;Reference&gt;</code>
+              block, the production <code>&lt;ProjectReference&gt;</code>, and <code>Directory.Build.props</code>
+              inheritance are unchanged (AC-1, AC-3, AC-4).
+            </li>
+            <li>
+              <strong>Version rationale — NUnit 4.6.1 (not 3.x).</strong> 4.6.1 is the current 4.x release;
+              its framework floor is <code>net462</code>, which <code>net472</code> satisfies ("4.6.2 or
+              higher"). NUnit 4.6 converted <code>TestDelegate</code>/<code>ActualValueDelegate</code> to
+              <code>Action</code>/<code>Func&lt;T&gt;</code>, which can cause overload ambiguity unless the
+              project compiles with C# 13+; the project builds on .NET SDK 10.0.300 with
+              <code>LangVersion=latest</code> (C# 14), so this is satisfied — and the suite does not use
+              <code>Assert.Throws</code>/<code>Assert.That(..., Throws…)</code> anyway (exception assertions
+              go through FluentAssertions per <a href="adr-0005-fluentassertions-7x.html">ADR-0005</a>), so
+              <code>TestDelegate</code> is never referenced. The classic <code>Assert.AreEqual</code> API
+              (removed in 4.0, restored as extension methods in 4.5.0) is irrelevant because no NUnit
+              <code>Assert.*</code> is used.
+            </li>
+            <li>
+              <strong>Adapter naming.</strong> The adapter package keeps the name
+              <code>NUnit3TestAdapter</code> even when paired with NUnit 4 — the "3" is the adapter/engine
+              lineage, not the framework major. Its assemblies are <code>nunit.framework</code> and
+              <code>NUnit3.TestAdapter</code>, which is why <code>scripts/coverage.ps1</code>'s AltCover
+              filter changes <code>--assemblyFilter xunit</code> → <code>--assemblyFilter nunit</code>
+              (AC-27).
+            </li>
+            <li>
+              <strong>Attribute mapping (1:1, exhaustive).</strong> Three distinct rules, by source
+              attribute:
+              <ul>
+                <li>
+                  <strong>Parameterless <code>[Fact]</code> → <code>[Test]</code>.</strong> A method that
+                  takes no arguments carries a single <code>[Test]</code> attribute. All 132
+                  <code>[Fact]</code> map this way: 129 executed <code>[Test]</code> + 3
+                  <code>[Test, Ignore]</code> (AC-5).
+                </li>
+                <li>
+                  <strong>Parameterized <code>[Theory]</code> + N×<code>[InlineData(...)]</code> →
+                  N×<code>[TestCase(...)]</code> on the same (now parameterized) method, with NO standalone
+                  <code>[Test]</code> attribute on it.</strong> Each <code>[TestCase(...)]</code> both
+                  declares a runnable case <em>and</em> supplies the arguments for that case, so the set of
+                  <code>[TestCase]</code> attributes is the complete and only case-declaring attribute on the
+                  method. <strong>A bare <code>[Test]</code> must NOT be added to a method that requires
+                  arguments:</strong> NUnit would treat that <code>[Test]</code> as a zero-argument case it
+                  cannot supply parameters for, producing a spurious non-runnable / errored case alongside the
+                  legitimate <code>[TestCase]</code> cases. So a parameterized method is annotated with
+                  <code>[TestCase(...)]</code> attributes only. The 3 <code>[Theory]</code> methods expand to
+                  13 <code>[TestCase]</code> cases (one per former <code>[InlineData]</code> row); enum-flag
+                  expressions like <code>TestFlags.FlagA | TestFlags.FlagB</code> are valid
+                  <code>[TestCase]</code> args because they are constant expressions (AC-6, AC-7).
+                </li>
+                <li>
+                  <strong>Skipped <code>[Fact(Skip="reason")]</code> → <code>[Test, Ignore("reason")]</code></strong>
+                  (the 3 sites in <code>Filters/PawnFilterTests.cs</code>, reason "Requires live RimWorld
+                  context for Verse.Translator" — kept present and reported as ignored, not deleted, AC-8).
+                </li>
+              </ul>
+              Case counts are preserved exactly: 129 executed <code>[Test]</code> + 3
+              <code>[Test, Ignore]</code> (from the 132 <code>[Fact]</code>), plus the 3
+              <code>[Theory]</code> methods expanding to 13 <code>[TestCase]</code> cases — 142 executed +
+              3 ignored in total (AC-9), consistent with the PRD inventory table as the single source of
+              truth (<a href="../../../.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html">sprint 002 PRD</a>).
+            </li>
+            <li>
+              <strong>Assertion library and infra seam are deferred</strong> to
+              <a href="adr-0005-fluentassertions-7x.html">ADR-0005</a> (FluentAssertions),
+              <a href="adr-0006-rimworld-assemblyresolve-setupfixture.html">ADR-0006</a> (resolver seam) and
+              <a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a> (StaticState isolation).
+              This ADR owns only the framework/runner/attribute swap.
+            </li>
+            <li>
+              Three new dependencies (<code>NUnit</code>, <code>NUnit3TestAdapter</code>,
+              <code>FluentAssertions</code>) and the removal of two (<code>xunit</code>, runner) are
+              introduced under <strong>Complication Approval</strong> and approved at the design-review/promote
+              gate; they are the direct, approved scope of sprint 002 (decisions-log 2026-06-04). The contract
+              change is the test-stack swap; production code (<code>Source/LordKuper.Common</code>) is
+              untouched (AC-18).
+            </li>
+          </ul>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Standardizes the suite on the project's chosen NUnit + FluentAssertions stack; the attribute model maps 1:1, so no test is dropped or semantically changed (AC-9, AC-18).</li>
+                <li>NUnit is non-parallel by default, which removes the need for an explicit serialization marker for the static-state suites (simplifies <a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>).</li>
+                <li><code>Microsoft.NET.Test.Sdk</code> and the runner convention are retained, so <code>dotnet test</code> and the AltCover flow keep working with only a filter-token change.</li>
+                <li>Pinning exact versions (NUnit 4.6.1, adapter 6.2.0) makes the stack reproducible and verifiable against the build governance.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li>Net new dependency surface: three packages added (two removed). The team now maintains NUnit/adapter/FA version compatibility (4.6.x ↔ 6.x ↔ 7.x) instead of the xUnit v2 lockstep.</li>
+                <li>NUnit 4.6's <code>TestDelegate</code>→<code>Action</code> change is a latent trap: were <code>LangVersion</code> ever pinned below C# 13 (it is <code>latest</code> per ADR-0003), or were <code>Assert.That(..., Throws…)</code> introduced, overload ambiguity could surface as build errors. Mitigated by staying on FluentAssertions for exception assertions and on <code>LangVersion=latest</code>.</li>
+                <li>The custom <code>[assembly: TestFramework]</code> hook has no NUnit analog; the resolver seam must be re-architected (<a href="adr-0006-rimworld-assemblyresolve-setupfixture.html">ADR-0006</a>) rather than ported — a behavior-sensitive rewrite, not a swap.</li>
+                <li>Must build warning-clean under <a href="adr-0003-build-governance.html">ADR-0003</a>'s <code>TreatWarningsAsErrors</code> + <code>WarningLevel 9999</code>: any NUnit/adapter analyzer warning or obsolete-API notice fails the build, not just warns. A Release build after migration must surface these before impl-review.</li>
+                <li>The persistent <a href="../tech-reference/xunit-2.9.3.md">xUnit @ 2.9.3 tech-reference</a> and the <code>stack.html</code> test-stack rows are superseded; the remap is performed in this design-promote step alongside this ADR (see <a href="../tech-reference/nunit-4.6.1.md">NUnit @ 4.6.1</a> and <a href="../stack.html">stack.html</a>).</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Stay on xUnit 2.9.3</strong> — rejected: the sprint's explicit, user-approved goal is to standardize on NUnit + FluentAssertions (decisions-log 2026-06-04). Not a technical failing of xUnit; a deliberate standardization choice.</li>
+            <li><strong>NUnit 3.x instead of 4.x</strong> — rejected: 4.6.1 is the current line, supports <code>net472</code>, and the <code>TestDelegate</code>/classic-Assert concerns that motivate some teams to stay on 3.x do not apply here (no NUnit <code>Assert.*</code> use; C# 14 build). Choosing 3.x would adopt an older line for no benefit.</li>
+            <li><strong>MSTest</strong> — rejected: not the project's chosen standard; would still require the same resolver/isolation rewrite while offering no advantage over NUnit for this suite.</li>
+            <li><strong>FluentAssertions license carve-out aside, keep xUnit asserts</strong> — out of scope: assertion-library choice is owned by <a href="adr-0005-fluentassertions-7x.html">ADR-0005</a>.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-1, AC-3, AC-4</strong> — package swap to NUnit 4.6.1 + NUnit3TestAdapter 6.2.0, <code>Microsoft.NET.Test.Sdk</code> 17.14.1 retained, global using swapped to <code>NUnit.Framework</code>; RimWorld refs / project ref / build-props inheritance unchanged.</li>
+            <li><strong>AC-5</strong> — all 132 <code>[Fact]</code> map to <code>[Test]</code> (129 executed + 3 ignored).</li>
+            <li><strong>AC-6, AC-7</strong> — 3 <code>[Theory]</code> + 13 <code>[InlineData]</code> map to 13 <code>[TestCase]</code> cases; enum-flag args preserved as constant expressions.</li>
+            <li><strong>AC-8</strong> — 3 skipped facts map to <code>[Test, Ignore("…")]</code>, kept and reported as ignored.</li>
+            <li><strong>AC-9</strong> — exact case-count preservation (142 executed + 3 ignored).</li>
+            <li><strong>AC-18</strong> — production code untouched; only the test stack changes.</li>
+            <li><strong>AC-27</strong> — coverage harness AltCover filter token changes <code>xunit</code> → <code>nunit</code>.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html"><code>.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0005-fluentassertions-7x.html">ADR-0005</a>: the assertion-library half of the same migration (FluentAssertions 7.x).</li>
+            <li><a href="adr-0006-rimworld-assemblyresolve-setupfixture.html">ADR-0006</a>: re-architects the framework seam this swap removes.</li>
+            <li><a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>: remaps the static-state isolation lifecycle this swap changes.</li>
+            <li><a href="adr-0003-build-governance.html">ADR-0003</a>: the <code>TreatWarningsAsErrors</code> / <code>WarningLevel 9999</code> / <code>LangVersion=latest</code> governance the migrated stack must satisfy.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
+    </div>
+  </div>
+</body>
+</html>

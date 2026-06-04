@@ -1,0 +1,43 @@
+{
+  "sprint_id": "002-migrate-tests-nunit-fluent",
+  "branch": "sprint/002-migrate-tests-nunit-fluent",
+  "phase": "plan",
+  "reviews": {
+    "design": {
+      "iteration": 4,
+      "verdicts": {
+        "iter-01": {
+          "documentation": "CONCERNS",
+          "simplification": "CONCERNS",
+          "external": "FAIL",
+          "ui": "N/A"
+        },
+        "iter-02": {
+          "documentation": "APPROVE",
+          "simplification": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-03": {
+          "documentation": "APPROVE",
+          "simplification": "APPROVE",
+          "external": "CONCERNS",
+          "ui": "N/A"
+        },
+        "iter-04": {
+          "documentation": "APPROVE",
+          "simplification": "APPROVE",
+          "external": "APPROVE",
+          "ui": "N/A"
+        }
+      }
+    },
+    "impl": { "iteration": 0, "verdicts": {} }
+  },
+  "created_at": "2026-06-04T08:17:27Z",
+  "updated_at": "2026-06-04T10:00:00Z",
+  "review_fixes_pending": null,
+  "subsystems_touched": [],
+  "new_subsystems": [],
+  "escalations": []
+}

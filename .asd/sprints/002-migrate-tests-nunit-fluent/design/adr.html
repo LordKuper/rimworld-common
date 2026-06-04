@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: architecture decisions for sprint 002 test-framework migration (multiple repeated blocks)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="002-migrate-tests-nunit-fluent">
+  <meta name="status" content="proposed">
+  <meta name="updated" content="2026-06-04">
+  <meta name="responsibility" content="architecture decisions for sprint 002 test-framework migration">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR — Sprint 002 · migrate-tests-nunit-fluent</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .badges .status-proposed    { color: var(--warn);    border-color: var(--warn); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#adr-0004">ADR-0004 · Framework xUnit→NUnit</a></li>
+        <li><a href="#adr-0005">ADR-0005 · FluentAssertions 7.x</a></li>
+        <li><a href="#adr-0006">ADR-0006 · RimWorld resolver seam</a></li>
+        <li><a href="#adr-0007">ADR-0007 · StaticState isolation remap</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-proposed">proposed</span>
+        </div>
+        <h1>ADR — Sprint 002 · migrate-tests-nunit-fluent</h1>
+        <div class="stats">
+          <span class="chip">4 decisions</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">status: proposed</span>
+          <span class="chip">updated 2026-06-04</span>
+        </div>
+      </header>
+      <main>
+
+        <!-- ================================================================ -->
+        <!-- ADR-0004 · Test framework: xUnit 2.9.3 → NUnit 4.6.1            -->
+        <!-- ================================================================ -->
+        <article class="adr" id="adr-0004">
+          <div class="meta">
+            <span class="status-chip status-proposed">proposed</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0004</span>
+          </div>
+
+          <h2>ADR-0004 · Test framework: xUnit 2.9.3 → NUnit 4.6.1 + NUnit3TestAdapter 6.2.0</h2>
+
+          <h3 id="adr-0004-context">Context</h3>
+          <p>
+            <code>Source/LordKuper.Common.Tests</code> (net472) runs on xUnit 2.9.3 with
+            <code>xunit.runner.visualstudio</code> 2.8.2 and a custom xUnit-specific framework seam
+            (<code>[assembly: TestFramework]</code> + <code>RimWorldTestFramework : XunitTestFramework</code>).
+            The audit inventoried 132 <code>[Fact]</code> — 129 executed plus 3 <code>[Fact(Skip=…)]</code> —
+            and 3 <code>[Theory]</code> with 13 <code>[InlineData]</code> rows, plus 236 <code>Assert.*</code>
+            calls across 11 files. The sprint
+            standardizes the suite on NUnit + FluentAssertions for more expressive, diff-rich assertions and
+            a maintainable runner setup (PRD G1, G2; AC-1 … AC-9). The framework choice is the foundational
+            decision: it fixes the attribute model, the runner package, the lifecycle hooks every other ADR
+            in this sprint builds on, and the exact major/minor versions, which interact with the project's
+            <code>net472</code> target and <code>LangVersion=latest</code> build governance
+            (<a href="../../../design/architecture/adr/adr-0003-build-governance.html">ADR-0003</a>).
+          </p>
+
+          <h3 id="adr-0004-decision">Decision</h3>
+          <p class="lede">
+            Replace the xUnit 2.9.3 stack with <strong>NUnit 4.6.1</strong> +
+            <strong>NUnit3TestAdapter 6.2.0</strong>, keeping <code>Microsoft.NET.Test.Sdk</code> 17.14.1,
+            and map the attribute model 1:1.
+          </p>
+          <ul>
+            <li>
+              <strong>Package swap</strong> in <code>LordKuper.Common.Tests.csproj</code>: remove
+              <code>xunit</code> 2.9.3 and <code>xunit.runner.visualstudio</code> 2.8.2; add
+              <code>NUnit</code> 4.6.1 and <code>NUnit3TestAdapter</code> 6.2.0. Keep
+              <code>Microsoft.NET.Test.Sdk</code> 17.14.1 (the NUnit adapter needs the same VSTest host).
+              <code>NUnit3TestAdapter</code> carries the existing runner convention verbatim
+              (<code>PrivateAssets=all</code>; <code>IncludeAssets=runtime; build; native; contentfiles; analyzers; buildtransitive</code>).
+              Swap the global <code>&lt;Using Include="Xunit" /&gt;</code> to
+              <code>&lt;Using Include="NUnit.Framework" /&gt;</code> (FluentAssertions using is added by
+              <a href="#adr-0005">ADR-0005</a>). The RimWorld <code>&lt;Reference&gt;</code> block, the
+              production <code>&lt;ProjectReference&gt;</code>, and <code>Directory.Build.props</code>
+              inheritance are unchanged (AC-1, AC-3, AC-4).
+            </li>
+            <li>
+              <strong>Version rationale — NUnit 4.6.1 (not 3.x).</strong> 4.6.1 is the current 4.x release;
+              its framework floor is <code>net462</code>, which <code>net472</code> satisfies ("4.6.2 or
+              higher"). NUnit 4.6 converted <code>TestDelegate</code>/<code>ActualValueDelegate</code> to
+              <code>Action</code>/<code>Func&lt;T&gt;</code>, which can cause overload ambiguity unless the
+              project compiles with C# 13+; the project builds on .NET SDK 10.0.300 with
+              <code>LangVersion=latest</code> (C# 14), so this is satisfied — and the suite does not use
+              <code>Assert.Throws</code>/<code>Assert.That(..., Throws…)</code> anyway (exception assertions
+              go through FluentAssertions per <a href="#adr-0005">ADR-0005</a>), so
+              <code>TestDelegate</code> is never referenced. The classic <code>Assert.AreEqual</code> API
+              (removed in 4.0, restored as extension methods in 4.5.0) is irrelevant because no NUnit
+              <code>Assert.*</code> is used.
+            </li>
+            <li>
+              <strong>Adapter naming.</strong> The adapter package keeps the name
+              <code>NUnit3TestAdapter</code> even when paired with NUnit 4 — the "3" is the adapter/engine
+              lineage, not the framework major. Its assemblies are <code>nunit.framework</code> and
+              <code>NUnit3.TestAdapter</code>, which is why <code>scripts/coverage.ps1</code>'s AltCover
+              filter changes <code>--assemblyFilter xunit</code> → <code>--assemblyFilter nunit</code>
+              (AC-27).
+            </li>
+            <li>
+              <strong>Attribute mapping (1:1, exhaustive).</strong> Three distinct rules, by source
+              attribute:
+              <ul>
+                <li>
+                  <strong>Parameterless <code>[Fact]</code> → <code>[Test]</code>.</strong> A method that
+                  takes no arguments carries a single <code>[Test]</code> attribute. All 132
+                  <code>[Fact]</code> map this way: 129 executed <code>[Test]</code> + 3
+                  <code>[Test, Ignore]</code> (AC-5).
+                </li>
+                <li>
+                  <strong>Parameterized <code>[Theory]</code> + N×<code>[InlineData(...)]</code> →
+                  N×<code>[TestCase(...)]</code> on the same (now parameterized) method, with NO standalone
+                  <code>[Test]</code> attribute on it.</strong> Each <code>[TestCase(...)]</code> both
+                  declares a runnable case <em>and</em> supplies the arguments for that case, so the set of
+                  <code>[TestCase]</code> attributes is the complete and only case-declaring attribute on the
+                  method. <strong>A bare <code>[Test]</code> must NOT be added to a method that requires
+                  arguments:</strong> NUnit would treat that <code>[Test]</code> as a zero-argument case it
+                  cannot supply parameters for, producing a spurious non-runnable / errored case alongside the
+                  legitimate <code>[TestCase]</code> cases. So a parameterized method is annotated with
+                  <code>[TestCase(...)]</code> attributes only. The 3 <code>[Theory]</code> methods expand to
+                  13 <code>[TestCase]</code> cases (one per former <code>[InlineData]</code> row); enum-flag
+                  expressions like <code>TestFlags.FlagA | TestFlags.FlagB</code> are valid
+                  <code>[TestCase]</code> args because they are constant expressions (AC-6, AC-7).
+                </li>
+                <li>
+                  <strong>Skipped <code>[Fact(Skip="reason")]</code> → <code>[Test, Ignore("reason")]</code></strong>
+                  (the 3 sites in <code>Filters/PawnFilterTests.cs</code>, reason "Requires live RimWorld
+                  context for Verse.Translator" — kept present and reported as ignored, not deleted, AC-8).
+                </li>
+              </ul>
+              Case counts are preserved exactly: 129 executed <code>[Test]</code> + 3
+              <code>[Test, Ignore]</code> (from the 132 <code>[Fact]</code>), plus the 3
+              <code>[Theory]</code> methods expanding to 13 <code>[TestCase]</code> cases — 142 executed +
+              3 ignored in total (AC-9), consistent with the
+              <a href="prd.html">PRD inventory table</a> as the single source of truth.
+            </li>
+            <li>
+              <strong>Assertion library and infra seam are deferred</strong> to
+              <a href="#adr-0005">ADR-0005</a> (FluentAssertions), <a href="#adr-0006">ADR-0006</a>
+              (resolver seam) and <a href="#adr-0007">ADR-0007</a> (StaticState isolation). This ADR owns
+              only the framework/runner/attribute swap.
+            </li>
+            <li>
+              Three new dependencies (<code>NUnit</code>, <code>NUnit3TestAdapter</code>,
+              <code>FluentAssertions</code>) and the removal of two (<code>xunit</code>, runner) are
+              introduced under <strong>Complication Approval</strong>, pending user approval at the
+              design-review/promote gate; they are the direct, approved scope of sprint 002
+              (decisions-log 2026-06-04). The contract change is the test-stack swap; production code
+              (<code>Source/LordKuper.Common</code>) is untouched (AC-18).
+            </li>
+          </ul>
+
+          <h3 id="adr-0004-consequences">Consequences</h3>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Standardizes the suite on the project's chosen NUnit + FluentAssertions stack; the attribute model maps 1:1, so no test is dropped or semantically changed (AC-9, AC-18).</li>
+                <li>NUnit is non-parallel by default, which removes the need for an explicit serialization marker for the static-state suites (simplifies <a href="#adr-0007">ADR-0007</a>).</li>
+                <li><code>Microsoft.NET.Test.Sdk</code> and the runner convention are retained, so <code>dotnet test</code> and the AltCover flow keep working with only a filter-token change.</li>
+                <li>Pinning exact versions (NUnit 4.6.1, adapter 6.2.0) makes the stack reproducible and verifiable against the build governance.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li>Net new dependency surface: three packages added (two removed). The team now maintains NUnit/adapter/FA version compatibility (4.6.x ↔ 6.x ↔ 7.x) instead of the xUnit v2 lockstep.</li>
+                <li>NUnit 4.6's <code>TestDelegate</code>→<code>Action</code> change is a latent trap: were <code>LangVersion</code> ever pinned below C# 13 (it is <code>latest</code> per ADR-0003), or were <code>Assert.That(..., Throws…)</code> introduced, overload ambiguity could surface as build errors. Mitigated by staying on FluentAssertions for exception assertions and on <code>LangVersion=latest</code>.</li>
+                <li>The custom <code>[assembly: TestFramework]</code> hook has no NUnit analog; the resolver seam must be re-architected (<a href="#adr-0006">ADR-0006</a>) rather than ported — a behavior-sensitive rewrite, not a swap.</li>
+                <li>Must build warning-clean under <a href="../../../design/architecture/adr/adr-0003-build-governance.html">ADR-0003</a>'s <code>TreatWarningsAsErrors</code> + <code>WarningLevel 9999</code>: any NUnit/adapter analyzer warning or obsolete-API notice fails the build, not just warns. A Release build after migration must surface these before impl-review.</li>
+                <li>The persistent <a href="../../../design/architecture/tech-reference/xunit-2.9.3.md">xUnit @ 2.9.3 tech-reference</a> and the <code>stack.html</code> test-stack rows become superseded; the remap is routed through design-promote, not edited in place here.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 id="adr-0004-alternatives">Alternatives considered</h3>
+          <ul class="alt-list">
+            <li><strong>Stay on xUnit 2.9.3</strong> — rejected: the sprint's explicit, user-approved goal is to standardize on NUnit + FluentAssertions (decisions-log 2026-06-04). Not a technical failing of xUnit; a deliberate standardization choice.</li>
+            <li><strong>NUnit 3.x instead of 4.x</strong> — rejected: 4.6.1 is the current line, supports <code>net472</code>, and the <code>TestDelegate</code>/classic-Assert concerns that motivate some teams to stay on 3.x do not apply here (no NUnit <code>Assert.*</code> use; C# 14 build). Choosing 3.x would adopt an older line for no benefit.</li>
+            <li><strong>MSTest</strong> — rejected: not the project's chosen standard; would still require the same resolver/isolation rewrite while offering no advantage over NUnit for this suite.</li>
+            <li><strong>FluentAssertions 8.x license carve-out aside, keep xUnit asserts</strong> — out of scope: assertion-library choice is owned by <a href="#adr-0005">ADR-0005</a>.</li>
+          </ul>
+
+          <h3 id="adr-0004-related">Related ADRs</h3>
+          <ul>
+            <li><a href="#adr-0005">ADR-0005</a>: the assertion-library half of the same migration (FluentAssertions 7.x).</li>
+            <li><a href="#adr-0006">ADR-0006</a>: re-architects the framework seam this swap removes.</li>
+            <li><a href="#adr-0007">ADR-0007</a>: remaps the static-state isolation lifecycle this swap changes.</li>
+            <li><a href="../../../design/architecture/adr/adr-0003-build-governance.html">ADR-0003</a>: the <code>TreatWarningsAsErrors</code> / <code>WarningLevel 9999</code> / <code>LangVersion=latest</code> governance the migrated stack must satisfy.</li>
+          </ul>
+        </article>
+
+        <!-- ================================================================ -->
+        <!-- ADR-0005 · Assertion library: FluentAssertions 7.x              -->
+        <!-- ================================================================ -->
+        <article class="adr" id="adr-0005">
+          <div class="meta">
+            <span class="status-chip status-proposed">proposed</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0005</span>
+          </div>
+
+          <h2>ADR-0005 · Assertion library: FluentAssertions 7.2.2 (Apache-2.0), not 8.x</h2>
+
+          <h3 id="adr-0005-context">Context</h3>
+          <p>
+            The suite holds 236 <code>Xunit.Assert.*</code> calls (12 distinct methods) across 11 files. The
+            sprint converts them to FluentAssertions <code>.Should()</code> form for readable, diff-rich
+            failures (PRD G2; AC-10 … AC-16). Two forces shape the decision: (1) the FluentAssertions license
+            split — version 8.0 moved commercial use to a paid license, while 7.x stays Apache-2.0 — and (2)
+            one xUnit assertion (<code>Assert.Equal(exp, act, precision)</code>) has no 1:1 FluentAssertions
+            equivalent because xUnit's <code>precision</code> is decimal-places while FluentAssertions
+            <code>BeApproximately</code> takes an absolute tolerance.
+          </p>
+
+          <h3 id="adr-0005-decision">Decision</h3>
+          <p class="lede">
+            Adopt <strong>FluentAssertions 7.2.2</strong> (latest 7.x, Apache-2.0) as the sole assertion
+            library, pinned to the 7.x line, and convert every <code>Assert.*</code> per the PRD's
+            assertion-mapping table.
+          </p>
+          <ul>
+            <li>
+              <strong>Pin to 7.x; reject 8.x.</strong> FluentAssertions 8.0+ requires a paid commercial
+              license for commercial use; 7.x "will remain fully open-source indefinitely" under Apache-2.0.
+              Pin <code>FluentAssertions</code> <code>7.2.2</code> (latest 7.x, 2026-03-16) and never float
+              to 8.x (AC-1, AC-2). 7.x supports <code>net472</code>.
+            </li>
+            <li>
+              Add the global <code>&lt;Using Include="FluentAssertions" /&gt;</code> so <code>.Should()</code>
+              is implicitly available (mirrors the NUnit/Xunit global-using convention, AC-4).
+            </li>
+            <li>
+              <strong>Mapping policy.</strong> The per-method <code>Assert.*</code> → <code>.Should()</code>
+              conversion table in the PRD (<a href="prd.html">prd.html §Assertion mapping reference</a>, AC-16)
+              is the single authoritative conversion contract; this ADR does <em>not</em> restate those rows.
+              The ADR owns only the conversion <em>policy</em> that the table does not capture: the FA 7.x pin
+              rationale (below), the <code>Assert.Equal(…, precision)</code> → <code>BeApproximately</code>
+              semantic-shift nuance (next bullet), and the <code>Assert.True/False</code>-over-comparison
+              diff-preservation rule (further below). Collection vs substring overload selection, and the
+              preservation of exception type and any message/inner-exception assertion on
+              <code>Assert.Throws&lt;T&gt;</code> → <code>action.Should().Throw&lt;T&gt;()</code>, follow the
+              PRD table per site (AC-11, AC-14, AC-15).
+            </li>
+            <li>
+              <strong>Semantic-shift site — <code>Assert.Equal(exp, act, precision)</code> →
+              <code>act.Should().BeApproximately(exp, tolerance)</code> with <code>tolerance = 10^-precision</code></strong>
+              (e.g. MathHelper precision <code>4</code> → tolerance <code>1e-4</code>). This is <em>not</em> a
+              1:1 swap: xUnit precision rounds to N decimal places; FA tolerance is an absolute band. Each
+              such site is converted explicitly with the chosen tolerance documented, and boundary/clamp
+              cases (MathHelper normalization) are spot-checked to confirm equivalent pass/fail behavior
+              (AC-12). Any site that cannot map 1:1 is flagged as a reviewable edit (AC-16).
+            </li>
+            <li>
+              <strong>Diff-preservation policy (refactor+cleanup mode).</strong> When
+              <code>Assert.True/False</code> wraps a value comparison, prefer the value-comparing FA form
+              (<code>x.Should().Be(y)</code>) over the weaker <code>.Should().BeTrue()</code> so the failure
+              diff is preserved; plain boolean checks use <code>.Should().BeTrue()/.BeFalse()</code> (AC-13).
+              Any assertion-strength change (tightening/pruning a weak or redundant assertion, permitted by
+              the approved refactor+cleanup mode) is an explicit, individually reviewable edit — never an
+              accidental side effect of mechanical conversion (AC-17).
+            </li>
+            <li>
+              Introducing <code>FluentAssertions</code> is a new dependency under <strong>Complication
+              Approval</strong>, pending the user gate; it is the approved scope of sprint 002
+              (decisions-log 2026-06-04, "FluentAssertions version pinned to 7.x").
+            </li>
+          </ul>
+
+          <h3 id="adr-0005-consequences">Consequences</h3>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Readable, diff-rich assertion failures; intent-revealing <code>.Should()</code> syntax across the suite.</li>
+                <li>Apache-2.0 7.x avoids any commercial-license obligation; the pin is explicit and documented so accidental 8.x adoption is guarded.</li>
+                <li>The mapping table makes the conversion mechanical and reviewable for 11 of 12 assert methods; only one method (the precision case) needs judgment, and that judgment is isolated and documented.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>The <code>BeApproximately</code> tolerance is a behavioral risk:</strong> a wrong tolerance silently loosens or tightens a float assertion, masking or inventing failures. Mitigated by the <code>10^-precision</code> rule + boundary spot-checks (AC-12), but it is the one place mechanical conversion is unsafe.</li>
+                <li>Version pin is a standing maintenance constraint: dependabot/NuGet auto-update to 8.x must be actively prevented; 7.x receives only bugfixes, so the suite forgoes future 8.x assertion features.</li>
+                <li>New dependency surface (one package) the team must keep warning-clean under <a href="../../../design/architecture/adr/adr-0003-build-governance.html">ADR-0003</a>; any FA analyzer/obsolete warning fails the build under <code>WarningLevel 9999</code> and must be resolved, not blanket-suppressed.</li>
+                <li>Refactor+cleanup mode widens the diff beyond a pure mechanical swap, raising review effort — the AC-13/AC-17 "explicit reviewable edit" rule is the control that keeps it auditable.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 id="adr-0005-alternatives">Alternatives considered</h3>
+          <ul class="alt-list">
+            <li><strong>FluentAssertions 8.x (latest)</strong> — rejected: commercial license for commercial use; 7.x is the last Apache-2.0 major and is the explicit user decision (decisions-log 2026-06-04).</li>
+            <li><strong>NUnit's built-in constraint model (<code>Assert.That(...)</code>)</strong> — rejected: would re-introduce the NUnit <code>Assert</code>/<code>TestDelegate</code> surface this migration deliberately avoids, and offers a less diff-rich failure message than FluentAssertions for the equality-heavy suite (~108 <code>Assert.Equal</code> sites).</li>
+            <li><strong>Shouldly</strong> — rejected: another new dependency with no advantage over FluentAssertions for this suite; not the project's chosen standard.</li>
+            <li><strong>Keep <code>Xunit.Assert</code> alongside NUnit</strong> — rejected: would retain a transitive xUnit reference purely for assertions, defeating the framework swap and the stack simplification.</li>
+          </ul>
+
+          <h3 id="adr-0005-related">Related ADRs</h3>
+          <ul>
+            <li><a href="#adr-0004">ADR-0004</a>: the framework half of the same migration; together they define the full new test stack.</li>
+            <li><a href="../../../design/architecture/adr/adr-0003-build-governance.html">ADR-0003</a>: the warning-clean build gate the FA usings and converted asserts must pass.</li>
+          </ul>
+        </article>
+
+        <!-- ================================================================ -->
+        <!-- ADR-0006 · RimWorld AssemblyResolve seam under NUnit            -->
+        <!-- ================================================================ -->
+        <article class="adr" id="adr-0006">
+          <div class="meta">
+            <span class="status-chip status-proposed">proposed</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0006</span>
+          </div>
+
+          <h2>ADR-0006 · RimWorld <code>AssemblyResolve</code> seam: <code>[assembly: TestFramework]</code> → global <code>[SetUpFixture]</code></h2>
+
+          <h3 id="adr-0006-context">Context</h3>
+          <p>
+            Most of the suite references RimWorld/Unity types. The library does not ship those assemblies;
+            instead an <code>AppDomain.CurrentDomain.AssemblyResolve</code> handler resolves them at runtime
+            from the RimWorld install (<code>%RIMWORLD_DIR%</code>/<code>%RimWorldDir%</code> →
+            <code>RimWorldWin64_Data\Managed\&lt;name&gt;.dll</code> via <code>Assembly.LoadFrom</code>).
+            Under xUnit this handler is wired through the framework-swap hook
+            (<code>[assembly: TestFramework("…RimWorldTestFramework", …)]</code> in
+            <code>AssemblyInfo.cs</code> + <code>RimWorldTestFramework : XunitTestFramework</code>, whose
+            constructor calls <code>InitializeRimWorldResolver()</code> before any discovery). NUnit has
+            <strong>no analog</strong> to <code>[assembly: TestFramework]</code>. The
+            load-bearing constraint is timing: the resolver MUST be registered <em>before any RimWorld-typed
+            test class is JIT-resolved</em>, or those tests fail at discovery/first-touch with
+            <code>FileNotFoundException</code>/<code>TypeLoadException</code> — which presents as mass test
+            failure, not a wiring bug (audit risk; PRD AC-19 … AC-21). The coverage harness depends on this
+            too: <code>scripts/coverage.ps1</code> step 3 deletes the copied RimWorld DLLs precisely so the
+            runtime resolver reloads them lazily.
+          </p>
+
+          <h3 id="adr-0006-decision">Decision</h3>
+          <p class="lede">
+            Replace the xUnit framework-swap hook with a <strong>namespace-less (global)
+            <code>[SetUpFixture]</code> whose <code>[OneTimeSetUp]</code></strong> registers the same
+            <code>AssemblyResolve</code> handler, preserving the resolution contract verbatim.
+          </p>
+          <ul>
+            <li>
+              Delete the <code>[assembly: TestFramework(...)]</code> attribute from
+              <code>AssemblyInfo.cs</code> and the <code>RimWorldTestFramework : XunitTestFramework</code>
+              type. Rename <code>XunitExtensions.cs</code> (no longer "Xunit") and re-house the resolver in
+              a <strong>namespace-less</strong> <code>[SetUpFixture]</code> class. A <code>[SetUpFixture]</code>
+              declared outside any namespace applies to the <em>whole assembly</em>; its
+              <code>[OneTimeSetUp]</code> runs once before any test in the assembly is executed — the timing
+              guarantee that replaces the xUnit framework-constructor hook (AC-19).
+            </li>
+            <li>
+              <strong>Chosen timing guarantee.</strong> NUnit invokes the global
+              <code>[SetUpFixture]</code>'s <code>[OneTimeSetUp]</code> before constructing or running any
+              test fixture. Registering the <code>AssemblyResolve</code> handler there is asserted to make it
+              live before the first RimWorld-typed test type is resolved at execution time.
+            </li>
+            <li>
+              <strong>Accepted risk (external review, design-phase decision).</strong> The external (Codex)
+              review flagged that <code>[OneTimeSetUp]</code> runs at NUnit <em>execution</em> time and does
+              <em>not</em> provably precede <em>discovery</em>-time type loading: NUnit can JIT-resolve a
+              test type while building its fixture model before any <code>[OneTimeSetUp]</code> body has run.
+              The AC-20 "resolver-before-type-load" ordering guarantee is therefore <strong>asserted, not
+              proven</strong>. The user accepted this risk for the design phase and chose to keep the
+              <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code> mechanism, revisiting only if the problem
+              actually manifests in impl. <strong>Documented contingency (anticipated fallback path):</strong>
+              if discovery-time RimWorld type resolution fails during implementation, fall back to an earlier
+              registration mechanism — e.g. a <code>[ModuleInitializer]</code> (with a <code>net472</code>
+              <code>IsExternalInit</code>/attribute polyfill) that registers the resolver at module load,
+              before NUnit touches any test type. This is now an anticipated path, not a contingency invented
+              on failure.
+            </li>
+            <li>
+              <strong>Idempotency guard retained — justified by the contingency.</strong> The previous
+              <code>AppDomain.GetData/SetData("RimWorldResolverInitialized")</code> guard is
+              <strong>kept</strong>. Its rationale is no longer "redundant but harmless / in case we need it":
+              the accepted-risk contingency above makes a <em>second</em> registration path a concrete
+              anticipated case — if the <code>[ModuleInitializer]</code> fallback is added later, both it and
+              the <code>[OneTimeSetUp]</code> could attempt registration in the same process, so a guard that
+              makes registration once-only across <em>any</em> path is justified defensive code, not a smell.
+            </li>
+            <li>
+              <strong>Resolution contract preserved verbatim</strong> (AC-20): the assembly-name match set
+              (<code>Assembly-CSharp</code>, <code>Assembly-CSharp-firstpass</code>, <code>UnityEngine*</code>,
+              <code>Unity.Burst</code>, <code>Unity.Collections</code>, <code>Unity.Mathematics</code>,
+              <code>com.rlabrecque.steamworks.net</code>); the env-var lookup
+              (<code>RIMWORLD_DIR</code>/<code>RimWorldDir</code>) with the existing fallback behavior; the
+              <code>Managed\&lt;name&gt;.dll</code> <code>Assembly.LoadFrom</code> resolution; and the
+              null-for-everything-else contract. None of these change — only the registration mechanism does.
+            </li>
+            <li>
+              <strong>Verification.</strong> Confirm the resolver is live before type load by running the
+              RimWorld-typed suites (<code>StatWeightTests</code>, <code>RimWorldTimeTests</code>,
+              <code>PawnFilterTests</code>) and confirming no <code>FileNotFoundException</code>/
+              <code>TypeLoadException</code> at discovery/execution (AC-21), and by re-running
+              <code>scripts/coverage.ps1</code> end-to-end so the step-3 DLL-removal + lazy-resolve path
+              still cooperates (AC-27).
+            </li>
+            <li>
+              The <code>[SetUpFixture]</code> seam is not a new <em>abstraction</em> — it is the
+              NUnit-idiomatic replacement for an existing seam; the resolver logic is reused. No Complication
+              Approval beyond the framework swap (<a href="#adr-0004">ADR-0004</a>) is required.
+            </li>
+          </ul>
+
+          <h3 id="adr-0006-consequences">Consequences</h3>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Restores the load-bearing "resolver-before-type-load" guarantee using a documented NUnit lifecycle hook, with a contract verbatim-identical to the xUnit version.</li>
+                <li>Removes the xUnit-only <code>[assembly: TestFramework]</code> coupling; the seam is now expressed in plain NUnit constructs that any maintainer can read.</li>
+                <li>The coverage harness's lazy-resolve dependency keeps working unchanged because the resolution contract is preserved.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Highest-risk piece of the migration.</strong> If the global <code>[SetUpFixture]</code> is accidentally placed inside a namespace, it scopes to that namespace only and runs too late for tests elsewhere — re-introducing the JIT-resolution failures as apparent mass test failure. The namespace-less placement is a hard requirement, not a style choice.</li>
+                <li><strong>Ordering is asserted, not proven (accepted risk).</strong> The external review noted that <code>[OneTimeSetUp]</code> runs at execution time and does not provably precede discovery-time type loading, so the AC-20 ordering guarantee is asserted. The user accepted this for the design phase; the anticipated fallback is an earlier registration via <code>[ModuleInitializer]</code> (net472 attribute polyfill) if discovery-time resolution actually fails in impl. Pinning NUnit 4.6.1 (<a href="#adr-0004">ADR-0004</a>) further bounds any future ordering drift.</li>
+                <li>The handler mutates process-global <code>AppDomain</code> state; the retained idempotency guard is justified defensive code (not overhead) because the accepted-risk contingency makes a second registration path — the <code>[ModuleInitializer]</code> fallback alongside <code>[OneTimeSetUp]</code> — a concrete anticipated case.</li>
+                <li>Supersedes the <code>XunitExtensions.cs</code>/<code>AssemblyInfo.cs</code> wiring; the rename + attribute deletion is a behavior-sensitive edit that must be verified by actually running the RimWorld-typed suites, not by inspection alone.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 id="adr-0006-alternatives">Alternatives considered</h3>
+          <ul class="alt-list">
+            <li><strong>Module initializer (<code>[ModuleInitializer]</code>)</strong> — not chosen now, but retained as the <em>anticipated fallback</em> (see Accepted-risk note). It registers the resolver at module load, earlier than <code>[OneTimeSetUp]</code>, so it would address the discovery-time ordering gap the external review flagged; it needs a <code>net472</code> attribute polyfill and is harder to verify than an explicit <code>[OneTimeSetUp]</code>. The global <code>[SetUpFixture]</code> is the NUnit-sanctioned hook and is preferred while the asserted ordering holds; the user accepted the risk of keeping it and moving to <code>[ModuleInitializer]</code> only if discovery-time resolution actually fails in impl.</li>
+            <li><strong>Per-fixture <code>[OneTimeSetUp]</code> on each RimWorld-typed test class</strong> — rejected: duplicative, easy to forget on a new test class (silent regression), and still per-class rather than assembly-global; the single global fixture is the minimal, centralized seam.</li>
+            <li><strong>Copy the RimWorld DLLs next to the test output instead of resolving at runtime</strong> — rejected: changes the coverage harness's deliberate step-3 DLL-removal design and bloats the output; the runtime resolver is the established, intentional approach.</li>
+          </ul>
+
+          <h3 id="adr-0006-related">Related ADRs</h3>
+          <ul>
+            <li><a href="#adr-0004">ADR-0004</a>: the framework swap that removes the <code>[assembly: TestFramework]</code> hook this ADR replaces.</li>
+            <li><a href="#adr-0007">ADR-0007</a>: the other infra seam (static-state isolation) remapped in the same migration.</li>
+          </ul>
+        </article>
+
+        <!-- ================================================================ -->
+        <!-- ADR-0007 · StaticState isolation remap (supersedes ADR-0001 vocab) -->
+        <!-- ================================================================ -->
+        <article class="adr" id="adr-0007">
+          <div class="meta">
+            <span class="status-chip status-proposed">proposed</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0007</span>
+          </div>
+
+          <h2>ADR-0007 · StaticState isolation: xUnit <code>[Collection]</code>/<code>IDisposable</code> → NUnit <code>[SetUp]</code>/<code>[TearDown]</code> + <code>[NonParallelizable]</code></h2>
+
+          <h3 id="adr-0007-context">Context</h3>
+          <p>
+            Three test classes (<code>StatWeightTests</code>, <code>StatefulSubsystemTests</code>,
+            <code>StatRangesTests</code>) touch shared static caches and isolate via the xUnit seam
+            introduced in <a href="../../../design/architecture/adr/adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>:
+            <code>StaticStateFixture : IDisposable</code> snapshots <code>DefProvider.Current</code> and
+            restores it (rebuilding <code>StatHelper</code>, <code>WorkTypeStatMap</code>, and reflection
+            resets of <code>SkillStatMap._map</code>,
+            <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>,
+            <code>StatRanges.Ranges</code>); <code>StaticStateTestBase</code> drives it per-test via ctor +
+            <code>Dispose</code>; and a <code>[CollectionDefinition("StaticState", DisableParallelization=true)]</code>
+            + <code>[Collection("StaticState")]</code> serializes the classes. ADR-0001 was deliberate that
+            per-test ctor+<code>Dispose</code> (not per-class <code>IClassFixture</code>) gives true per-test
+            isolation. The migration must preserve the isolation <em>contract</em> (the exact snapshot/restore
+            set) while re-expressing the xUnit lifecycle vocabulary in NUnit (PRD AC-22 … AC-25). This makes
+            ADR-0001's xUnit-specific prose inaccurate; that ADR is approved and persistent, so its wording
+            must be remapped through design-promote, not edited here.
+          </p>
+
+          <h3 id="adr-0007-decision">Decision</h3>
+          <p class="lede">
+            Re-express the ADR-0001 isolation seam in NUnit: keep the snapshot/restore body verbatim, drive
+            it from per-test <code>[SetUp]</code> (snapshot) / <code>[TearDown]</code> (restore), and replace
+            the xUnit collection-serialization with NUnit's default non-parallel execution (made explicit via
+            <code>[NonParallelizable]</code>).
+          </p>
+          <ul>
+            <li>
+              <strong>Snapshot/restore preserved verbatim</strong> (AC-22): the set of snapshotted/restored
+              statics — <code>DefProvider.Current</code>; rebuild of <code>StatHelper</code> and
+              <code>WorkTypeStatMap</code>; reflection resets of <code>SkillStatMap._map</code>,
+              <code>PassionHelper.{_isInitialized,_cachedPassions,PassionCache}</code>, and
+              <code>StatRanges.Ranges</code> — is unchanged. This body is framework-agnostic and is the actual
+              isolation contract from ADR-0001 (and the <code>StatRanges.Ranges</code> entry exists because
+              <a href="../../../design/architecture/adr/adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>
+              keeps that cache mutable). The reusable logic stays in the renamed <code>StaticStateFixture</code>
+              type; only its <em>invocation</em> mechanism changes.
+            </li>
+            <li>
+              <strong>Per-test lifecycle remap</strong> (AC-23): <code>StaticStateTestBase</code>'s
+              constructor → <code>[SetUp]</code> (build the fixture / snapshot); its <code>Dispose()</code> →
+              <code>[TearDown]</code> (restore). NUnit <code>[SetUp]</code>/<code>[TearDown]</code> are
+              per-test, matching the original ctor+<code>Dispose</code> per-test granularity exactly — the
+              deliberate ADR-0001 choice over per-class <code>IClassFixture</code> is preserved.
+            </li>
+            <li>
+              <strong>Serialization remap</strong> (AC-24): drop
+              <code>[CollectionDefinition("StaticState", DisableParallelization=true)]</code> and
+              <code>[Collection("StaticState")]</code>. NUnit runs <strong>non-parallel by default</strong>
+              (this project sets no <code>[Parallelizable]</code>/<code>[assembly: Parallelizable]</code>),
+              so the static-touching classes are already serialized. Apply <code>[NonParallelizable]</code>
+              to the three classes anyway, as an explicit, self-documenting statement of intent (belt-and-
+              suspenders against a future accidental opt-in to parallelism).
+            </li>
+            <li>
+              <strong>Supersession of ADR-0001 vocabulary.</strong> This ADR supersedes the
+              <em>xUnit-specific wording</em> of ADR-0001 (<code>StaticStateFixture</code> via
+              <code>IClassFixture</code>, <code>[Collection]</code> serialization,
+              <code>IDisposable</code> snapshot/restore) — <strong>not</strong> ADR-0001's isolation
+              <em>contract</em> or its <code>IDefProvider</code>/<code>InternalsVisibleTo</code> decisions,
+              which stand unchanged. The actual edit to the approved, persistent
+              <code>adr-0001-…html</code> is performed in <strong>design-promote</strong> (remap the
+              vocabulary in place, contract untouched), never silently here. ADR-0001 is not marked
+              superseded as a whole; only its mechanism prose is updated.
+            </li>
+            <li>
+              <strong>No cross-test bleed</strong> (AC-25): running the full suite repeatedly and in any
+              order yields the same results; the 8 plain (non-isolated) classes are unaffected by the seam.
+            </li>
+            <li>
+              The <code>InternalsVisibleTo</code> grant and the internal reset/snapshot hooks from ADR-0001
+              remain in force; this remap introduces no new abstraction, layer, or dependency, so no fresh
+              Complication Approval is needed.
+            </li>
+          </ul>
+
+          <h3 id="adr-0007-consequences">Consequences</h3>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Isolation contract is preserved bit-for-bit; only the lifecycle vocabulary changes, so the risk of altering what the suite verifies is minimal.</li>
+                <li>NUnit's non-parallel-by-default removes the need for an explicit serialization construct; <code>[NonParallelizable]</code> is documentation, not load-bearing wiring — simpler than the xUnit collection machinery.</li>
+                <li>Per-test <code>[SetUp]</code>/<code>[TearDown]</code> map 1:1 to the original per-test ctor+<code>Dispose</code>, keeping the deliberate per-test (not per-class) granularity from ADR-0001.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Approved-ADR drift:</strong> ADR-0001 (approved, persistent) now describes the seam in vocabulary the code no longer uses. Until design-promote remaps its wording, the persistent doc is partly inaccurate. Mitigation: route the wording update through design-promote, keep the contract unchanged so only mechanism prose moves.</li>
+                <li>Relying on NUnit's non-parallel default is implicit: if anyone later adds <code>[Parallelizable]</code> at assembly scope, the static-state suites would race and the snapshot/restore isolation would break. <code>[NonParallelizable]</code> on the three classes is the explicit guard, but a global parallel opt-in could still mis-order setup; the tech-reference notes "do not add <code>[assembly: Parallelizable]</code>".</li>
+                <li>The reflection-driven reset set is a maintained contract: if production adds a new static cache, the snapshot/restore set must be extended in lockstep or new cross-test bleed appears — same standing obligation as under xUnit, carried forward unchanged.</li>
+                <li>The <code>StaticStateTestBase</code> ctor→<code>[SetUp]</code> / <code>Dispose</code>→<code>[TearDown]</code> rewrite is behavior-sensitive (ordering of snapshot vs. test body); must be verified by repeated/random-order full runs (AC-25), not inspection.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 id="adr-0007-alternatives">Alternatives considered</h3>
+          <ul class="alt-list">
+            <li><strong>Per-class <code>[OneTimeSetUp]</code>/<code>[OneTimeTearDown]</code> (snapshot once per class)</strong> — rejected: coarsens isolation to per-class, reversing ADR-0001's deliberate per-test choice; a test that mutates statics could then leak into the next test in the same class.</li>
+            <li><strong>Keep a serialization marker analogous to <code>[Collection]</code> (e.g. an explicit single-threaded fixture)</strong> — rejected: redundant given NUnit's non-parallel default; adds machinery for no behavioral gain.</li>
+            <li><strong>Mark ADR-0001 fully superseded and re-state the whole isolation decision here</strong> — rejected: ADR-0001's contract (<code>IDefProvider</code>, the snapshot set, <code>InternalsVisibleTo</code>) is unchanged and still authoritative; only the mechanism vocabulary moves, so a scoped vocabulary remap (via design-promote) is correct, not a wholesale supersession.</li>
+          </ul>
+
+          <h3 id="adr-0007-related">Related ADRs</h3>
+          <ul>
+            <li><a href="../../../design/architecture/adr/adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>: defines the isolation contract this ADR preserves; its xUnit vocabulary is remapped (in design-promote) by this decision.</li>
+            <li><a href="../../../design/architecture/adr/adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>: keeps <code>StatRanges.Ranges</code> mutable — why it is in the snapshot/restore set.</li>
+            <li><a href="#adr-0006">ADR-0006</a>: the other infra seam remapped in this migration (RimWorld resolver).</li>
+            <li><a href="#adr-0004">ADR-0004</a>: the framework swap whose non-parallel-by-default behavior this ADR leans on.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>

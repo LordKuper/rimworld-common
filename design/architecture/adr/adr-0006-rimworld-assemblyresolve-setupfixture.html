@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (RimWorld AssemblyResolve seam: [assembly: TestFramework] -> global [SetUpFixture]/[OneTimeSetUp])
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="002-migrate-tests-nunit-fluent">
+  <meta name="status" content="approved">
+  <meta name="updated" content="2026-06-04">
+  <meta name="responsibility" content="single architecture decision (RimWorld AssemblyResolve seam: assembly TestFramework to global SetUpFixture/OneTimeSetUp)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0006 · RimWorld AssemblyResolve seam under NUnit</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; margin: 14px 0; }
+    section.callout.warn { border-left-color: var(--warn); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#accepted-risk">Accepted risk</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">approved</span>
+        </div>
+        <h1>ADR-0006 · RimWorld <code>AssemblyResolve</code> seam: <code>[assembly: TestFramework]</code> → global <code>[SetUpFixture]</code></h1>
+        <div class="stats">
+          <span class="chip">approved</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-04</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0006">
+          <div class="meta">
+            <span class="status-chip status-accepted">approved</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0006</span>
+          </div>
+
+          <h2 id="context">Context</h2>
+          <p>
+            Most of the suite references RimWorld/Unity types. The library does not ship those assemblies;
+            instead an <code>AppDomain.CurrentDomain.AssemblyResolve</code> handler resolves them at runtime
+            from the RimWorld install (<code>%RIMWORLD_DIR%</code>/<code>%RimWorldDir%</code> →
+            <code>RimWorldWin64_Data\Managed\&lt;name&gt;.dll</code> via <code>Assembly.LoadFrom</code>).
+            Under xUnit this handler is wired through the framework-swap hook
+            (<code>[assembly: TestFramework("…RimWorldTestFramework", …)]</code> in
+            <code>AssemblyInfo.cs</code> + <code>RimWorldTestFramework : XunitTestFramework</code>, whose
+            constructor calls <code>InitializeRimWorldResolver()</code> before any discovery). NUnit has
+            <strong>no analog</strong> to <code>[assembly: TestFramework]</code>. The
+            load-bearing constraint is timing: the resolver MUST be registered <em>before any RimWorld-typed
+            test class is JIT-resolved</em>, or those tests fail at discovery/first-touch with
+            <code>FileNotFoundException</code>/<code>TypeLoadException</code> — which presents as mass test
+            failure, not a wiring bug (audit risk; PRD AC-19 … AC-21). The coverage harness depends on this
+            too: <code>scripts/coverage.ps1</code> step 3 deletes the copied RimWorld DLLs precisely so the
+            runtime resolver reloads them lazily.
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Replace the xUnit framework-swap hook with a <strong>namespace-less (global)
+            <code>[SetUpFixture]</code> whose <code>[OneTimeSetUp]</code></strong> registers the same
+            <code>AssemblyResolve</code> handler, preserving the resolution contract verbatim.
+          </p>
+          <ul>
+            <li>
+              Delete the <code>[assembly: TestFramework(...)]</code> attribute from
+              <code>AssemblyInfo.cs</code> and the <code>RimWorldTestFramework : XunitTestFramework</code>
+              type. Rename <code>XunitExtensions.cs</code> (no longer "Xunit") and re-house the resolver in
+              a <strong>namespace-less</strong> <code>[SetUpFixture]</code> class. A <code>[SetUpFixture]</code>
+              declared outside any namespace applies to the <em>whole assembly</em>; its
+              <code>[OneTimeSetUp]</code> runs once before any test in the assembly is executed — the timing
+              guarantee that replaces the xUnit framework-constructor hook (AC-19).
+            </li>
+            <li>
+              <strong>Chosen timing guarantee.</strong> NUnit invokes the global
+              <code>[SetUpFixture]</code>'s <code>[OneTimeSetUp]</code> before constructing or running any
+              test fixture. Registering the <code>AssemblyResolve</code> handler there is asserted to make it
+              live before the first RimWorld-typed test type is resolved at execution time.
+            </li>
+            <li>
+              <strong>Resolution contract preserved verbatim</strong> (AC-20): the assembly-name match set
+              (<code>Assembly-CSharp</code>, <code>Assembly-CSharp-firstpass</code>, <code>UnityEngine*</code>,
+              <code>Unity.Burst</code>, <code>Unity.Collections</code>, <code>Unity.Mathematics</code>,
+              <code>com.rlabrecque.steamworks.net</code>); the env-var lookup
+              (<code>RIMWORLD_DIR</code>/<code>RimWorldDir</code>) with the existing fallback behavior; the
+              <code>Managed\&lt;name&gt;.dll</code> <code>Assembly.LoadFrom</code> resolution; and the
+              null-for-everything-else contract. None of these change — only the registration mechanism does.
+            </li>
+            <li>
+              <strong>Idempotency guard retained — justified by the contingency.</strong> The previous
+              <code>AppDomain.GetData/SetData("RimWorldResolverInitialized")</code> guard is
+              <strong>kept</strong>. Its rationale is no longer "redundant but harmless / in case we need it":
+              the accepted-risk contingency below makes a <em>second</em> registration path a concrete
+              anticipated case — if the <code>[ModuleInitializer]</code> fallback is added later, both it and
+              the <code>[OneTimeSetUp]</code> could attempt registration in the same process, so a guard that
+              makes registration once-only across <em>any</em> path is justified defensive code, not a smell.
+            </li>
+            <li>
+              <strong>Verification.</strong> Confirm the resolver is live before type load by running the
+              RimWorld-typed suites (<code>StatWeightTests</code>, <code>RimWorldTimeTests</code>,
+              <code>PawnFilterTests</code>) and confirming no <code>FileNotFoundException</code>/
+              <code>TypeLoadException</code> at discovery/execution (AC-21), and by re-running
+              <code>scripts/coverage.ps1</code> end-to-end so the step-3 DLL-removal + lazy-resolve path
+              still cooperates (AC-27).
+            </li>
+            <li>
+              The <code>[SetUpFixture]</code> seam is not a new <em>abstraction</em> — it is the
+              NUnit-idiomatic replacement for an existing seam; the resolver logic is reused. No Complication
+              Approval beyond the framework swap (<a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>)
+              is required.
+            </li>
+          </ul>
+
+          <section class="callout warn" id="accepted-risk">
+            <h2 style="border:none;margin-top:0;">Accepted risk (external review, design-phase decision)</h2>
+            <p>
+              The external (Codex) review flagged that <code>[OneTimeSetUp]</code> runs at NUnit
+              <em>execution</em> time and does <em>not</em> provably precede <em>discovery</em>-time type
+              loading: NUnit can JIT-resolve a test type while building its fixture model before any
+              <code>[OneTimeSetUp]</code> body has run. The AC-20 "resolver-before-type-load" ordering
+              guarantee is therefore <strong>asserted, not proven</strong>. The user accepted this risk for
+              the design phase and chose to keep the <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code>
+              mechanism, revisiting only if the problem actually manifests in impl.
+            </p>
+            <p>
+              <strong>Documented contingency (anticipated fallback path):</strong> if discovery-time RimWorld
+              type resolution fails during implementation, fall back to an earlier registration mechanism —
+              e.g. a <code>[ModuleInitializer]</code> (with a <code>net472</code>
+              <code>IsExternalInit</code>/attribute polyfill) that registers the resolver at module load,
+              before NUnit touches any test type. This is now an anticipated path, not a contingency invented
+              on failure. The retained idempotency guard (above) is what makes the
+              <code>[ModuleInitializer]</code> + <code>[OneTimeSetUp]</code> coexistence safe should the
+              fallback be adopted.
+            </p>
+          </section>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Restores the load-bearing "resolver-before-type-load" guarantee using a documented NUnit lifecycle hook, with a contract verbatim-identical to the xUnit version.</li>
+                <li>Removes the xUnit-only <code>[assembly: TestFramework]</code> coupling; the seam is now expressed in plain NUnit constructs that any maintainer can read.</li>
+                <li>The coverage harness's lazy-resolve dependency keeps working unchanged because the resolution contract is preserved.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Highest-risk piece of the migration.</strong> If the global <code>[SetUpFixture]</code> is accidentally placed inside a namespace, it scopes to that namespace only and runs too late for tests elsewhere — re-introducing the JIT-resolution failures as apparent mass test failure. The namespace-less placement is a hard requirement, not a style choice.</li>
+                <li><strong>Ordering is asserted, not proven (accepted risk).</strong> The external review noted that <code>[OneTimeSetUp]</code> runs at execution time and does not provably precede discovery-time type loading, so the AC-20 ordering guarantee is asserted. The user accepted this for the design phase; the anticipated fallback is an earlier registration via <code>[ModuleInitializer]</code> (net472 attribute polyfill) if discovery-time resolution actually fails in impl. Pinning NUnit 4.6.1 (<a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>) further bounds any future ordering drift.</li>
+                <li>The handler mutates process-global <code>AppDomain</code> state; the retained idempotency guard is justified defensive code (not overhead) because the accepted-risk contingency makes a second registration path — the <code>[ModuleInitializer]</code> fallback alongside <code>[OneTimeSetUp]</code> — a concrete anticipated case.</li>
+                <li>Supersedes the <code>XunitExtensions.cs</code>/<code>AssemblyInfo.cs</code> wiring; the rename + attribute deletion is a behavior-sensitive edit that must be verified by actually running the RimWorld-typed suites, not by inspection alone.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Module initializer (<code>[ModuleInitializer]</code>)</strong> — not chosen now, but retained as the <em>anticipated fallback</em> (see Accepted-risk note). It registers the resolver at module load, earlier than <code>[OneTimeSetUp]</code>, so it would address the discovery-time ordering gap the external review flagged; it needs a <code>net472</code> attribute polyfill and is harder to verify than an explicit <code>[OneTimeSetUp]</code>. The global <code>[SetUpFixture]</code> is the NUnit-sanctioned hook and is preferred while the asserted ordering holds; the user accepted the risk of keeping it and moving to <code>[ModuleInitializer]</code> only if discovery-time resolution actually fails in impl.</li>
+            <li><strong>Per-fixture <code>[OneTimeSetUp]</code> on each RimWorld-typed test class</strong> — rejected: duplicative, easy to forget on a new test class (silent regression), and still per-class rather than assembly-global; the single global fixture is the minimal, centralized seam.</li>
+            <li><strong>Copy the RimWorld DLLs next to the test output instead of resolving at runtime</strong> — rejected: changes the coverage harness's deliberate step-3 DLL-removal design and bloats the output; the runtime resolver is the established, intentional approach.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-19</strong> — the resolver is wired through a namespace-less global <code>[SetUpFixture]</code>/<code>[OneTimeSetUp]</code> that runs once before any test executes.</li>
+            <li><strong>AC-20</strong> — the resolution contract (assembly-name match set, env-var lookup + fallback, <code>Managed\&lt;name&gt;.dll</code> <code>LoadFrom</code>, null-for-others) is preserved verbatim; the ordering guarantee is asserted (see Accepted risk).</li>
+            <li><strong>AC-21</strong> — verified by running the RimWorld-typed suites with no <code>FileNotFoundException</code>/<code>TypeLoadException</code>.</li>
+            <li><strong>AC-27</strong> — the coverage harness's step-3 DLL-removal + lazy-resolve path still cooperates after the resolver port.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html"><code>.asd/sprints/002-migrate-tests-nunit-fluent/design/prd.html</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0004-test-framework-xunit-to-nunit.html">ADR-0004</a>: the framework swap that removes the <code>[assembly: TestFramework]</code> hook this ADR replaces.</li>
+            <li><a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>: the other infra seam (static-state isolation) remapped in the same migration.</li>
+            <li><a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>: the isolation contract whose xUnit vocabulary is remapped alongside this seam.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-04 | sprint 002-migrate-tests-nunit-fluent</footer>
+    </div>
+  </div>
+</body>
+</html>
