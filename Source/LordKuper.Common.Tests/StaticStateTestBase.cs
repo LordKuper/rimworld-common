@@ -1,3 +1,7 @@
+using System.Collections;
+using System.Reflection;
+using LordKuper.Common.Helpers;
+
 namespace LordKuper.Common.Tests;
 
 /// <summary>
@@ -15,20 +19,53 @@ namespace LordKuper.Common.Tests;
 /// </remarks>
 public abstract class StaticStateTestBase
 {
-    private StaticStateFixture? _fixture;
+    private IDefProvider? _originalProvider;
 
     /// <summary>Saves all static state before each test.</summary>
     [SetUp]
     public void SetUpStaticState()
     {
-        _fixture = new StaticStateFixture();
+        _originalProvider = DefProvider.Current;
     }
 
     /// <summary>Restores all static state saved before the test.</summary>
     [TearDown]
     public void TearDownStaticState()
     {
-        _fixture?.Dispose();
-        _fixture = null;
+        // Restore the original provider before rebuilding caches
+        if (_originalProvider != null)
+            DefProvider.Current = _originalProvider;
+        _originalProvider = null;
+
+        // Rebuild all dependent static caches to reset them with the production provider
+        StatHelper.Rebuild();
+        WorkTypeStatMap.Rebuild();
+
+        // Reset SkillStatMap via reflection (it has lazy BuildMap but no public Rebuild)
+        var sksmType = typeof(SkillStatMap);
+        var mapField = sksmType.GetField("_map", BindingFlags.NonPublic | BindingFlags.Static);
+        if (mapField != null)
+            mapField.SetValue(null, null);
+
+        // Reset PassionHelper via reflection since there's no public Rebuild
+        var phType = typeof(PassionHelper);
+        var isInitField =
+            phType.GetField("_isInitialized", BindingFlags.NonPublic | BindingFlags.Static);
+        var cachedPassionsField =
+            phType.GetField("_cachedPassions", BindingFlags.NonPublic | BindingFlags.Static);
+        var passionCacheField =
+            phType.GetField("PassionCache", BindingFlags.NonPublic | BindingFlags.Static);
+        if (isInitField != null)
+            isInitField.SetValue(null, false);
+        if (cachedPassionsField != null)
+            cachedPassionsField.SetValue(null, null);
+        if (passionCacheField?.GetValue(null) is IDictionary cache)
+            cache.Clear();
+
+        // Reset StatRanges.Ranges via reflection
+        var srType = typeof(StatRanges);
+        var rangesField = srType.GetField("Ranges", BindingFlags.NonPublic | BindingFlags.Static);
+        if (rangesField?.GetValue(null) is IDictionary ranges)
+            ranges.Clear();
     }
 }
