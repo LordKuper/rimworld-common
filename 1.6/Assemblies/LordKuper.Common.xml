@@ -573,7 +573,7 @@
                 Tests swap <see cref="P:LordKuper.Common.DefProvider.Current" /> to a fake implementation and restore it after each test.
             </summary>
             <remarks>
-                This is the single test-isolation seam introduced by ADR-0001.
+                This is the single seam through which Def lookups can be substituted in unit tests.
                 Only one global replacement is supported; no DI container.
             </remarks>
         </member>
@@ -1752,7 +1752,7 @@
                 Tests install a fake implementation via <see cref="P:LordKuper.Common.DefProvider.Current" />.
             </summary>
             <remarks>
-                This is the single test-isolation seam introduced by ADR-0001.
+                This is the single seam through which Def lookups can be substituted in unit tests.
                 Keep the interface narrow: only add members that have real call sites in the library.
             </remarks>
         </member>
@@ -2647,7 +2647,7 @@
             </summary>
             <remarks>
                 <para>
-                    <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+                    <strong>Adaptive behavior (intentional, by design):</strong> the returned score
                     is <em>not stable</em> across differing call sequences or sessions. The per-<see cref="T:RimWorld.StatDef" />
                     min/max range in <see cref="F:LordKuper.Common.StatRanges.Ranges" /> expands as values are observed, so the normalized
                     result for a given <paramref name="value" /> depends on the <em>set and order</em> of all
@@ -2655,9 +2655,8 @@
                     if the observation history differs.
                 </para>
                 <para>
-                    This order-dependence is the explicitly documented, user-approved contract.
-                    See ADR-0002 for the rationale. Tests must save/restore <see cref="F:LordKuper.Common.StatRanges.Ranges" /> (via
-                    <c>StaticStateFixture</c>) to prevent cross-test leakage (ADR-0001).
+                    This order-dependence is intentional. Unit tests that exercise normalization must
+                    save and restore <see cref="F:LordKuper.Common.StatRanges.Ranges" /> to prevent state leaking between tests.
                 </para>
             </remarks>
             <param name="stat">The stat definition to normalize.</param>
@@ -4480,7 +4479,7 @@
             </summary>
             <remarks>
                 <para>
-                    <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+                    <strong>Adaptive behavior (intentional, by design):</strong> the returned score
                     is <em>not stable</em> across differing call sequences or sessions. Internally this method
                     delegates to <see cref="M:LordKuper.Common.StatRanges.NormalizeStatValue(RimWorld.StatDef,System.Single)" />, which maintains a running
                     min/max per <see cref="T:RimWorld.StatDef" /> that expands as values are observed. A given
@@ -4489,8 +4488,7 @@
                     if the observation history differs.
                 </para>
                 <para>
-                    This order-dependence is the explicitly documented, user-approved contract.
-                    See ADR-0002 for the rationale.
+                    This order-dependence is intentional by design.
                 </para>
             </remarks>
             <param name="def">The <see cref="T:Verse.ThingDef" /> to score.</param>
@@ -4506,7 +4504,7 @@
             </summary>
             <remarks>
                 <para>
-                    <strong>ADAPTIVE behavior (ADR-0002, intentional contract):</strong> the returned score
+                    <strong>Adaptive behavior (intentional, by design):</strong> the returned score
                     is <em>not stable</em> across differing call sequences or sessions. Internally this method
                     delegates to <see cref="M:LordKuper.Common.StatRanges.NormalizeStatValue(RimWorld.StatDef,System.Single)" />, which maintains a running
                     min/max per <see cref="T:RimWorld.StatDef" /> that expands as values are observed. A given
@@ -4515,8 +4513,7 @@
                     if the observation history differs.
                 </para>
                 <para>
-                    This order-dependence is the explicitly documented, user-approved contract.
-                    See ADR-0002 for the rationale.
+                    This order-dependence is intentional by design.
                 </para>
             </remarks>
             <param name="thing">The thing to score.</param>
