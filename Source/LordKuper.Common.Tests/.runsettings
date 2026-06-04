@@ -9,9 +9,10 @@
 
   <!-- NUnit adapter settings.
        InProcess=true: run tests in the testhost process without spawning a sub-process.
-       This ensures the RimWorld AssemblyResolve handler (registered by [ModuleInitializer] in
-       RimWorldResolverSetup.cs) is live in the same AppDomain that NUnit scans for test types,
-       resolving the Assembly-CSharp discovery-time dependency without requiring copy-local DLLs. -->
+       This ensures the RimWorld AssemblyResolve handler (registered by the global [SetUpFixture]
+       [OneTimeSetUp] in RimWorldResolverSetup.cs) is live in the same AppDomain that NUnit scans
+       for test types, resolving the Assembly-CSharp discovery-time dependency without requiring
+       copy-local DLLs. -->
   <NUnit>
     <InProcess>true</InProcess>
   </NUnit>
