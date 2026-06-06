@@ -216,4 +216,48 @@ public class StatRangesTests : StaticStateTestBase
         var hundred = StatRanges.NormalizeStatValue(statDef, 100f);
         hundred.Should().Be(1f);
     }
+
+    [Test]
+    public void NormalizeStatValue_NegativeSequenceToZero_ExactBounds()
+    {
+        // AC-2, AC-7: Exact-bound test for the exact AC-2 negative sequence.
+        // Observe -10, then -5, then 0; verify range expansion from [-10, -10] to [-10, -5] to [-10, 0].
+        // Verify exact normalized values: -10 → 0 and 0 → 1 when range is [-10, 0].
+        var fakeProvider = new FakeDefProvider();
+        var statDef = new StatDef { defName = "NegToZeroStat", label = "Neg to Zero Stat", category = null };
+        fakeProvider.AddDef(statDef);
+        DefProvider.Current = fakeProvider;
+        StatHelper.Rebuild();
+
+        // First observation: -10 seeds [-10, -10] (degenerate).
+        // NormalizeValue(-10, [-10, -10]) = 0 (zero width).
+        var first = StatRanges.NormalizeStatValue(statDef, -10f);
+        first.Should().Be(0f);
+
+        // Second observation: -5 expands to [-10, -5].
+        // NormalizeValue(-5, [-10, -5]):
+        // normalizedValue = (-5 - (-10)) / (-5 - (-10)) = 5 / 5 = 1.
+        // min < 0, max < 0 => -1 + 1 = 0.
+        var second = StatRanges.NormalizeStatValue(statDef, -5f);
+        second.Should().Be(0f);
+
+        // Third observation: 0 expands to [-10, 0].
+        // NormalizeValue(0, [-10, 0]):
+        // normalizedValue = (0 - (-10)) / (0 - (-10)) = 10 / 10 = 1.
+        // min < 0, max = 0 (not > 0) => default case => normalizedValue = 1.
+        var third = StatRanges.NormalizeStatValue(statDef, 0f);
+        third.Should().Be(1f);
+
+        // Verify endpoints in the final range [-10, 0].
+        // Re-observe -10 and 0 (they are at the current min/max, so calling them does not expand the range).
+        // NormalizeValue(-10, [-10, 0]) = (-10 - (-10)) / (0 - (-10)) = 0 / 10 = 0.
+        // min < 0, max = 0 (not > 0) => default case => 0.
+        var endpointMin = StatRanges.NormalizeStatValue(statDef, -10f);
+        endpointMin.Should().Be(0f);
+
+        // NormalizeValue(0, [-10, 0]) = (0 - (-10)) / (0 - (-10)) = 10 / 10 = 1.
+        // min < 0, max = 0 (not > 0) => default case => 1.
+        var endpointMax = StatRanges.NormalizeStatValue(statDef, 0f);
+        endpointMax.Should().Be(1f);
+    }
 }
