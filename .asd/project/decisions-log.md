@@ -369,3 +369,9 @@ Append-only. Never edited or removed. New entries appended below.
 - **Decision**: impl-review iter 02: APPROVE — DoD met. AC-2 negative-sequence gap resolved; all 8 lenses green; build 0 warn, 180 tests pass, jb-inspect clean. iter-01 low findings (external namespace already-safe, performance redundant-lookup pre-existing) below iter-02 floor, not actioned.
 - **Rationale**: The iter-01 implementation-medium AC-2 negative-sequence gap is now fully covered by `NormalizeStatValue_NegativeSequenceToZero_ExactBounds` (sound, revert-sensitive, deterministic — implementation and testing both APPROVE). The other six lenses (quality, ui, simplification, documentation, performance, external) APPROVED at iter-01 and their domains are unchanged (only a test was added at iter-02); their iter-01 low findings carry APPROVE as they sit below the iter-02 medium severity floor. All 8 lenses APPROVE → impl-review DoD met.
 - **Affected docs**: .asd/sprints/003-statranges-fix-expose/state.json
+
+## 2026-06-07 — Sprint 003-statranges-fix-expose completed, archived; PR opened
+
+- **Decision**: sprint 003-statranges-fix-expose completed, archived; PR https://github.com/LordKuper/rimworld-common/pull/6
+- **Rationale**: Definition of Done verified (AC-1..AC-10 satisfied, build 0 warnings, full test suite green, jb-inspect clean, corrected assembly republished to 1.6/Assemblies/, regression test revert-sensitivity confirmed). User confirmed PR opening; per config (auto_pr: true, gh_enabled: true, base main) the branch was pushed, PR #6 opened, and the sprint folder archived. ADR-0008 promoted; ADR-0002 and ADR-0007 reconciled.
+- **Affected docs**: .asd/sprints/archived/003-statranges-fix-expose/**, design/architecture/adr/adr-0008-*.html, design/architecture/adr/adr-0002-*.html, design/architecture/adr/adr-0007-*.html, .asd/project/config.yaml
