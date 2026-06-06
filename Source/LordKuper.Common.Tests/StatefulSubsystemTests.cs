@@ -101,7 +101,7 @@ public class StatefulSubsystemTests : StaticStateTestBase
         // Verify StatHelper is using the fake provider
         var retrieved = StatHelper.GetStatDef("teststat");
         retrieved.Should().NotBeNull();
-        retrieved!.defName.Should().Be("TestStat");
+        retrieved.defName.Should().Be("TestStat");
     }
 
     [Test]

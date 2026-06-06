@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (StatRanges first-observation fix + public-API exposure + static constraint + Clear() reset routing)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="003-statranges-fix-expose">
+  <meta name="status" content="accepted">
+  <meta name="updated" content="2026-06-06">
+  <meta name="responsibility" content="single architecture decision (StatRanges first-observation fix + public-API exposure + static constraint + Clear() reset routing)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0008 · StatRanges first-observation fix and public-API exposure</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "\2298 "; color: var(--warn); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+    .amends { border-left: 4px solid var(--info); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; margin: 14px 0; }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#amends">Amends note</a></li>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">accepted</span>
+        </div>
+        <h1>ADR-0008 · StatRanges first-observation fix and public-API exposure</h1>
+        <div class="stats">
+          <span class="chip">accepted</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-06</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0008">
+          <div class="meta">
+            <span class="status-chip status-accepted">accepted</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0008</span>
+          </div>
+
+          <section class="amends" id="amends">
+            <p style="margin:0;">
+              <strong>Amends ADR-0002 and ADR-0007.</strong> This decision changes facts those approved
+              ADRs assert: ADR-0002 described <code>NormalizeStatValue</code> as <code>internal static</code>
+              and stated &ldquo;no signature or runtime-behavior change to any public member&rdquo; (both no longer
+              hold — visibility flips to <code>public</code> and first-observation behavior is corrected),
+              and ADR-0007 described the test-isolation reset of <code>StatRanges.Ranges</code> as a
+              reflection-null of the backing field (this decision routes that reset through the new public
+              <code>StatRanges.Clear()</code>). Both persistent ADRs have been reconciled in place during
+              design-promote: their prose now points to this ADR as the governing decision for the changed
+              facts, while their original decisions stand otherwise.
+            </p>
+          </section>
+
+          <h2 id="context">Context</h2>
+          <p>
+            <code>Source/LordKuper.Common/StatRanges.cs</code> is the shared per-<code>StatDef</code> stat
+            normalizer. Its adaptive running-min/max contract was blessed by
+            <a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a>
+            and its static cache is part of the test-isolation snapshot/restore set defined by
+            <a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>
+            and re-expressed for NUnit in
+            <a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a>.
+            Three forces drive this sprint (see
+            <a href="../../../.asd/sprints/003-statranges-fix-expose/audit.md">audit.md</a> and
+            <a href="../../../.asd/sprints/003-statranges-fix-expose/design/prd.html">prd.html</a>):
+          </p>
+          <ul>
+            <li>
+              <strong>Confirmed correctness defect.</strong> In <code>UpdateStatRange</code>
+              (<code>StatRanges.cs:53–66</code>), on a <code>TryGetValue</code> miss the dictionary entry is
+              seeded to <code>[value, value]</code>, but the local <code>range</code> variable keeps its
+              <code>default(FloatRange)</code> value <code>{0, 0}</code>. The subsequent min/max comparisons run
+              against that stale local and overwrite the seeded entry. The first value <code>v</code> therefore
+              yields <code>[0, v]</code> for positive <code>v</code> (or <code>[v, 0]</code> for negative
+              <code>v</code>) instead of the correct degenerate <code>[v, v]</code>. Through
+              <code>MathHelper.NormalizeValue</code> this makes <code>NormalizeStatValue(stat, 50)</code> return
+              <code>1</code> where <code>0</code> is correct. The existing six tests assert only
+              <code>!NaN &amp;&amp; !Inf</code>, so they pass under both buggy and fixed code and never lock the
+              contract.
+            </li>
+            <li>
+              <strong>Hidden surface blocks reuse.</strong> <code>StatRanges</code> and
+              <code>NormalizeStatValue</code> are <code>internal</code>. The downstream EquipmentManager mod
+              cannot reference the shared, corrected implementation and instead carries its own duplicate range
+              logic (<code>EquipmentManagerGameComponent_StatRanges</code>) with the same class of error. Making
+              the type correct and <code>public</code> is the prerequisite for that mod to drop its duplicate
+              (the migration itself is out of scope — motivating context only).
+            </li>
+            <li>
+              <strong>Stringly-typed reset fragility.</strong> <code>StaticStateTestBase</code>
+              (<code>:107–111</code>) resets the cache by reflecting the <code>Ranges</code> field by the literal
+              name <code>"Ranges"</code>. A future rename would silently no-op the reset and leak state across
+              the suite. The newly public surface offers a typed reset entry point to replace it.
+            </li>
+          </ul>
+          <p>
+            The project config sets <code>backward_compat: none</code>, so future breaking changes to a public
+            surface are permitted without ceremony; nonetheless, promoting members to <code>public</code> is a
+            deliberate commitment that should be acknowledged and documented, not made implicitly.
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Correct the first-observation logic, expose <code>StatRanges</code> and
+            <code>NormalizeStatValue</code> as <code>public</code> with a new public <code>Clear()</code>, keep
+            the type <code>static</code> and process-global, and route the test-isolation reset through
+            <code>Clear()</code>.
+          </p>
+
+          <h3>D1 — Correct first-observation to seed a degenerate <code>[v, v]</code> range</h3>
+          <p>
+            Rewrite <code>UpdateStatRange</code> so that on a <code>TryGetValue</code> miss it seeds a
+            <em>local</em> <code>FloatRange(value, value)</code>, runs both the <code>min</code> and
+            <code>max</code> comparisons against that seeded value (never the stale <code>{0, 0}</code> default),
+            and writes the dictionary entry <strong>exactly once</strong>. The first value <code>v</code> for any
+            stat then yields <code>[v, v]</code>. This is not a behavioral redesign — it is the realization of
+            the adaptive-normalization contract ADR-0002 already blessed: the running min/max is intended to
+            begin from the first observed value, so a single observation must produce a degenerate range that
+            normalizes to <code>0</code>. The current code merely compares against an accidental
+            <code>{0, 0}</code> seed; D1 removes that accident. (PRD AC-1, AC-2.)
+          </p>
+
+          <h3>D2 — Expose <code>StatRanges</code> and <code>NormalizeStatValue</code> as <code>public</code>; add public <code>Clear()</code></h3>
+          <p>
+            Change <code>internal static class StatRanges</code> to <code>public static class</code>; change
+            <code>internal static float NormalizeStatValue(...)</code> to <code>public static</code>, keeping the
+            signature <strong>exactly</strong> <code>NormalizeStatValue(StatDef, float)</code> (unchanged); and
+            add <code>public static void Clear() =&gt; Ranges.Clear();</code>. The downstream EquipmentManager mod
+            then consumes the shared, corrected primitive instead of duplicating it. This is now a
+            <strong>public-API surface commitment</strong>: the adaptive/order-dependent contract from ADR-0002
+            must be documented on the now-public members via XML docs. With <code>backward_compat: none</code>,
+            future breaks are allowed without ceremony, but the commitment is acknowledged here so the surface is
+            adopted deliberately. (PRD AC-3, AC-4, AC-5.)
+          </p>
+
+          <h3>D3 — Keep <code>StatRanges</code> static and process-global (NOT an instance class)</h3>
+          <p>
+            <code>StatRanges</code> remains <code>static</code> with its process-global <code>Ranges</code>
+            cache; it is explicitly <strong>not</strong> converted to an instance class. The only production
+            consumer, <code>WorkTypeThingRule</code> (<code>GetThingDefScore</code> / <code>GetThingScore</code>),
+            relies on the shared cache to accumulate min/max across <em>all</em> scored defs and things within
+            the process — the adaptive design ADR-0002 documents as intentional. Converting to an instance class
+            would fragment that accumulation and break the documented contract. Exposing the existing static
+            type (D2) is sufficient for the downstream consumer; no instance abstraction is introduced.
+            (PRD AC-6.)
+          </p>
+
+          <h3>D4 — Route the test-isolation reset through the public <code>Clear()</code></h3>
+          <p>
+            Replace the reflection-null of the <code>Ranges</code> backing field in
+            <code>StaticStateTestBase</code> (<code>:107–111</code>) with a direct <code>StatRanges.Clear()</code>
+            call. This removes the stringly-typed <code>"Ranges"</code> field lookup, eliminating the
+            rename-fragility risk while preserving the exact isolation <em>contract</em> ADR-0007 defines (the
+            <code>StatRanges.Ranges</code> entry stays in the reset set; only its mechanism changes from
+            reflection to a typed call). (PRD AC-5.)
+          </p>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>First-observed stats normalize correctly (<code>[v, v]</code> &rarr; <code>0</code>), realizing the ADR-0002 adaptive contract that the buggy <code>{0, 0}</code> seed silently violated.</li>
+                <li>The downstream EquipmentManager mod can consume one correct shared primitive instead of duplicating range logic that carried the same defect.</li>
+                <li>The signature <code>NormalizeStatValue(StatDef, float)</code> is unchanged, so the in-library <code>WorkTypeThingRule</code> consumer is not edited and other callers are source-compatible.</li>
+                <li>The typed <code>StatRanges.Clear()</code> reset removes the stringly-typed <code>"Ranges"</code> reflection lookup, closing the rename-fragility hole in <code>StaticStateTestBase</code>.</li>
+                <li>No new abstraction, layer, interface, or dependency is introduced; the existing static type is reused as-is (only visibility and one tiny member change).</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Public-API commitment.</strong> Promoting <code>StatRanges</code> + <code>NormalizeStatValue</code> + <code>Clear()</code> to <code>public</code> makes them a contract surface consumed by EquipmentManager. <code>backward_compat: none</code> permits future breaks without ceremony, but the surface is now something consumers depend on. Mitigation: keep the signature unchanged and document the adaptive/order-dependent contract on the public members.</li>
+                <li><strong>Behavior shift for existing consumers.</strong> <code>WorkTypeThingRule</code> scores change for first-observed stats (degenerate <code>[v, v]</code> &rarr; <code>0</code> instead of the buggy <code>[0, v]</code> &rarr; nonzero). This is the intended correction, but it changes emitted scores; the new exact-bound tests lock the corrected values.</li>
+                <li><strong>Warnings-as-errors discipline.</strong> The build uses a high warning level with warnings-as-errors. New public members with incomplete XML docs, or any unused/dead local in the rewritten <code>UpdateStatRange</code>, fail the build. Mitigation: full XML docs on the now-public members and <code>Clear()</code>; no dead locals in the rewrite.</li>
+                <li><strong>Assembly republish gate.</strong> The shipped <code>1.6/Assemblies/</code> artifact must be rebuilt from the fixed source; shipping corrected source against a stale assembly is a silent regression for consumers. Mitigation: treat rebuild-and-publish to <code>1.6/Assemblies/</code> as a hard acceptance gate after green tests.</li>
+                <li><strong>Approved-ADR drift, now resolved.</strong> ADR-0002 and ADR-0007 read as out-of-date until reconciled (see Amends note). Their prose has been reconciled in place during design-promote, so the persistent ADRs now agree with the as-decided result.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Convert <code>StatRanges</code> to an instance class</strong> — rejected: the process-global accumulation across all scored items in <code>WorkTypeThingRule</code> is the documented adaptive design (ADR-0002); per-instance ranges would fragment that accumulation and silently change scoring. Exposing the existing static type meets the consumer's need without the redesign.</li>
+            <li><strong>Keep <code>StatRanges</code> internal and let EquipmentManager keep its own copy</strong> — rejected: leaves two divergent implementations of the same primitive, both carrying the first-observation defect, and defeats the sprint's reuse goal. The whole point is one correct shared normalizer.</li>
+            <li><strong>Fix the bug in place by also mutating the seeded entry (write twice)</strong> — rejected: writing the dictionary entry on both the seed and the comparison path is redundant and easy to get subtly wrong; seeding a local and writing exactly once is simpler and provably correct.</li>
+            <li><strong>Leave the reflection-null reset in <code>StaticStateTestBase</code></strong> — rejected: the literal <code>"Ranges"</code> field lookup silently no-ops on rename and leaks state across the suite. Since a typed public <code>Clear()</code> now exists, routing the reset through it is strictly safer at no cost.</li>
+            <li><strong>Make <code>NormalizeStatValue</code> deterministic / order-independent</strong> — rejected: out of scope and already explicitly rejected by the user in ADR-0002, which blesses the adaptive order-dependence as the intended contract.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-1</strong> — D1: <code>UpdateStatRange</code> seeds a local <code>FloatRange(value, value)</code> on miss, compares against it, writes once; first value <code>v</code> yields <code>[v, v]</code>.</li>
+            <li><strong>AC-2</strong> — D1: corrected normalization (first <code>v=50</code> &rarr; <code>0</code>; later <code>100</code> &rarr; <code>1</code>; sequence <code>-10, -5, 0</code> &rarr; <code>[-10, -5]</code> then <code>[-10, 0]</code> with <code>-10</code> &rarr; <code>0</code> / <code>0</code> &rarr; <code>1</code>).</li>
+            <li><strong>AC-3</strong> — D2: <code>StatRanges</code> becomes <code>public static class</code>.</li>
+            <li><strong>AC-4</strong> — D2: <code>NormalizeStatValue</code> becomes <code>public static</code> with the unchanged signature <code>NormalizeStatValue(StatDef, float)</code>.</li>
+            <li><strong>AC-5</strong> — D2 + D4: <code>public static void Clear() =&gt; Ranges.Clear();</code> exists and <code>StaticStateTestBase</code> resets via <code>StatRanges.Clear()</code> instead of reflecting the <code>Ranges</code> field.</li>
+            <li><strong>AC-6</strong> — D3: <code>StatRanges</code> stays static / process-global; not an instance class; <code>WorkTypeThingRule</code> keeps accumulating min/max across all scored items.</li>
+            <li><strong>AC-7, AC-8, AC-9, AC-10</strong> — covered by the impl/test/build scope (exact-bound and revert-sensitive tests, zero-warning build, republish to <code>1.6/Assemblies/</code>); this ADR fixes the contract those criteria verify.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/003-statranges-fix-expose/design/prd.html"><code>.asd/sprints/003-statranges-fix-expose/design/prd.html</code></a>.
+            Audit support: <a href="../../../.asd/sprints/003-statranges-fix-expose/audit.md"><code>.asd/sprints/003-statranges-fix-expose/audit.md</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0002-statranges-adaptive-normalization.html">ADR-0002</a> — <strong>amended.</strong> Blesses the adaptive normalization this ADR realizes; its &ldquo;<code>internal static</code> <code>NormalizeStatValue</code>&rdquo; description and its &ldquo;no signature or runtime-behavior change to any public member&rdquo; clause became stale here (visibility &rarr; public; first-observation behavior corrected). Reconciled in place during design-promote.</li>
+            <li><a href="adr-0007-staticstate-isolation-nunit-remap.html">ADR-0007</a> — <strong>amended.</strong> Describes the reflection-null reset of <code>StatRanges.Ranges</code>; this ADR routes that reset through the public <code>StatRanges.Clear()</code>. The reset-set <em>membership</em> contract is unchanged; only the mechanism for the <code>StatRanges</code> entry changes. Reconciled in place during design-promote.</li>
+            <li><a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a> — defines the isolation contract that keeps <code>StatRanges.Ranges</code> in the snapshot/restore set; that membership is preserved (D4 only changes the reset mechanism, not the set).</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-06 | sprint 003-statranges-fix-expose</footer>
+    </div>
+  </div>
+</body>
+</html>

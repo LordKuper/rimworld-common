@@ -105,7 +105,7 @@ public class StatWeightTests : StaticStateTestBase
         // Should lazily resolve the StatDef via StatHelper.GetStatDef
         var resolved = weight.StatDef;
         resolved.Should().NotBeNull();
-        resolved!.defName.Should().Be("TestStat");
+        resolved.defName.Should().Be("TestStat");
     }
 
     [Test]
@@ -124,7 +124,7 @@ public class StatWeightTests : StaticStateTestBase
         // First access to StatDef should resolve it
         var resolved = weight.StatDef;
         resolved.Should().NotBeNull();
-        resolved!.defName.Should().Be("TestStat");
+        resolved.defName.Should().Be("TestStat");
     }
 
     [Test]

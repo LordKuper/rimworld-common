@@ -65,4 +65,4 @@ git:
   gh_enabled: true
 
   # Automatically open PR after Definition of Done is met and user confirms.
-  auto_pr: false
+  auto_pr: true

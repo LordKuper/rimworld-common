@@ -104,10 +104,7 @@ public abstract class StaticStateTestBase
         if (passionCacheField?.GetValue(null) is IDictionary cache)
             cache.Clear();
 
-        // Reset StatRanges.Ranges via reflection.
-        var srType = typeof(StatRanges);
-        var rangesField = srType.GetField("Ranges", BindingFlags.NonPublic | BindingFlags.Static);
-        if (rangesField?.GetValue(null) is IDictionary ranges)
-            ranges.Clear();
+        // Reset StatRanges via public Clear() method.
+        StatRanges.Clear();
     }
 }

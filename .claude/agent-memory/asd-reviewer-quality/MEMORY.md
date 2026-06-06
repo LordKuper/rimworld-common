@@ -1,1 +1,1 @@
-- [StatRanges zero-injection](project_statranges_zero_injection.md) — latent first-value bug in UpdateStatRange, retained by ADR-0002, flag low/informational only
+- [StatRanges zero-injection](project_statranges_zero_injection.md) — FIXED in sprint 003 (ADR-0008 D1); historical anchor only, do not re-flag as a current defect
