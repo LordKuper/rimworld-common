@@ -88,11 +88,11 @@ File: `Source/LordKuper.Common.Tests/StatRangesTests.cs`, using the existing `Fa
 
 ### Task 4: Build green and republish corrected assembly (owner: backend-dev) — AC-9, AC-10
 
-- [ ] Build the solution with 0 warnings under high warning level + warnings-as-errors using the `build` command key (`dotnet build Source\LordKuper.Common.slnx -c Release`). (AC-9)
-- [ ] Run the full test suite (existing + new) green using the `test` command key (`dotnet test Source\LordKuper.Common.Tests\LordKuper.Common.Tests.csproj`). (AC-9)
-- [ ] Verification step: confirm the regression test fails when the fix is reverted (revert locally, observe failure, restore the fix) — proves the test is revert-sensitive. (AC-8 support)
-- [ ] Run `lint` (`dotnet format ... --verify-no-changes --severity warn`) and `jb-inspect`; confirm the SARIF has no error/warning entries. (AC-9)
-- [ ] Rebuild and republish the corrected Common assembly (net472) so the output lands in `1.6/Assemblies/`. (AC-10)
+- [x] Build the solution with 0 warnings under high warning level + warnings-as-errors using the `build` command key (`dotnet build Source\LordKuper.Common.slnx -c Release`). (AC-9)
+- [x] Run the full test suite (existing + new) green using the `test` command key (`dotnet test Source\LordKuper.Common.Tests\LordKuper.Common.Tests.csproj`). (AC-9)
+- [x] Verification step: confirm the regression test fails when the fix is reverted (revert locally, observe failure, restore the fix) — proves the test is revert-sensitive. (AC-8 support)
+- [x] Run `lint` (`dotnet format ... --verify-no-changes --severity warn`) and `jb-inspect`; confirm the SARIF has no error/warning entries. (AC-9)
+- [x] Rebuild and republish the corrected Common assembly (net472) so the output lands in `1.6/Assemblies/`. (AC-10)
 
 ## Risks
 
