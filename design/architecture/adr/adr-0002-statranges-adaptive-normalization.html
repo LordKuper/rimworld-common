@@ -16,7 +16,7 @@ source: ""
   <meta name="subsystem" content="project">
   <meta name="sprint-id" content="">
   <meta name="status" content="approved">
-  <meta name="updated" content="2026-06-04">
+  <meta name="updated" content="2026-06-06">
   <meta name="responsibility" content="single architecture decision (StatRanges adaptive normalization contract)">
   <meta name="provenance" content="original">
   <meta name="source" content="">
@@ -124,6 +124,7 @@ source: ""
     <nav class="toc" aria-label="Table of contents">
       <p class="toc-title">Contents</p>
       <ol>
+        <li><a href="#amended-by">Amended by ADR-0008</a></li>
         <li><a href="#context">Context</a></li>
         <li><a href="#decision">Decision</a></li>
         <li><a href="#consequences">Consequences</a></li>
@@ -143,7 +144,7 @@ source: ""
         <div class="stats">
           <span class="chip">approved</span>
           <span class="chip">subsystem: project</span>
-          <span class="chip">updated 2026-06-04</span>
+          <span class="chip">updated 2026-06-06</span>
         </div>
       </header>
       <main>
@@ -154,6 +155,22 @@ source: ""
             <span class="chip area">subsystem: project</span>
             <span class="chip">ADR-0002</span>
           </div>
+
+          <section class="callout" id="amended-by" style="border-left:4px solid var(--info);padding:8px 14px;background:var(--card-bg);border-radius:4px;margin:14px 0;">
+            <p style="margin:0;">
+              <strong>Amended by <a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a> — 2026-06-06 (sprint 003-statranges-fix-expose design-promote).</strong>
+              Two facts this ADR asserted no longer hold and have been reconciled in place below:
+              (1) <code>StatRanges.NormalizeStatValue</code> is now <code>public static</code>, not
+              <code>internal static</code> — the type and method were promoted to <code>public</code> so the
+              shared, corrected normalizer can be consumed downstream; and (2) the &ldquo;no signature or
+              runtime-behavior change to any public member&rdquo; clause is superseded — visibility flips to
+              <code>public</code> <strong>and</strong> the first-observation behavior is corrected
+              (first value <code>v</code> now yields the degenerate <code>[v, v]</code> range that normalizes
+              to <code>0</code>, instead of the buggy <code>[0, v]</code>). ADR-0008 is the governing decision
+              for both changes. The adaptive / observation-order normalization design recorded in this ADR
+              stands unchanged; ADR-0008 realizes it rather than replacing it.
+            </p>
+          </section>
 
           <h2 id="context">Context</h2>
           <p>
@@ -187,11 +204,16 @@ source: ""
           <ul>
             <li>
               <code>StatRanges.NormalizeStatValue</code> continues to mutate the per-<code>StatDef</code>
-              <code>Ranges</code> cache as values are observed. No behavioral change.
+              <code>Ranges</code> cache as values are observed. (No behavioral change <em>at the time of this
+              ADR</em>; the separate first-observation correction is decided later in
+              <a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a> and does not
+              alter the adaptive contract recorded here.)
             </li>
             <li>
               Add explicit XML doc comments to the affected members
-              (<code>StatRanges.NormalizeStatValue</code> &mdash; <code>internal static</code> &mdash;
+              (<code>StatRanges.NormalizeStatValue</code> &mdash; <code>public static</code> as of
+              <a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a>;
+              <code>internal static</code> when this ADR was written &mdash;
               <code>WorkTypeThingRule.GetThingScore</code>,
               <code>WorkTypeThingRule.GetThingDefScore</code>) stating that the returned scores are
               <strong>adaptive</strong> and depend on the set and order of items scored within the
@@ -219,7 +241,7 @@ source: ""
               <ul>
                 <li>Scores remain non-reproducible across differing observation histories; consumers must understand the documented adaptive contract.</li>
                 <li>The static <code>StatRanges.Ranges</code> cache stays — process-global mutable state that <strong>must</strong> be saved/restored by <a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>'s <code>StaticStateFixture</code> for tests to remain isolated. This cross-cutting obligation is the cost of keeping the cache.</li>
-                <li><strong>Behavioral/API note:</strong> only XML documentation changes; no signature or runtime-behavior change to any public member.</li>
+                <li><strong>Behavioral/API note (superseded by <a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a>):</strong> as originally recorded, this decision was XML-documentation-only with no signature or runtime-behavior change to any public member. That no longer holds: ADR-0008 promotes <code>StatRanges</code> and <code>NormalizeStatValue</code> to <code>public</code> (visibility change) and corrects the first-observation behavior (runtime-behavior change). The adaptive contract recorded in this ADR is unaffected; see ADR-0008 for the governing decision on those changes.</li>
               </ul>
             </div>
           </div>
@@ -231,7 +253,7 @@ source: ""
 
           <h2 id="acceptance">Acceptance criteria satisfied</h2>
           <ul>
-            <li><strong>AC-9</strong> — documents the observation-order dependence on the affected members' XML docs (<code>StatRanges.NormalizeStatValue</code>, which is <code>internal static</code>, plus <code>WorkTypeThingRule.GetThingScore</code> and <code>GetThingDefScore</code>), with the adaptive behavior retained by design (no behavioral change).</li>
+            <li><strong>AC-9</strong> — documents the observation-order dependence on the affected members' XML docs (<code>StatRanges.NormalizeStatValue</code>, now <code>public static</code> per <a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a>; <code>internal static</code> when this ADR was written, plus <code>WorkTypeThingRule.GetThingScore</code> and <code>GetThingDefScore</code>), with the adaptive behavior retained by design.</li>
             <li><strong>AC-16</strong> — formally requires the retained adaptive <code>StatRanges.Ranges</code> cache to be in ADR-0001's snapshot/restore set, so order-independence (AC-19) holds despite the documented order-dependent scoring.</li>
           </ul>
           <p class="lede" style="font-size:0.9rem;color:var(--muted)">
@@ -242,6 +264,7 @@ source: ""
           <h2 id="related">Related ADRs</h2>
           <ul>
             <li><a href="adr-0001-rimworld-context-isolation-seam.html">ADR-0001</a>: mandates that the retained <code>StatRanges.Ranges</code> cache be snapshot/restored by the test fixture.</li>
+            <li><a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a>: <strong>amends</strong> this ADR — promotes <code>StatRanges</code> / <code>NormalizeStatValue</code> to <code>public</code> and corrects the first-observation behavior, superseding this ADR's &ldquo;<code>internal static</code>&rdquo; description and its &ldquo;no signature or runtime-behavior change&rdquo; clause. The adaptive normalization contract recorded here is unchanged; ADR-0008 realizes it.</li>
           </ul>
         </article>
 

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: product requirements (sprint draft full scope, or persistent per-subsystem feature set)
+  excludes: ui mockups, design decisions, code, ux flows
+  delegates_to: ux-spec.html (ui + flows), adr.html (decisions)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="PRD">
+  <meta name="subsystem" content="sprint">
+  <meta name="sprint-id" content="003-statranges-fix-expose">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-06">
+  <meta name="responsibility" content="product requirements (sprint draft full scope)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>PRD — 003-statranges-fix-expose</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    ol.goal-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    ol.goal-grid li { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; }
+    ol.goal-grid .num { flex: 0 0 auto; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+    ol.goal-grid p { margin: 0; }
+
+    details.role-group { border: 1px solid var(--border); border-radius: 6px; margin: 8px 0; background: var(--card-bg); }
+    details.role-group > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+    details.role-group > summary .count { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
+    details.role-group ul.stories { margin: 0; padding: 4px 16px 12px 28px; }
+    ul.stories li { margin: 4px 0; }
+    ul.stories b { color: var(--accent); font-weight: 600; }
+
+    table.ac-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+    .chip.prio-must   { background: var(--chip-must-bg);   color: var(--chip-must-fg); border-color: var(--chip-must-fg); }
+    .chip.prio-should { background: var(--chip-should-bg); color: var(--chip-should-fg); border-color: var(--chip-should-fg); }
+    .chip.prio-may    { background: var(--chip-may-bg);    color: var(--chip-may-fg); border-color: var(--chip-may-fg); }
+
+    ul.non-goals { margin: 0; padding-left: 22px; }
+    ul.non-goals li::marker { content: "⊘  "; color: var(--warn); }
+
+    /* definition-list pattern: Purpose / Entry / Exit / Notes */
+    dl.def-list { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 8px 0; }
+    dl.def-list dt { font-weight: 600; color: var(--muted); }
+    dl.def-list dd { margin: 0; }
+
+    .na-note { color: var(--muted); font-style: italic; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#audience">Audience &amp; consumers</a></li>
+        <li><a href="#goals">Goals</a></li>
+        <li><a href="#user-stories">User stories</a></li>
+        <li><a href="#acceptance-criteria">Acceptance criteria</a></li>
+        <li><a href="#ui-ux">UI / UX</a></li>
+        <li><a href="#non-goals">Non-goals</a></li>
+        <li><a href="#follow-ups">Documentation follow-ups</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>PRD</span>
+          <span>sprint</span>
+          <span class="status-draft">draft</span>
+        </div>
+        <h1>PRD — 003-statranges-fix-expose</h1>
+        <div class="stats">
+          <span class="chip">3 goals</span>
+          <span class="chip">5 stories</span>
+          <span class="chip">10 AC</span>
+          <span class="chip">1 non-goal</span>
+          <span class="chip">updated 2026-06-06</span>
+        </div>
+      </header>
+      <main>
+
+<section id="problem" class="hero">
+  <h2>Problem</h2>
+  <p class="lede">The shared <code>StatRanges</code> normalizer mishandles the first observation of every stat, and the type is hidden behind <code>internal</code> so the downstream EquipmentManager mod cannot consume it.</p>
+  <p>Two coupled defects in <code>Source/LordKuper.Common/StatRanges.cs</code> block the library from being a correct, reusable normalization primitive:</p>
+  <ul>
+    <li><b>First-observation bug</b> (<code>UpdateStatRange</code>, lines 53–66). On a <code>TryGetValue</code> miss the dictionary entry is correctly seeded to <code>[value, value]</code>, but the local <code>range</code> variable keeps its <code>default(FloatRange)</code> value <code>{0, 0}</code>. The subsequent min/max comparisons run against that stale local and overwrite the seeded entry. The first value <code>v</code> therefore yields <code>[0, v]</code> for a positive <code>v</code> (or <code>[v, 0]</code> for a negative <code>v</code>) instead of the correct degenerate range <code>[v, v]</code>. Downstream, <code>MathHelper.NormalizeValue</code> turns a correct <code>[50, 50]</code> (which should normalize <code>50 &rarr; 0</code>) into a buggy <code>[0, 50]</code> (which normalizes <code>50 &rarr; 1</code>), so scores for first-observed stats are wrong.</li>
+    <li><b>Hidden surface</b>. <code>StatRanges</code> and <code>NormalizeStatValue</code> are <code>internal</code>. The EquipmentManager mod cannot reference the shared, corrected implementation and instead maintains its own duplicate range logic (<code>EquipmentManagerGameComponent_StatRanges</code>) that carries the same class of error.</li>
+  </ul>
+  <p>The existing test suite does not catch the bug: all six tests in <code>StatRangesTests.cs</code> assert only <code>!NaN &amp;&amp; !Inf</code>, so they pass under both buggy and fixed code and do not lock in the contract.</p>
+</section>
+
+<section id="audience">
+  <h2>Audience &amp; consumers</h2>
+  <ul>
+    <li><b>Mod developers consuming LordKuper.Common</b> — primarily the downstream EquipmentManager mod. Making <code>Common.StatRanges</code> correct and <code>public</code> is the prerequisite for that mod to drop its duplicate range logic and consume the shared implementation. (The migration of EquipmentManager itself is motivating context only and is out of scope — see Non-goals.)</li>
+    <li><b>In-library consumer <code>WorkTypeThingRule</code></b> — <code>GetThingDefScore</code> and <code>GetThingScore</code> are the only production callers of <code>StatRanges.NormalizeStatValue</code>. They rely on the static, process-global range cache accumulating min/max across all scored defs and things. The fix corrects the scores they emit for first-observed stats but does not change the <code>NormalizeStatValue(StatDef, float)</code> signature, so these callers are not edited.</li>
+  </ul>
+</section>
+
+<section id="goals">
+  <h2>Goals</h2>
+  <ol class="goal-grid">
+    <li><span class="num">G1</span><p>Correct the first-observation behavior so the first value <code>v</code> of any stat produces the degenerate range <code>[v, v]</code> and normalizes consistently.</p></li>
+    <li><span class="num">G2</span><p>Expose <code>StatRanges</code> as a public, reusable primitive (public class, public <code>NormalizeStatValue</code>, public <code>Clear()</code>) while preserving its intentional static / process-global adaptive design.</p></li>
+    <li><span class="num">G3</span><p>Lock in the corrected contract with revert-sensitive tests and ship the corrected behavior by republishing the assembly with a clean (zero-warning) build.</p></li>
+  </ol>
+</section>
+
+<section id="user-stories">
+  <h2>User stories</h2>
+  <details class="role-group" open>
+    <summary>Mod developer (Common consumer) <span class="count">2</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a mod developer consuming LordKuper.Common, <b>I want</b> <code>StatRanges</code> and <code>NormalizeStatValue</code> to be public with a stable signature and a <code>Clear()</code> reset entry point, <b>so that</b> I can reference the shared normalizer directly and drop my own duplicate range logic. &rarr; AC-3, AC-4, AC-5</li>
+      <li><b>as</b> a mod developer consuming LordKuper.Common, <b>I want</b> the first observation of a stat to normalize correctly, <b>so that</b> the scores I derive from the shared primitive are right from the first value. &rarr; AC-1, AC-2</li>
+    </ul>
+  </details>
+  <details class="role-group" open>
+    <summary>Library maintainer <span class="count">2</span></summary>
+    <ul class="stories">
+      <li><b>as</b> the library maintainer, <b>I want</b> the static / process-global adaptive design preserved (not converted to an instance class), <b>so that</b> the existing <code>WorkTypeThingRule</code> consumer keeps accumulating min/max across all scored items as intended. &rarr; AC-6</li>
+      <li><b>as</b> the library maintainer, <b>I want</b> the corrected behavior pinned by exact-bound regression tests and the shipped assembly rebuilt cleanly, <b>so that</b> the fix cannot silently regress and consumers receive the corrected binary. &rarr; AC-7, AC-8, AC-9, AC-10</li>
+    </ul>
+  </details>
+  <details class="role-group" open>
+    <summary>Test engineer <span class="count">1</span></summary>
+    <ul class="stories">
+      <li><b>as</b> the test engineer, <b>I want</b> the static-state reset in <code>StaticStateTestBase</code> to route through the new public <code>StatRanges.Clear()</code> instead of reflection on the <code>Ranges</code> field, <b>so that</b> cross-test isolation no longer depends on a stringly-typed field lookup that breaks on rename. &rarr; AC-5, AC-7</li>
+    </ul>
+  </details>
+</section>
+
+<section id="acceptance-criteria">
+  <h2>Acceptance criteria</h2>
+  <p>Each criterion is one testable assertion. They map 1:1 onto the sprint acceptance items in <a href="../sprint.md">sprint.md</a>.</p>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-1"><td><a href="#AC-1">AC-1</a></td><td>On a <code>TryGetValue</code> miss, <code>UpdateStatRange</code> seeds a local <code>FloatRange(value, value)</code>, runs both min/max comparisons against that seeded value (never the stale <code>{0, 0}</code> default), and writes the dictionary entry exactly once; the first value <code>v</code> for any stat yields the range <code>[v, v]</code>.</td><td><span class="chip area">bug fix</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-2"><td><a href="#AC-2">AC-2</a></td><td>With first <code>v = 50</code>, <code>NormalizeStatValue(stat, 50)</code> returns <code>0</code> (degenerate <code>[50, 50]</code>) and a later <code>NormalizeStatValue(stat, 100)</code> returns <code>1</code>; for the sequence <code>-10, -5, 0</code> the range becomes <code>[-10, -5]</code> then <code>[-10, 0]</code>, with <code>-10 &rarr; 0</code> and <code>0 &rarr; 1</code>.</td><td><span class="chip area">behavior</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-3"><td><a href="#AC-3">AC-3</a></td><td><code>StatRanges</code> changes from <code>internal static class</code> to <code>public static class</code>.</td><td><span class="chip area">visibility</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-4"><td><a href="#AC-4">AC-4</a></td><td><code>NormalizeStatValue</code> changes from <code>internal static</code> to <code>public static</code>, keeping the signature exactly <code>NormalizeStatValue(StatDef, float)</code>.</td><td><span class="chip area">visibility</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-5"><td><a href="#AC-5">AC-5</a></td><td>A <code>public static void Clear() =&gt; Ranges.Clear();</code> member exists on <code>StatRanges</code>, and <code>StaticStateTestBase</code> resets the range cache by calling <code>StatRanges.Clear()</code> instead of reflecting the <code>Ranges</code> backing field.</td><td><span class="chip area">visibility</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-6"><td><a href="#AC-6">AC-6</a></td><td><code>StatRanges</code> remains <code>static</code> and process-global; it is NOT converted to an instance class, and the <code>WorkTypeThingRule</code> consumer continues to accumulate min/max across all scored items via the shared cache.</td><td><span class="chip area">constraint</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-7"><td><a href="#AC-7">AC-7</a></td><td><code>StatRangesTests.cs</code> contains exact-bound assertions (first <code>v = 50 &rarr; [50, 50]</code> with <code>50 &rarr; 0</code> / <code>100 &rarr; 1</code>; sequence <code>-10, -5, 0 &rarr; [-10, -5] &rarr; [-10, 0]</code> with <code>-10 &rarr; 0</code> / <code>0 &rarr; 1</code>) using the existing <code>FakeDefProvider</code> + <code>StatHelper.Rebuild()</code> pattern.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-8"><td><a href="#AC-8">AC-8</a></td><td>A named regression test (e.g. <code>NormalizeStatValue_FirstPositiveValue_SeedsDegenerateRange</code>) exists that passes on the fix and demonstrably fails if the fix is reverted to the old <code>[0, v]</code> behavior.</td><td><span class="chip area">tests</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-9"><td><a href="#AC-9">AC-9</a></td><td>The solution builds green with 0 warnings (high warning level + warnings-as-errors), and all existing plus new tests pass.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-10"><td><a href="#AC-10">AC-10</a></td><td>The corrected Common assembly is rebuilt from the fixed source and republished to <code>1.6/Assemblies/</code> (net472 output landing in the version folder).</td><td><span class="chip area">publish</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="ui-ux">
+  <h2>UI / UX</h2>
+  <p class="na-note">N/A — headless library, no UI surface. LordKuper.Common is a RimWorld modding library consumed as an assembly; this sprint has no user-facing screens, flows, or visual design. UX-spec, mockups, and design-system steps are skipped for this sprint by user decision.</p>
+</section>
+
+<section id="non-goals" class="callout warn">
+  <h2>Non-goals</h2>
+  <ul class="non-goals">
+    <li>Migrating the EquipmentManager mod itself onto <code>Common.StatRanges</code> / <code>Common.WorkTypeThingRule</code> and deleting its duplicate range logic (<code>EquipmentManagerGameComponent_StatRanges</code>). That is motivating context for exposing the type, but the migration is a separate, future effort outside this sprint.</li>
+  </ul>
+</section>
+
+<section id="follow-ups">
+  <h2>Documentation follow-ups (non-functional)</h2>
+  <p>This sprint's as-built result drifts from existing approved ADR text (ADR-0002, ADR-0007). That drift is <b>not</b> restated here: it is owned by ADR-0008's &ldquo;Amends&rdquo; note in <a href="../adr.html">adr.html</a> and recorded under Gaps in <a href="../audit.md">audit.md</a>. See those sources for the reconciliation detail; wording reconciliation belongs to design-promote.</p>
+  <p class="na-note">XML-doc coverage for the now-public members and the new <code>Clear()</code> is handled in implementation, not as a documentation migration.</p>
+</section>
+
+      </main>
+      <footer>by ASD BA | 2026-06-06 | sprint 003-statranges-fix-expose</footer>
+    </div>
+  </div>
+  <script>
+    // Scrollspy: highlight current section in TOC
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>
