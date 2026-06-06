@@ -75,7 +75,7 @@ File: `Source/LordKuper.Common/StatRanges.cs`.
 
 File: `Source/LordKuper.Common.Tests/StaticStateTestBase.cs` (lines 107-111).
 
-- [ ] Replace the reflection-null reset of the `StatRanges.Ranges` backing field with a direct `StatRanges.Clear();` call, removing the stringly-typed `"Ranges"` field lookup. Preserve the reset-set membership contract (the `StatRanges` entry stays reset on `[TearDown]`); only the mechanism changes. (AC-5)
+- [x] Replace the reflection-null reset of the `StatRanges.Ranges` backing field with a direct `StatRanges.Clear();` call, removing the stringly-typed `"Ranges"` field lookup. Preserve the reset-set membership contract (the `StatRanges` entry stays reset on `[TearDown]`); only the mechanism changes. (AC-5)
 
 ### Task 3: Strengthen StatRanges tests with exact-bound and regression assertions (owner: test-engineer) — AC-2, AC-7, AC-8
 
