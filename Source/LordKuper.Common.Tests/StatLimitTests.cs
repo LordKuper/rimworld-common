@@ -54,7 +54,7 @@ public class StatLimitTests : StaticStateTestBase
     [Test]
     public void Ctor_StatDef_CapsSetFromDef()
     {
-        var limit = new StatLimit(MakeStatDef(-1000f, 1000f));
+        var limit = new StatLimit(MakeStatDef());
         limit.LimitMinCap.Should().BeApproximately(-1000f, 0.001f);
         limit.LimitMaxCap.Should().BeApproximately(1000f, 0.001f);
     }

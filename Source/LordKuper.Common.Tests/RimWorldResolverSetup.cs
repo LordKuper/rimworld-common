@@ -1,6 +1,8 @@
 using System.Reflection;
 
-// Global (namespace-less) NUnit SetUpFixture so this fixture applies to the whole assembly.
+namespace LordKuper.Common.Tests;
+
+// Global NUnit SetUpFixture so this fixture applies to the whole assembly.
 // NUnit runs the [OneTimeSetUp] method here before constructing or running any test fixture in
 // the assembly, which gives the resolver-live-before-type-load guarantee needed so that
 // RimWorld / Unity assemblies can be resolved at discovery time.
