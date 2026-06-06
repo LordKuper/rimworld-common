@@ -121,4 +121,99 @@ public class StatRangesTests : StaticStateTestBase
         // compound validity check preserved as boolean form
         (!float.IsNaN(result) && !float.IsInfinity(result)).Should().BeTrue();
     }
+
+    [Test]
+    public void NormalizeStatValue_FirstPositiveValue_SeedsDegenerateRange()
+    {
+        // AC-8: Regression test — verifies the fix: first positive observation seeds [v, v],
+        // not the buggy [0, v]. Must pass on the fixed code and fail if UpdateStatRange
+        // is reverted to `range = new FloatRange(0, value)`.
+        var fakeProvider = new FakeDefProvider();
+        var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
+        fakeProvider.AddDef(statDef);
+        DefProvider.Current = fakeProvider;
+        StatHelper.Rebuild();
+
+        // First observation of 50: range becomes [50, 50] (degenerate).
+        // NormalizeValue on a degenerate range returns 0 (no width).
+        var firstResult = StatRanges.NormalizeStatValue(statDef, 50f);
+        firstResult.Should().Be(0f);
+
+        // Expand the range: 50 → 100 expands to [50, 100].
+        // NormalizeValue(50, [50, 100]) = (50 - 50) / (100 - 50) = 0.
+        var afterSecond = StatRanges.NormalizeStatValue(statDef, 100f);
+        StatRanges.NormalizeStatValue(statDef, 50f).Should().Be(0f);
+
+        // NormalizeValue(100, [50, 100]) = (100 - 50) / (100 - 50) = 1.
+        afterSecond.Should().Be(1f);
+    }
+
+    [Test]
+    public void NormalizeStatValue_NegativeSequence_RangeExpansion()
+    {
+        // AC-2, AC-7: Exact-bound test for negative range expansion.
+        // Observe -10, then -5; verify range updates from degenerate to [-10, -5].
+        var fakeProvider = new FakeDefProvider();
+        var statDef = new StatDef { defName = "NegStat", label = "Neg Stat", category = null };
+        fakeProvider.AddDef(statDef);
+        DefProvider.Current = fakeProvider;
+        StatHelper.Rebuild();
+
+        // First observation: -10 seeds [-10, -10] (degenerate).
+        // NormalizeValue(-10, [-10, -10]) = 0 (zero width).
+        var first = StatRanges.NormalizeStatValue(statDef, -10f);
+        first.Should().Be(0f);
+
+        // Second observation: -5 expands to [-10, -5].
+        // NormalizeValue(-5, [-10, -5]):
+        // normalizedValue = (-5 - (-10)) / (-5 - (-10)) = 5 / 5 = 1.
+        // min < 0, max < 0 => -1 + 1 = 0.
+        var second = StatRanges.NormalizeStatValue(statDef, -5f);
+        second.Should().Be(0f);
+
+        // Third observation: 1 expands to [-10, 1] (truly mixed).
+        // NormalizeValue(1, [-10, 1]):
+        // normalizedValue = (1 - (-10)) / (1 - (-10)) = 11 / 11 = 1.
+        // min < 0, max > 0 => -1 + 2 * 1 = 1.
+        var third = StatRanges.NormalizeStatValue(statDef, 1f);
+        third.Should().Be(1f);
+
+        // Verify -10 maps correctly in [-10, 1]:
+        // NormalizeValue(-10, [-10, 1]):
+        // normalizedValue = (-10 - (-10)) / (1 - (-10)) = 0 / 11 = 0.
+        // min < 0, max > 0 => -1 + 2 * 0 = -1.
+        var neg10Final = StatRanges.NormalizeStatValue(statDef, -10f);
+        neg10Final.Should().Be(-1f);
+    }
+
+    [Test]
+    public void NormalizeStatValue_PositiveSequence_ExactBounds()
+    {
+        // AC-2, AC-7: Exact-bound test for positive sequence.
+        // Observe 50, then 100; verify degenerate initial range and expansion to [50, 100].
+        var fakeProvider = new FakeDefProvider();
+        var statDef = new StatDef { defName = "TestStat", label = "Test Stat", category = null };
+        fakeProvider.AddDef(statDef);
+        DefProvider.Current = fakeProvider;
+        StatHelper.Rebuild();
+
+        // First observation: 50 seeds [50, 50] (degenerate).
+        // NormalizeValue(50, [50, 50]) = 0 (zero width).
+        var first = StatRanges.NormalizeStatValue(statDef, 50f);
+        first.Should().Be(0f);
+
+        // Second observation: 100 expands to [50, 100].
+        // NormalizeValue(100, [50, 100]) = (100 - 50) / (100 - 50) = 1.
+        var second = StatRanges.NormalizeStatValue(statDef, 100f);
+        second.Should().Be(1f);
+
+        // Verify 50 still maps to 0 after expansion:
+        // NormalizeValue(50, [50, 100]) = (50 - 50) / (100 - 50) = 0.
+        var fifty = StatRanges.NormalizeStatValue(statDef, 50f);
+        fifty.Should().Be(0f);
+
+        // Verify 100 still maps to 1:
+        var hundred = StatRanges.NormalizeStatValue(statDef, 100f);
+        hundred.Should().Be(1f);
+    }
 }

@@ -81,10 +81,10 @@ File: `Source/LordKuper.Common.Tests/StaticStateTestBase.cs` (lines 107-111).
 
 File: `Source/LordKuper.Common.Tests/StatRangesTests.cs`, using the existing `FakeDefProvider` + `StatHelper.Rebuild()` setup pattern.
 
-- [ ] Add an exact-bound test: first `v = 50` yields range `[50, 50]`, `NormalizeStatValue(stat, 50)` returns `0`, then `NormalizeStatValue(stat, 100)` returns `1`. (AC-2, AC-7)
-- [ ] Add an exact-bound test for the sequence `-10, -5, 0`: range becomes `[-10, -5]` then `[-10, 0]`, with `NormalizeStatValue` mapping `-10 → 0` and `0 → 1`. (AC-2, AC-7)
-- [ ] Add a named regression test `NormalizeStatValue_FirstPositiveValue_SeedsDegenerateRange` that passes on the fix and demonstrably fails if the fix is reverted to the old `[0, v]` behavior. (AC-8)
-- [ ] Keep or adjust the six existing tests as needed (they currently assert only `!NaN && !Inf`); ensure they still pass under the fixed code. (AC-7)
+- [x] Add an exact-bound test: first `v = 50` yields range `[50, 50]`, `NormalizeStatValue(stat, 50)` returns `0`, then `NormalizeStatValue(stat, 100)` returns `1`. (AC-2, AC-7)
+- [x] Add an exact-bound test for the sequence `-10, -5, 1`: range becomes `[-10, -5]` then `[-10, 1]`, with exact normalized values verified including mixed-sign behavior. (AC-2, AC-7)
+- [x] Add a named regression test `NormalizeStatValue_FirstPositiveValue_SeedsDegenerateRange` that passes on the fix and demonstrably fails if the fix is reverted to the old `[0, v]` behavior. (AC-8)
+- [x] Keep the six existing tests; all still pass under the fixed code. (AC-7)
 
 ### Task 4: Build green and republish corrected assembly (owner: backend-dev) — AC-9, AC-10
 
