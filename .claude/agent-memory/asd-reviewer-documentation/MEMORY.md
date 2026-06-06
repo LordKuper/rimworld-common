@@ -1,1 +1,0 @@
-- [Sprint 001 ADR-0003 Tests props drift](project_adr0003_tests_props_drift.md) — RESOLVED iter-02: root holds path SSoT, children are thin import wrappers, ADR text now matches.

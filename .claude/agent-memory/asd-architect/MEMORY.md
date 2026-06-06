@@ -1,1 +1,0 @@
-- [RimWorld version folders](project_rimworld-version-folders.md) — per-version assembly folders; net472 locked; build emits to <version>/Assemblies/

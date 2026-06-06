@@ -1,1 +1,0 @@
-- [Sprint 001 task state](project_sprint001_state.md) — T0-T7 done; T8-T11 next (test harness/coverage); T12/T13 final gates
