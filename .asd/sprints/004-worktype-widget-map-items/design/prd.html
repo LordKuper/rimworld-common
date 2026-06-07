@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: product requirements (sprint draft full scope, or persistent per-subsystem feature set)
+  excludes: ui mockups, design decisions, code, ux flows
+  delegates_to: ux-spec.html (ui + flows), adr.html (decisions)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="PRD">
+  <meta name="subsystem" content="sprint">
+  <meta name="sprint-id" content="004-worktype-widget-map-items">
+  <meta name="status" content="draft">
+  <meta name="updated" content="2026-06-07">
+  <meta name="responsibility" content="product requirements (sprint draft full scope)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>PRD — 004-worktype-widget-map-items</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    .mermaid { background: var(--bg); text-align: center; margin: 16px 0; }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    /* fragment-shared utilities */
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.hero { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 18px; }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "⊘ "; color: var(--warn); }
+
+    ol.goal-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+    ol.goal-grid li { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: flex; gap: 10px; }
+    ol.goal-grid .num { flex: 0 0 auto; font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+    ol.goal-grid p { margin: 0; }
+
+    details.role-group { border: 1px solid var(--border); border-radius: 6px; margin: 8px 0; background: var(--card-bg); }
+    details.role-group > summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+    details.role-group > summary .count { display: inline-block; margin-left: 6px; padding: 0 7px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); font-weight: 400; font-size: 0.8rem; color: var(--muted); }
+    details.role-group ul.stories { margin: 0; padding: 4px 16px 12px 28px; }
+    ul.stories li { margin: 4px 0; }
+    ul.stories b { color: var(--accent); font-weight: 600; }
+
+    table.ac-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+    .chip.prio-must   { background: var(--chip-must-bg);   color: var(--chip-must-fg); border-color: var(--chip-must-fg); }
+    .chip.prio-should { background: var(--chip-should-bg); color: var(--chip-should-fg); border-color: var(--chip-should-fg); }
+    .chip.prio-may    { background: var(--chip-may-bg);    color: var(--chip-may-fg); border-color: var(--chip-may-fg); }
+
+    ul.non-goals { margin: 0; padding-left: 22px; }
+    ul.non-goals li::marker { content: "⊘  "; color: var(--warn); }
+
+    /* definition-list pattern: Purpose / Entry / Exit / Notes */
+    dl.def-list { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 8px 0; }
+    dl.def-list dt { font-weight: 600; color: var(--muted); }
+    dl.def-list dd { margin: 0; }
+
+    .na-note { color: var(--muted); font-style: italic; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#audience">Audience &amp; consumers</a></li>
+        <li><a href="#goals">Goals</a></li>
+        <li><a href="#user-stories">User stories</a></li>
+        <li><a href="#acceptance-criteria">Acceptance criteria</a></li>
+        <li><a href="#open-decisions">Open design decisions</a></li>
+        <li><a href="#ui-ux">UI / UX</a></li>
+        <li><a href="#non-goals">Non-goals</a></li>
+        <li><a href="#follow-ups">Documentation follow-ups</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>PRD</span>
+          <span>sprint</span>
+          <span class="status-draft">draft</span>
+        </div>
+        <h1>PRD — 004-worktype-widget-map-items</h1>
+        <div class="stats">
+          <span class="chip">3 goals</span>
+          <span class="chip">6 stories</span>
+          <span class="chip">7 AC</span>
+          <span class="chip">2 non-goals</span>
+          <span class="chip">updated 2026-06-07</span>
+        </div>
+      </header>
+      <main>
+
+<section id="problem" class="hero">
+  <h2>Problem</h2>
+  <p class="lede">The public widget <code>WorkTypeThingRuleWidget</code> can render only <b>one</b> &ldquo;available items&rdquo; list in the bottom section of the work-type rule tab. A second list — real on-map <code>Thing</code> instances ranked by the selected rule's stat weights — was previously available to the downstream EquipmentManager mod and is now missing, leaving the widget unable to show players the concrete equipment present on their map.</p>
+  <p>The bottom section of the tab (<code>DoBottomPart</code>, <code>WorkTypeThingRuleWidget.cs:28-44</code>) currently draws exactly one section header plus one <code>ThingIconBox.DoThingDefBox</code> call over an <code>IReadOnlyList&lt;ThingDef&gt;</code> (List 1, items available by definition). Three coupled limitations block the second list:</p>
+  <ul>
+    <li><b>No public entry for instance data.</b> The public <code>DoWidgetTab(...)</code> (<code>:179-199</code>) carries exactly one items collection (<code>IReadOnlyList&lt;ThingDef&gt; things</code>) and one thing-box scroll position. There is no parameter through which a consumer can supply on-map <code>Thing</code> instances or enable a second list, and no second scroll state.</li>
+    <li><b>Single-box rendering.</b> <code>DoBottomPart</code> renders exactly one box occupying the full width of the bottom region. The tab's bottom region (<code>Tabs.DoTab</code>, <code>Tabs.cs:45-58</code>) is a fixed, non-scrolling band whose height is sized by <code>GetBottomPartHeight</code> (<code>:206-210</code>) for one box + one section header + one gap. There is no provision for a second list to appear <em>beside</em> the first within that band; today a single list simply takes the whole width.</li>
+    <li><b>Render primitive present but unwired.</b> The instance-render primitive <code>ThingIconBox.DoThingBox(...)</code> (<code>:39-79</code>) and the instance score path <code>WorkTypeThingRule.GetThingScore(Thing)</code> (<code>:234-242</code>) already exist in the assembly but are dormant — no production caller renders or sorts an on-map <code>Thing</code> list, and no per-instance stat tooltip helper exists.</li>
+  </ul>
+  <p>This sprint restores the second list as an additive capability: the consumer (EquipmentManager) supplies the on-map <code>Thing</code> data, and the widget renders it — sorted by descending score per the rule's stat weights, with a per-instance stat tooltip — alongside the unchanged <code>ThingDef</code> list. Enabling the second list requires a change to the public <code>DoWidgetTab(...)</code> signature, which is permitted (<code>backward_compat: none</code>) and must be documented.</p>
+</section>
+
+<section id="audience">
+  <h2>Audience &amp; consumers</h2>
+  <ul>
+    <li><b>Mod developers consuming LordKuper.Common</b> — primarily the downstream EquipmentManager mod. EquipmentManager owns the on-map item collection logic and calls <code>DoWidgetTab(...)</code> as its integration point. This sprint gives that consumer a public way to supply on-map <code>Thing</code> instances and enable the second list; EquipmentManager adapts to the changed signature separately (out of scope — see Non-goals).</li>
+    <li><b>End users (RimWorld players, indirectly)</b> — players using a consuming mod see two ranked lists in the work-type rule tab: items available by definition (List 1) and the concrete equipment present on their current map ranked best-first for the selected rule (List 2). They are not a direct API audience but are the ultimate beneficiary of the restored behavior.</li>
+    <li><b>In-library render &amp; scoring surface</b> — <code>ThingIconBox.DoThingBox</code> (the dormant instance-render primitive) and <code>WorkTypeThingRule.GetThingScore(Thing)</code> (the instance score path) are the existing building blocks this sprint wires up. Both already exist and are not introduced by this sprint.</li>
+  </ul>
+</section>
+
+<section id="goals">
+  <h2>Goals</h2>
+  <ol class="goal-grid">
+    <li><span class="num">G1</span><p>Restore a second &ldquo;available items&rdquo; list in the widget's bottom section that renders real on-map <code>Thing</code> instances, ranked by descending score per the selected rule's stat weights, each with a tooltip showing that instance's actual stat values.</p></li>
+    <li><span class="num">G2</span><p>Expose the second list publicly through <code>WorkTypeThingRuleWidget.DoWidgetTab(...)</code> so the consumer can supply on-map <code>Thing</code> data and enable rendering, preserving List 1 (<code>ThingDef</code>) with no regression and the bottom band's layout with no overlap.</p></li>
+    <li><span class="num">G3</span><p>Document any break to the public <code>DoWidgetTab(...)</code> signature, ship the change by rebuilding and republishing the assembly green (0 warnings) with existing tests passing, and cover the new behavior with tests where feasible.</p></li>
+  </ol>
+</section>
+
+<section id="user-stories">
+  <h2>User stories</h2>
+  <details class="role-group" open>
+    <summary>Mod developer (Common consumer) <span class="count">3</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a mod developer consuming LordKuper.Common, <b>I want</b> a public way through <code>DoWidgetTab(...)</code> to supply on-map <code>Thing</code> instances and enable the second list, <b>so that</b> I can show players the actual equipment present on their map without re-implementing the widget. &rarr; AC-1</li>
+      <li><b>as</b> a mod developer consuming LordKuper.Common, <b>I want</b> the widget to render my supplied <code>Thing</code> instances ranked best-first for the selected rule with per-instance stat tooltips, <b>so that</b> the ranking and details are consistent with the library's scoring without me duplicating that logic. &rarr; AC-2, AC-3</li>
+      <li><b>as</b> a mod developer consuming LordKuper.Common, <b>I want</b> any break to the public <code>DoWidgetTab(...)</code> signature documented explicitly, <b>so that</b> I can adapt my call site deliberately and know exactly what changed. &rarr; AC-6</li>
+    </ul>
+  </details>
+  <details class="role-group" open>
+    <summary>End user (player, via consuming mod) <span class="count">1</span></summary>
+    <ul class="stories">
+      <li><b>as</b> a player using a consuming mod, <b>I want</b> to see both the by-definition items and the concrete on-map items ranked best-first for the selected work-type rule, in a bottom section where the two lists do not overlap, <b>so that</b> I can quickly identify the best equipment actually available to me. &rarr; AC-2, AC-3, AC-4, AC-5</li>
+    </ul>
+  </details>
+  <details class="role-group" open>
+    <summary>Library maintainer <span class="count">2</span></summary>
+    <ul class="stories">
+      <li><b>as</b> the library maintainer, <b>I want</b> <code>DoBottomPart</code> to split the fixed band's width so both lists sit side by side with no overlap while <code>GetBottomPartHeight</code> stays unchanged (constant band height), and List 1 keeps working full-width when the second list is absent, <b>so that</b> adding the second list does not regress the existing one or disturb the tab layout above the band. &rarr; AC-4, AC-5</li>
+      <li><b>as</b> the library maintainer, <b>I want</b> the changed behavior shipped via a clean (zero-warning) rebuild republished to <code>1.6/Assemblies/</code> with existing tests passing and new behavior covered where feasible, <b>so that</b> consumers receive the corrected binary and the change cannot silently regress. &rarr; AC-7</li>
+    </ul>
+  </details>
+</section>
+
+<section id="acceptance-criteria">
+  <h2>Acceptance criteria</h2>
+  <p>Each criterion is one testable assertion. They map 1:1 onto the sprint acceptance items AC1–AC7 in <a href="../sprint.md">sprint.md</a>.</p>
+  <table class="ac-table">
+    <thead>
+      <tr><th>ID</th><th>Criterion</th><th>Area</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+      <tr id="AC-1"><td><a href="#AC-1">AC-1</a></td><td>The public <code>WorkTypeThingRuleWidget.DoWidgetTab(...)</code> exposes a way for a consumer to supply on-map <code>Thing</code> instances and enable rendering of the second list in the bottom section of the tab. When the second list is not supplied/enabled, the widget behaves as before (List 1 only). The exact API form is decided in the <a href="../adr.html">ADR</a>.</td><td><span class="chip area">public API</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-2"><td><a href="#AC-2">AC-2</a></td><td>List 2 renders the supplied real <code>Thing</code> instances via <code>ThingIconBox.DoThingBox(...)</code>, and each instance's tooltip shows that specific instance's actual stat values for the selected rule's weighted stats (read from the live instance, e.g. via <code>StatHelper.GetStatValue(Thing, StatDef)</code>, not synthesized from the def).</td><td><span class="chip area">behavior</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-3"><td><a href="#AC-3">AC-3</a></td><td>List 2 is displayed in descending score order per the selected rule's stat weights, consistent with <code>WorkTypeThingRule.GetThingScore(Thing)</code>. Relative best-first ordering within the list holds regardless of the observation-order-dependent absolute normalization. Whether the widget or the consumer performs the sort is decided in the <a href="../adr.html">ADR</a>.</td><td><span class="chip area">behavior</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-4"><td><a href="#AC-4">AC-4</a></td><td>List 1 (the <code>ThingDef</code> list rendered via <code>ThingIconBox.DoThingDefBox</code> with <code>GetWorkTypeDefTooltip</code> tooltips) remains functional with no regression: same items, same tooltips, same scroll behavior as before this sprint.</td><td><span class="chip area">regression</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-5"><td><a href="#AC-5">AC-5</a></td><td>When the second list is enabled, the two lists render <b>side by side</b> — <code>DoBottomPart(...)</code> splits the bottom band's <em>width</em> between them (List&nbsp;1 in one half, List&nbsp;2 in the other), each box on the same row with its own section header, like EquipmentManager. &ldquo;No overlap&rdquo; means the two boxes occupy <b>disjoint horizontal halves</b> of the band. The bottom-section <b>height is constant</b> whether one list or both render: <code>GetBottomPartHeight(...)</code> is <b>unchanged</b> (still one box height + one section header + one gap) and the band does not grow for the second list. When the map list is <code>null</code>/empty, List&nbsp;1 renders <b>full width</b> at that same band height, exactly as before this sprint.</td><td><span class="chip area">layout</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-6"><td><a href="#AC-6">AC-6</a></td><td>Any change to the public <code>DoWidgetTab(...)</code> signature is documented explicitly in <a href="../sprint.md">sprint.md</a> and the decisions-log (<a href="../adr.html">adr.html</a>), recording the old and new signatures.</td><td><span class="chip area">docs</span></td><td><span class="chip prio-must">must</span></td></tr>
+      <tr id="AC-7"><td><a href="#AC-7">AC-7</a></td><td>The solution builds green with 0 warnings; existing tests pass; the new behavior (e.g. instance scoring/sort order and any new tooltip/sort helper) is covered by tests where feasible; and the corrected <code>LordKuper.Common</code> assembly is rebuilt and republished to <code>1.6/Assemblies/</code>.</td><td><span class="chip area">build</span></td><td><span class="chip prio-must">must</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="open-decisions">
+  <h2>Open design decisions (owned by the ADR)</h2>
+  <p>Two decisions in this sprint's scope are deferred to the architect and recorded in <a href="../adr.html">adr.html</a>. They are listed here as open so requirements traceability is complete; this PRD does <b>not</b> decide them.</p>
+  <ul>
+    <li><b>Public API form</b> (affects AC-1, AC-6) — how the consumer supplies the on-map <code>Thing</code> instances and enables the second list: a <code>DoWidgetTab</code> overload, an optional/added parameter (and a second scroll position), a render-options object, or a separate method. The current 10-parameter signature is the consumer's integration point, so the form should minimize call-site churn. Open in the ADR.</li>
+    <li><b>Score-sort ownership</b> (affects AC-3) — whether the consumer pre-sorts the <code>Thing</code> instances by score or the widget sorts them via <code>WorkTypeThingRule.GetThingScore</code>. Both score paths intentionally depend on observation order: <code>StatRanges</code> normalization maintains a running, expanding per-stat min/max (<code>WorkTypeThingRule.cs:181-194</code>), so scoring two lists against shared range history normalizes differently than scoring them in isolation. AC-3 requires only relative best-first order within the list. Open in the ADR.</li>
+  </ul>
+</section>
+
+<section id="ui-ux">
+  <h2>UI / UX</h2>
+  <p class="na-note">N/A — no web UI and no design-system / UX-spec step for this sprint. The change is to a RimWorld IMGUI widget consumed as a library assembly: a public C# API plus immediate-mode rendering of two list boxes within a fixed bottom band. Functional rendering and layout requirements are captured as acceptance criteria (AC-2, AC-3, AC-4, AC-5) rather than as mockups or flows. Per the precedent sprint (003), this library produces only <code>prd.html</code> + <code>adr.html</code>; no <code>ux-spec.html</code>, mockups, or design-system tokens apply.</p>
+</section>
+
+<section id="non-goals" class="callout warn">
+  <h2>Non-goals</h2>
+  <ul class="non-goals">
+    <li>Changes inside the EquipmentManager mod. The consumer adapts to the new <code>DoWidgetTab(...)</code> signature separately; that work is out of scope for this sprint.</li>
+    <li>The map-item collection logic. Gathering the on-map <code>Thing</code> instances is supplied by the consumer; the widget only renders the supplied data and does not query the map itself.</li>
+  </ul>
+</section>
+
+<section id="follow-ups">
+  <h2>Documentation follow-ups (non-functional)</h2>
+  <p>No existing documentation describes <code>WorkTypeThingRuleWidget</code>, <code>ThingIconBox</code>, <code>DoWidgetTab</code>, or the bottom-section layout (see <a href="../audit.md">audit.md</a> — &ldquo;Existing docs found: None&rdquo;). There is therefore no persistent doc to update for the signature break beyond <a href="../sprint.md">sprint.md</a> and the decisions-log.</p>
+  <p>The audit flags a candidate persistent public-API reference for this widget (e.g. a <code>design/api/</code> fragment capturing the post-change public surface, the chosen enable-second-list parameter form, and the score-sort ownership decision). Whether that doc is created now or deferred is a design-promote decision and is owned by the architect / design-promote phase, not this PRD.</p>
+  <p class="na-note">XML-doc coverage for the changed public member(s) is handled in implementation, not as a documentation migration.</p>
+</section>
+
+      </main>
+      <footer>by ASD BA | 2026-06-07 | sprint 004-worktype-widget-map-items</footer>
+    </div>
+  </div>
+  <script>
+    // Scrollspy: highlight current section in TOC
+    (function () {
+      const links = Array.from(document.querySelectorAll('nav.toc a[href^="#"]'));
+      if (!links.length) return;
+      const map = new Map();
+      links.forEach(a => { const el = document.getElementById(a.getAttribute('href').slice(1)); if (el) map.set(el, a); });
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            links.forEach(a => a.classList.remove('active'));
+            const a = map.get(e.target);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-30% 0px -65% 0px', threshold: 0 });
+      map.forEach((_a, el) => io.observe(el));
+    })();
+  </script>
+</body>
+</html>
