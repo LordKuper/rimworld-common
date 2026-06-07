@@ -44,10 +44,12 @@ public static class WorkTypeThingRuleWidget
         var showMapList = mapThings is { Count: > 0 };
         if (showMapList)
         {
-            // Side-by-side layout: split the header row and the box row horizontally into two equal halves.
-            var halfWidth = rect.width / 2f;
+            // Side-by-side layout: split the band into two equal halves separated by ElementGap.
+            // Reserving the gap before halving ensures both columns are identical in width and
+            // consistent with the spacing used elsewhere in the layout.
+            var halfWidth = (rect.width - Layout.ElementGap) / 2f;
             var list1HeaderRect = new Rect(rect.x, rect.y, halfWidth, rect.height);
-            var list2HeaderRect = new Rect(rect.x + halfWidth, rect.y, halfWidth, rect.height);
+            var list2HeaderRect = new Rect(rect.x + halfWidth + Layout.ElementGap, rect.y, halfWidth, rect.height);
 
             // List 1 header + refresh button
             var header1Rect = Sections.GetSectionHeaderRect(list1HeaderRect, out var rem1Rect);
