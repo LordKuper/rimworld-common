@@ -50,6 +50,7 @@ public static partial class Fields
             DoFieldLabelIcon(iconRect, icon);
             Layout.GetLeftColumnRect(labelRect, Layout.ElementGapSmall, out labelRect);
         }
+
         Verse.Widgets.LabelFit(labelRect, label);
         Text.Font = font;
         Text.Anchor = anchor;
@@ -95,6 +96,7 @@ public static partial class Fields
             DoFieldLabelIcon(iconRect, icon);
             Layout.GetLeftColumnRect(labelRect, Layout.ElementGapSmall, out labelRect);
         }
+
         Verse.Widgets.LabelFit(labelRect, label);
         Text.Font = font;
         Text.Anchor = anchor;

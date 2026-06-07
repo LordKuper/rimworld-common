@@ -116,6 +116,7 @@ public static class Tabs
         {
             topFixedRect = Rect.zero;
         }
+
         if (bottomFixedHeight > 0)
         {
             bottomFixedRect = Layout.GetBottomRowRect(remRect,

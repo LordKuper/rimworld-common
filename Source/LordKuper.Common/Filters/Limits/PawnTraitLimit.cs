@@ -21,7 +21,9 @@ public class PawnTraitLimit : DefCache<TraitDef>, IExposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnTraitLimit" /> class.
     /// </summary>
-    public PawnTraitLimit() { }
+    public PawnTraitLimit()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnTraitLimit" /> class with the specified trait definition.

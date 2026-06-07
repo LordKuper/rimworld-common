@@ -162,6 +162,8 @@ public class StatefulSubsystemTests : StaticStateTestBase
     // Helper class for DefCache test
     private class TestDefCache : DefCache<StatDef>
     {
-        public TestDefCache(string? defName) : base(defName) { }
+        public TestDefCache(string? defName) : base(defName)
+        {
+        }
     }
 }

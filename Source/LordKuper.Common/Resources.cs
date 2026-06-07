@@ -478,6 +478,7 @@ public static class Resources
                         Environment.NewLine, MultiCheckboxStates.Off, ": ", offTooltip);
                     TooltipCache[key] = baseTooltip;
                 }
+
                 if (!triState) return baseTooltip;
                 if (!TriStateTooltipCache.TryGetValue(key, out var triStateTooltip))
                 {
@@ -485,6 +486,7 @@ public static class Resources
                         $"{baseTooltip}{Environment.NewLine}{MultiCheckboxStates.Partial}: {UndefinedFilterTooltip}";
                     TriStateTooltipCache[key] = triStateTooltip;
                 }
+
                 return triStateTooltip;
             }
 
@@ -652,17 +654,31 @@ public static class Resources
         internal static class WorkTypeThingRuleWidget
         {
             /// <summary>
-            ///     Gets the localized label for available items.
+            ///     Gets the localized label for available items (globally available by ThingDef, List 1).
             /// </summary>
             public static readonly string AvailableItemsLabel =
                 $"{CommonMod.ModId}.{nameof(WorkTypeThingRuleWidget)}.{nameof(AvailableItemsLabel)}"
                     .Translate();
 
             /// <summary>
-            ///     Gets the localized tooltip for available items.
+            ///     Gets the localized tooltip for available items (globally available by ThingDef, List 1).
             /// </summary>
             public static readonly string AvailableItemsTooltip =
                 $"{CommonMod.ModId}.{nameof(WorkTypeThingRuleWidget)}.{nameof(AvailableItemsTooltip)}"
+                    .Translate();
+
+            /// <summary>
+            ///     Gets the localized label for items currently available on the map (on-map instances, List 2).
+            /// </summary>
+            public static readonly string AvailableItemsOnMapLabel =
+                $"{CommonMod.ModId}.{nameof(WorkTypeThingRuleWidget)}.{nameof(AvailableItemsOnMapLabel)}"
+                    .Translate();
+
+            /// <summary>
+            ///     Gets the localized tooltip for items currently available on the map (on-map instances, List 2).
+            /// </summary>
+            public static readonly string AvailableItemsOnMapTooltip =
+                $"{CommonMod.ModId}.{nameof(WorkTypeThingRuleWidget)}.{nameof(AvailableItemsOnMapTooltip)}"
                     .Translate();
 
             /// <summary>

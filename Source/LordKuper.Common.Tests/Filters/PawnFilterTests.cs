@@ -131,10 +131,7 @@ public class PawnFilterTests
         // Verify collections are independent (reference inequality)
         copy.AllowedPawnTypes.Should().NotBeSameAs(original.AllowedPawnTypes);
         copy.AllowedPawnTypes.Count.Should().Be(original.AllowedPawnTypes.Count);
-        foreach (var pawnType in original.AllowedPawnTypes)
-        {
-            copy.AllowedPawnTypes.Should().Contain(pawnType);
-        }
+        foreach (var pawnType in original.AllowedPawnTypes) copy.AllowedPawnTypes.Should().Contain(pawnType);
     }
 
     [Test]

@@ -26,6 +26,7 @@ public static partial class Fields
             remRect = rect;
             return;
         }
+
         var buttonsRect = Layout.GetLeftColumnRect(rect,
             (Buttons.IconButtonSize + Layout.ElementGapSmall) * actionButtons.Count, out remRect);
         foreach (var actionButton in actionButtons)
@@ -166,6 +167,7 @@ public static partial class Fields
         {
             iconRect = Rect.zero;
         }
+
         Layout.GetLeftColumnRect(inputRect, Layout.ElementGap, out inputRect);
     }
 }

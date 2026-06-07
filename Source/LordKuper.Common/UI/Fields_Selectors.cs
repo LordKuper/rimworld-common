@@ -65,10 +65,7 @@ public static partial class Fields
         if (getLabelAction == null) throw new ArgumentNullException(nameof(getLabelAction));
         if (selectAction == null) throw new ArgumentNullException(nameof(selectAction));
         var optionList = new List<FloatMenuOption>(options.Count);
-        foreach (var o in options)
-        {
-            optionList.Add(new FloatMenuOption(getLabelAction(o), () => { selectAction(o); }));
-        }
+        foreach (var o in options) optionList.Add(new FloatMenuOption(getLabelAction(o), () => { selectAction(o); }));
         Buttons.DoActionButton(rect, getLabelAction(value),
             () => { Find.WindowStack.Add(new FloatMenu(optionList)); },
             getTooltipAction?.Invoke(value), optionList.Count > 0);

@@ -53,6 +53,7 @@ internal static class SkillStatMap
                 "failed to read SkillDefs from DefProvider.", ex);
             skillDefs = [];
         }
+
         try
         {
             statDefs = DefProvider.Current.AllDefsListForReading<StatDef>();
@@ -64,11 +65,9 @@ internal static class SkillStatMap
                 "failed to read StatDefs from DefProvider.", ex);
             statDefs = [];
         }
+
         _map = new Dictionary<SkillDef, HashSet<StatDef>>(skillDefs.Count);
-        foreach (var skill in skillDefs)
-        {
-            _map[skill] = [];
-        }
+        foreach (var skill in skillDefs) _map[skill] = [];
         foreach (var stat in statDefs)
         {
             if (stat.skillNeedFactors != null)
@@ -80,11 +79,9 @@ internal static class SkillStatMap
                     if (!_map.TryGetValue(needFactor.skill, out var stats)) continue;
                     stats.Add(stat);
                     if (stat.statFactors == null) continue;
-                    foreach (var f in stat.statFactors)
-                    {
-                        stats.Add(f);
-                    }
+                    foreach (var f in stat.statFactors) stats.Add(f);
                 }
+
             if (stat.skillNeedOffsets != null)
                 foreach (var needOffset in stat.skillNeedOffsets)
                 {
@@ -92,17 +89,11 @@ internal static class SkillStatMap
                     if (!_map.TryGetValue(needOffset.skill, out var stats)) continue;
                     stats.Add(stat);
                     if (stat.statFactors == null) continue;
-                    foreach (var f in stat.statFactors)
-                    {
-                        stats.Add(f);
-                    }
+                    foreach (var f in stat.statFactors) stats.Add(f);
                 }
         }
 #if DEBUG
-        foreach (var kvp in _map)
-        {
-            Logger.LogMessage($"{kvp.Key.defName}: {string.Join(", ", kvp.Value)}");
-        }
+        foreach (var kvp in _map) Logger.LogMessage($"{kvp.Key.defName}: {string.Join(", ", kvp.Value)}");
 #endif
     }
 }

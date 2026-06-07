@@ -352,6 +352,7 @@ public class PawnFilter : IExposable
                 pawns.Add(pawn);
             }
         }
+
         return pawns;
     }
 
@@ -384,6 +385,7 @@ public class PawnFilter : IExposable
                 ? string.Join(", ", AllowedPawnTypes.Select(Resources.Strings.PawnType.GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterPawnHealthStates.HasValue)
         {
             anyValue = true;
@@ -396,6 +398,7 @@ public class PawnFilter : IExposable
                         .Select(Resources.Strings.PawnHealthState.GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterPawnPrimaryWeaponTypes.HasValue)
         {
             anyValue = true;
@@ -408,6 +411,7 @@ public class PawnFilter : IExposable
                         .GetLabel))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterPawnSkills.HasValue)
         {
             anyValue = true;
@@ -420,6 +424,7 @@ public class PawnFilter : IExposable
                         $"{l.Label} [{l.Limit.TrueMin:N0}..{l.Limit.TrueMax:N0}]"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterWorkPassions.HasValue)
         {
             anyValue = true;
@@ -433,6 +438,7 @@ public class PawnFilter : IExposable
                             p!.Label)) // Where(p => p != null) guards non-null; ! asserts that to the compiler
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterWorkCapacities.HasValue)
         {
             anyValue = true;
@@ -445,6 +451,7 @@ public class PawnFilter : IExposable
                         $"{(l.Value ? "+" : "-")}{l.Key.LabelTranslated()}"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterPawnTraits.HasValue)
         {
             anyValue = true;
@@ -456,6 +463,7 @@ public class PawnFilter : IExposable
                     PawnTraitLimits.Select(l => $"{(l.Limit ? "+" : "-")}{l.Label}"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterPawnStats.HasValue)
         {
             anyValue = true;
@@ -468,6 +476,7 @@ public class PawnFilter : IExposable
                         $"{l.Label} [{l.Limit.TrueMin.ToStringByStyle(l.ValueStyle)}..{l.Limit.TrueMax.ToStringByStyle(l.ValueStyle)}]"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (FilterPawnCapacities.HasValue)
         {
             anyValue = true;
@@ -480,6 +489,7 @@ public class PawnFilter : IExposable
                         $"{l.Label} [{l.Limit.TrueMin.ToStringByStyle(PawnCapacityLimit.ValueStyle)}..{l.Limit.TrueMax.ToStringByStyle(PawnCapacityLimit.ValueStyle)}]"))
                 : Resources.Strings.PawnFilter.IgnoreFilter);
         }
+
         if (!anyValue)
             stringBuilder.AppendIndented(Resources.Strings.PawnFilter.UndefinedFilterTooltip,
                 indentationLevel);
@@ -513,6 +523,7 @@ public class PawnFilter : IExposable
             var pawnType = PawnHelper.GetPawnType(pawn);
             if (!AllowedPawnTypes.Contains(pawnType)) return false;
         }
+
         if (FilterPawnHealthStates == true)
         {
             var healthState = PawnHelper.GetPawnHealthState(pawn);
@@ -526,6 +537,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterPawnPrimaryWeaponTypes == true)
         {
             var weaponType = PawnHelper.GetPrimaryWeaponType(pawn);
@@ -538,6 +550,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterWorkPassions == true && workType != null)
         {
             var passion = PawnHelper.GetWorkPassion(pawn, workType);
@@ -550,6 +563,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterPawnTraits == true && PawnTraitLimits.Count > 0)
         {
             var traits = pawn.story?.traits;
@@ -565,6 +579,7 @@ public class PawnFilter : IExposable
                         enabledSatisfied = false;
                         hasEnabled = true;
                     }
+
                     if (!enabledSatisfied && traits.HasTrait(limit.Def))
                         enabledSatisfied = true;
                 }
@@ -577,6 +592,7 @@ public class PawnFilter : IExposable
                     }
                 }
             }
+
             if (!enabledSatisfied || !disabledSatisfied)
             {
 #if DEBUG
@@ -586,6 +602,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterPawnCapacities == true && PawnCapacityLimits.Count > 0)
         {
             if (pawn.health?.capacities == null) return false;
@@ -599,6 +616,7 @@ public class PawnFilter : IExposable
                     break;
                 }
             }
+
             if (!satisfied)
             {
 #if DEBUG
@@ -608,17 +626,17 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterWorkCapacities == true && WorkCapacityLimits.Count > 0)
         {
             var satisfied = true;
             foreach (var limit in WorkCapacityLimits)
-            {
                 if (pawn.WorkTagIsDisabled(limit.Key) == limit.Value)
                 {
                     satisfied = false;
                     break;
                 }
-            }
+
             if (!satisfied)
             {
 #if DEBUG
@@ -628,6 +646,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterPawnSkills == true && PawnSkillLimits.Count > 0)
         {
             if (pawn.skills == null) return false;
@@ -642,6 +661,7 @@ public class PawnFilter : IExposable
                     break;
                 }
             }
+
             if (!satisfied)
             {
 #if DEBUG
@@ -651,6 +671,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         if (FilterPawnStats == true && PawnStatLimits.Count > 0)
         {
             var satisfied = true;
@@ -664,6 +685,7 @@ public class PawnFilter : IExposable
                     break;
                 }
             }
+
             if (!satisfied)
             {
 #if DEBUG
@@ -673,6 +695,7 @@ public class PawnFilter : IExposable
                 return false;
             }
         }
+
         return true;
     }
 

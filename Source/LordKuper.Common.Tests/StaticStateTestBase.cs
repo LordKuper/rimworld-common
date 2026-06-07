@@ -78,6 +78,7 @@ public abstract class StaticStateTestBase
             var field = shType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
             field?.SetValue(null, null);
         }
+
         // Stats is readonly (Dictionary instance is fixed); only the contents need clearing.
         var statsField = shType.GetField("Stats", BindingFlags.NonPublic | BindingFlags.Static);
         if (statsField?.GetValue(null) is IDictionary statsDict)

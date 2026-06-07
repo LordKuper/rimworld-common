@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!--
+responsibility:
+  owns: single architecture decision (WorkTypeThingRuleWidget second-list public API form + side-by-side layout)
+  excludes: requirements, ux, code
+  delegates_to: prd.html (requirements), code (implementation)
+provenance: original
+source: ""
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="ASD workflow">
+  <meta name="doc-type" content="ADR">
+  <meta name="subsystem" content="project">
+  <meta name="sprint-id" content="004-worktype-widget-map-items">
+  <meta name="status" content="accepted">
+  <meta name="updated" content="2026-06-07">
+  <meta name="responsibility" content="single architecture decision (WorkTypeThingRuleWidget second-list public API form + side-by-side layout)">
+  <meta name="provenance" content="original">
+  <meta name="source" content="">
+  <title>ADR-0009 · WorkTypeThingRuleWidget second list — public API form and side-by-side layout</title>
+  <style>
+    :root {
+      --fg: #1a1c1e; --bg: #fff; --muted: #5b6770; --accent: #0066cc;
+      --code-bg: #f4f6f8; --border: #d0d7de; --max: 1040px;
+      --card-bg: #fafbfc;
+      --ok: #1f883d; --warn: #b35900; --danger: #cf222e; --info: #0969da; --neutral: #5b6770;
+      --chip-must-bg: #ffebe9; --chip-must-fg: #cf222e;
+      --chip-should-bg: #fff5e1; --chip-should-fg: #9a6700;
+      --chip-may-bg: #ddf4ff; --chip-may-fg: #0969da;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --fg: #e6e6e6; --bg: #0e1116; --muted: #9aa4ad; --code-bg: #161b22; --border: #30363d;
+        --card-bg: #161b22;
+        --chip-must-bg: #3b1416; --chip-must-fg: #ff7b72;
+        --chip-should-bg: #2d2410; --chip-should-fg: #e3b341;
+        --chip-may-bg: #0d2538; --chip-may-fg: #58a6ff;
+      }
+    }
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+    .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+    .content { min-width: 0; }
+    header, main, footer { max-width: var(--max); margin: 0 auto; padding: 16px 24px; }
+    header { border-bottom: 1px solid var(--border); }
+    header h1 { margin: 4px 0 8px; font-size: 1.9rem; }
+    .badges span { display: inline-block; padding: 2px 8px; margin-right: 6px; font-size: 0.75rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); background: var(--bg); }
+    .badges .provenance-reverse-engineered, .badges .provenance-migrated { color: var(--warn); border-color: var(--warn); }
+    .badges .status-draft       { color: var(--neutral); border-color: var(--neutral); }
+    .badges .status-in-review   { color: var(--warn);    border-color: var(--warn); }
+    .badges .status-approved    { color: var(--ok);      border-color: var(--ok); }
+    .badges .status-locked      { color: var(--info);    border-color: var(--info); }
+    .stats { margin-top: 6px; font-size: 0.85rem; color: var(--muted); }
+    .stats .chip { display: inline-block; padding: 1px 8px; margin-right: 6px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); }
+    nav.toc { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; padding: 18px 14px; border-right: 1px solid var(--border); background: var(--card-bg); font-size: 0.9rem; }
+    nav.toc .toc-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 8px; padding-left: 6px; }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: tocn; }
+    nav.toc li { margin: 2px 0; counter-increment: tocn; }
+    nav.toc a { display: block; padding: 4px 8px; border-radius: 4px; color: var(--fg); text-decoration: none; border-left: 2px solid transparent; }
+    nav.toc a:hover { background: var(--code-bg); color: var(--accent); }
+    nav.toc a.active { background: var(--code-bg); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+    nav.toc a::before { content: counter(tocn) ". "; color: var(--muted); font-variant-numeric: tabular-nums; }
+    @media (max-width: 880px) {
+      .layout { grid-template-columns: 1fr; }
+      nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+    }
+    h2, h3, h4 { line-height: 1.25; margin-top: 1.6em; }
+    h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, "Cascadia Code", Menlo, monospace; }
+    code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: 0.9em; }
+    pre { background: var(--code-bg); padding: 12px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: none; padding: 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: var(--code-bg); position: sticky; top: 0; z-index: 1; }
+    tbody tr:nth-child(even) td { background: var(--card-bg); }
+    blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 4px 14px; color: var(--muted); }
+    footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+    .lede { font-size: 1.08rem; color: var(--fg); }
+    section.callout { border-left: 4px solid var(--border); padding: 8px 14px; background: var(--card-bg); border-radius: 4px; }
+    section.callout.warn { border-left-color: var(--warn); }
+    section.callout.warn h2::before { content: "\2298 "; color: var(--warn); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .chip.area { background: var(--code-bg); color: var(--muted); }
+
+    .adr { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 18px 0; background: var(--card-bg); }
+    .adr > .meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 6px; }
+    .adr h2 { margin-top: 1.1em; border-bottom: none; font-size: 1.15rem; }
+    .adr h3 { margin-top: 1em; font-size: 1rem; color: var(--muted); }
+    .status-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.78rem; border: 1px solid var(--border); }
+    .status-proposed   { color: var(--warn);    border-color: var(--warn);    background: var(--chip-should-bg); }
+    .status-accepted   { color: var(--ok);      border-color: var(--ok);      background: rgba(31,136,61,0.10); }
+    .status-superseded { color: var(--muted);   border-color: var(--muted);   background: var(--code-bg); text-decoration: line-through; }
+    .status-deprecated { color: var(--danger);  border-color: var(--danger);  background: var(--chip-must-bg); }
+    .consequences { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .consequences .pros, .consequences .cons { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); }
+    .consequences .pros { background: rgba(31,136,61,0.07); border-left: 3px solid var(--ok); }
+    .consequences .cons { background: rgba(207,34,46,0.06); border-left: 3px solid var(--danger); }
+    .consequences h3 { margin: 0 0 4px; }
+    .consequences ul { margin: 0; padding-left: 20px; }
+    @media (max-width: 720px) { .consequences { grid-template-columns: 1fr; } }
+    ul.alt-list li { margin: 4px 0; }
+    ul.alt-list li strong { color: var(--fg); }
+    table.sig-table td:first-child { white-space: nowrap; font-weight: 600; color: var(--muted); vertical-align: top; }
+
+    @media print {
+      nav.toc { background: none; border: 1px solid var(--border); }
+      a { color: inherit; text-decoration: none; }
+      footer { page-break-before: always; }
+      tr, li { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <nav class="toc" aria-label="Table of contents">
+      <p class="toc-title">Contents</p>
+      <ol>
+        <li><a href="#context">Context</a></li>
+        <li><a href="#decision">Decision</a></li>
+        <li><a href="#signature">Old vs new signature (AC-6)</a></li>
+        <li><a href="#consequences">Consequences</a></li>
+        <li><a href="#alternatives">Alternatives considered</a></li>
+        <li><a href="#acceptance">Acceptance criteria satisfied</a></li>
+        <li><a href="#related">Related ADRs</a></li>
+      </ol>
+    </nav>
+    <div class="content">
+      <header>
+        <div class="badges">
+          <span>ADR</span>
+          <span>project</span>
+          <span class="status-approved">accepted</span>
+        </div>
+        <h1>ADR-0009 · WorkTypeThingRuleWidget second list — public API form and side-by-side layout</h1>
+        <div class="stats">
+          <span class="chip">accepted</span>
+          <span class="chip">subsystem: project</span>
+          <span class="chip">updated 2026-06-07</span>
+        </div>
+      </header>
+      <main>
+
+        <article class="adr" id="adr-0009">
+          <div class="meta">
+            <span class="status-chip status-accepted">accepted</span>
+            <span class="chip area">subsystem: project</span>
+            <span class="chip">ADR-0009</span>
+          </div>
+
+          <h2 id="context">Context</h2>
+          <p>
+            <code>WorkTypeThingRuleWidget.DoWidgetTab(...)</code>
+            (<code>Source/LordKuper.Common/UI/Widgets/WorkTypeThingRuleWidget.cs:243&ndash;264</code>) is the public
+            integration point for the work-type rule tab and the call site the downstream EquipmentManager mod
+            consumes. Today it carries exactly <strong>one</strong> items collection
+            (<code>IReadOnlyList&lt;ThingDef&gt; things</code>, List&nbsp;1) and <strong>one</strong> thing-box scroll
+            position (<code>ref Vector2 thingIconBoxScrollPosition</code>). There is no parameter through which a
+            consumer can supply on-map <code>Thing</code> instances or enable a second list, and no second scroll
+            state (audit, &ldquo;Existing implementation found&rdquo;).
+          </p>
+          <p>
+            AC-1 requires a public way for a consumer to supply on-map <code>Thing</code> instances and enable
+            rendering of the second list, while AC-4 requires List&nbsp;1 to remain functional with no regression when
+            the second list is not supplied. The project config sets <code>backward_compat: none</code>, so breaking
+            the public <code>DoWidgetTab</code> signature is permitted &mdash; but the break must be documented
+            explicitly (AC-6), recording old and new signatures. The dominant force is therefore: expose the new
+            capability with the <strong>smallest call-site change</strong> and <strong>no new abstraction</strong>,
+            since the ASD Simplicity Default forbids introducing a new layer, interface, or options type without
+            explicit Complication Approval, which was not granted.
+          </p>
+
+          <h2 id="decision">Decision</h2>
+          <p class="lede">
+            Add the second list to the existing <code>DoWidgetTab</code> as <strong>two nullable / opt-in
+            parameters</strong>: a nullable on-map instance list and a second thing-box scroll position. No overload,
+            no options object, no separate method is introduced.
+          </p>
+          <ul>
+            <li>
+              Add an <strong>on-map instance list</strong> parameter <code>IReadOnlyList&lt;Thing&gt;? mapThings</code>
+              (nullable). When it is <code>null</code> or empty, the second list is <strong>not</strong> rendered and
+              the bottom section behaves exactly as today &mdash; a single <code>ThingDef</code> list &mdash;
+              preserving AC-4 and letting existing and other consumers opt in without behavioral change.
+            </li>
+            <li>
+              Add a <strong>second thing-box scroll position</strong> <code>ref Vector2 mapThingIconBoxScrollPosition</code>
+              so List&nbsp;2 owns its own scroll state, threaded <code>DoWidgetTab</code> &rarr; <code>DoBottomPart</code>
+              symmetrically with the existing <code>thingIconBoxScrollPosition</code>. (Parameter names are
+              illustrative; the implementer may pick equivalent names, but the <em>shape</em> &mdash; one nullable
+              <code>IReadOnlyList&lt;Thing&gt;</code> plus one <code>ref Vector2</code> &mdash; is the decision.)
+            </li>
+            <li>
+              This <strong>breaks</strong> the public <code>DoWidgetTab</code> signature. Permitted under
+              <code>backward_compat: none</code>; the break is documented below (AC-6).
+            </li>
+          </ul>
+
+          <p>The following architecture-level points follow from this decision and the audit; they bind the implementation:</p>
+          <ul>
+            <li>
+              <strong>Per-instance tooltip helper (AC-2).</strong> Add a new <em>private</em> helper analogous to
+              <code>GetWorkTypeDefTooltip(ThingDef, WorkTypeThingRule)</code> (<code>:317&ndash;334</code>) &mdash; for
+              example <code>GetWorkTypeThingTooltip(Thing, WorkTypeThingRule)</code> &mdash; that reads the
+              <strong>real instance's</strong> stat values via <code>StatHelper.GetStatValue(Thing, StatDef)</code>
+              (<code>StatHelper.cs:131&ndash;155</code>). Unlike the def helper, it must <strong>not</strong> synthesize
+              a temporary <code>Thing</code> via <code>ThingMaker.MakeThing</code>; it reads the live instance
+              directly, including <code>equippedStatOffsets</code>. It mirrors the existing
+              <code>Current.Game == null</code> early-return guard.
+            </li>
+            <li>
+              <strong>Side-by-side layout, constant height (AC-5).</strong> The two lists are drawn
+              <strong>side by side</strong> (horizontally adjacent) within the bottom band &mdash; the same arrangement
+              EquipmentManager uses &mdash; <strong>not</strong> stacked vertically. The bottom region is a fixed,
+              non-scrolling band sized by <code>GetBottomPartHeight(int)</code> (<code>:271&ndash;275</code>;
+              <code>Tabs.DoTab</code>, <code>Tabs.cs:45&ndash;58</code>). Because the second list occupies horizontal
+              space, <strong><code>GetBottomPartHeight</code> is unchanged</strong>: it still returns exactly one box
+              height (<code>ThingIconBox.GetThingIconBoxHeight(...)</code>) + one section header + one gap, regardless
+              of whether one list or both are rendered. The band height does <strong>not</strong> grow for the second
+              list.
+            </li>
+            <li>
+              <strong><code>DoBottomPart</code> splits the band width.</strong> <code>DoBottomPart(...)</code>
+              (<code>:38&ndash;94</code>) splits the bottom region's <em>width</em> between the two boxes when
+              <code>mapThings</code> is present: List&nbsp;1 on one side, List&nbsp;2 on the other, each box on the same
+              row with its own section header directly above it (two headers on a single header row). Each box renders
+              via <code>ThingIconBox.DoThingBox(...)</code> (<code>:54&ndash;106</code>, the existing,
+              currently-dormant instance-render primitive for List&nbsp;2; <code>DoThingDefBox</code> for List&nbsp;1)
+              with its own scroll position and, for List&nbsp;2, the new tooltip helper. When <code>mapThings</code> is
+              <code>null</code>/empty, List&nbsp;1 renders <strong>full width</strong> exactly as today, at the same
+              band height. Because <code>GetBottomPartHeight</code> never branches on second-list presence, the two
+              functions cannot mis-size the band relative to each other.
+            </li>
+            <li>
+              <strong>Width-driven <code>itemsPerRow</code>.</strong> Each box computes its <code>itemsPerRow</code>
+              from its own <code>rect.width</code> inside <code>ThingIconBox</code>. When the band is split, each box
+              gets roughly half the width, so it fits fewer items per row and scrolls more internally &mdash; this is
+              acceptable and expected; each box scrolls independently within its own region, as today. The shared
+              <code>thingIconBoxRowCount</code> still governs box height, so the box height (and thus the band height)
+              is identical in the one-list and two-list cases.
+            </li>
+            <li>
+              <strong>Shared row count.</strong> Both lists use the single existing
+              <code>thingIconBoxRowCount</code> parameter; no independent per-list row count is introduced. The audit
+              offers no reason for divergent row counts, and a single shared count keeps the signature minimal and the
+              two boxes visually symmetric. (Were divergent sizing later required, it would be a separate
+              Complication-Approved change.)
+            </li>
+            <li>
+              <strong>New strings.</strong> The second section needs its own header label and tooltip in
+              <code>Strings.WorkTypeThingRuleWidget</code> alongside the existing
+              <code>AvailableItemsLabel</code>/<code>AvailableItemsTooltip</code> &mdash; e.g.
+              <code>AvailableItemsOnMapLabel</code> / <code>AvailableItemsOnMapTooltip</code> (on-map /
+              available-now). Exact wording is an implementation detail; the requirement is two new string entries.
+            </li>
+            <li>
+              <strong>Graceful no-op.</strong> When <code>mapThings</code> is <code>null</code> or empty, the band width
+              is not split &mdash; the second header and box are not drawn and List&nbsp;1 takes the full width &mdash;
+              mirroring the <code>Current.Game == null</code> guard pattern
+              (audit Risk &ldquo;<code>Current.Game == null</code> / instance availability&rdquo;).
+            </li>
+            <li>
+              <strong>No new tech / dependency.</strong> All primitives (<code>DoThingBox</code>,
+              <code>GetThingScore</code>, <code>GetStatValue(Thing, StatDef)</code>) already exist in the assembly; no
+              external dependency is added, so no tech-reference doc is required.
+            </li>
+          </ul>
+
+          <h2 id="signature">Old vs new <code>DoWidgetTab</code> signature (AC-6)</h2>
+          <p>The signature break is recorded here verbatim so consumers (EquipmentManager) can adapt deliberately. Parameter names on the new collection / scroll arguments are illustrative; the contract is the added <em>types and positions</em>.</p>
+          <table class="sig-table">
+            <tbody>
+              <tr>
+                <td>Old (before)</td>
+                <td>
+<pre><code>public static void DoWidgetTab(Rect rect, ref float scrollableContentHeight,
+    ref Vector2 scrollPosition, int thingIconBoxRowCount,
+    IReadOnlyCollection&lt;WorkTypeThingRule&gt; workTypeRules,
+    WorkTypeThingRule? selectedWorkTypeRule, Action&lt;WorkTypeThingRule&gt; selectRuleAction,
+    Action updateThingsAction, ref Vector2 thingIconBoxScrollPosition,
+    IReadOnlyList&lt;ThingDef&gt; things)</code></pre>
+                </td>
+              </tr>
+              <tr>
+                <td>New (after)</td>
+                <td>
+<pre><code>public static void DoWidgetTab(Rect rect, ref float scrollableContentHeight,
+    ref Vector2 scrollPosition, int thingIconBoxRowCount,
+    IReadOnlyCollection&lt;WorkTypeThingRule&gt; workTypeRules,
+    WorkTypeThingRule? selectedWorkTypeRule, Action&lt;WorkTypeThingRule&gt; selectRuleAction,
+    Action updateThingsAction, ref Vector2 thingIconBoxScrollPosition,
+    IReadOnlyList&lt;ThingDef&gt; things,
+    ref Vector2 mapThingIconBoxScrollPosition,
+    IReadOnlyList&lt;Thing&gt;? mapThings = null)</code></pre>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            The added arguments are appended after the existing ones. <code>mapThings</code> is nullable and defaults
+            to <code>null</code> (second list off). Because the second scroll position is a <code>ref Vector2</code>,
+            it cannot carry a default value, so even &ldquo;List&nbsp;1 only&rdquo; callers must pass a backing
+            <code>Vector2</code> field &mdash; this is the source-breaking part of the change and the reason the break
+            is recorded under AC-6.
+          </p>
+
+          <h2 id="consequences">Consequences</h2>
+          <div class="consequences">
+            <div class="pros">
+              <h3>Positive</h3>
+              <ul>
+                <li>Smallest viable change: the existing method is extended, not duplicated; no new abstraction, layer, interface, options type, or dependency is introduced (honors the Simplicity Default).</li>
+                <li>Opt-in by construction: a <code>null</code>/empty <code>mapThings</code> reproduces today's behavior exactly, so List&nbsp;1 has no regression path (AC-4) and other consumers adopt the feature only when ready.</li>
+                <li>Symmetric with the existing List&nbsp;1 plumbing (one collection + one <code>ref Vector2</code> scroll per list), keeping <code>DoBottomPart</code> uniform and easy to reason about.</li>
+                <li>The dormant <code>DoThingBox</code> primitive is wired up as-is; no new render primitive is needed.</li>
+                <li>Constant bottom-section height: side-by-side layout means <code>GetBottomPartHeight</code> is unchanged and never branches on second-list presence, so the band cannot be mis-sized and the tab layout above it is undisturbed whether one or two lists render.</li>
+                <li>The signature break is explicit and documented, not silent.</li>
+              </ul>
+            </div>
+            <div class="cons">
+              <h3>Negative</h3>
+              <ul>
+                <li><strong>Public signature break.</strong> The added <code>ref Vector2</code> (no default possible) forces every <code>DoWidgetTab</code> caller &mdash; including List-1-only callers &mdash; to update, breaking the EquipmentManager call site. Permitted under <code>backward_compat: none</code>; mitigated by recording old/new signatures (AC-6) and treating consumer adaptation as out of scope (per sprint Non-goals).</li>
+                <li><strong>Growing parameter list.</strong> <code>DoWidgetTab</code> goes from 10 to 12 parameters; a long positional signature is harder to read and easy to mis-call. Accepted as the cost of avoiding a new options abstraction the Simplicity Default would otherwise require approval for; revisitable later via Complication Approval if the surface keeps growing.</li>
+                <li><strong>Narrower boxes, more internal scrolling.</strong> Because the band width is split, each box gets roughly half the width and computes a smaller <code>itemsPerRow</code> from its <code>rect.width</code>, so each fits fewer items per row and scrolls more internally than a full-width box. This is accepted and expected (each box scrolls independently, as today); the alternative &mdash; growing the band &mdash; was rejected to keep the bottom-section height constant.</li>
+                <li><strong>New private helper + strings.</strong> A per-instance tooltip helper and two new string entries are added; small surface, but they must carry the same <code>Current.Game == null</code> guard and complete the zero-warning build (AC-7).</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="alternatives">Alternatives considered</h2>
+          <ul class="alt-list">
+            <li><strong>Render-options object</strong> (e.g. a <code>WorkTypeWidgetOptions</code> struct/class carrying both lists, both scroll positions, and the enable flag) &mdash; rejected: introduces a new abstraction/type, which the ASD Simplicity Default forbids without explicit Complication Approval (not granted). It would also force a larger refactor of the existing 10-parameter call path for a single additive feature. The nullable-parameter form delivers the same capability with no new type.</li>
+            <li><strong>Separate method / overload</strong> (a second <code>DoWidgetTab</code> that renders two lists) &mdash; rejected: duplicates the bottom-section layout and sizing logic across two methods, creating a divergence/regression risk for List&nbsp;1 and doubling the maintenance surface. A single method with an opt-in parameter keeps one layout path.</li>
+            <li><strong>Independent per-list row counts</strong> (a second <code>thingIconBoxRowCount</code> parameter) &mdash; rejected for this sprint: adds a parameter with no requirement behind it; the audit gives no reason the two boxes need different row counts. A shared row count is simpler and symmetric; divergent sizing remains available later as a Complication-Approved change.</li>
+          </ul>
+
+          <h2 id="acceptance">Acceptance criteria satisfied</h2>
+          <ul>
+            <li><strong>AC-1</strong> &mdash; <code>DoWidgetTab</code> gains a nullable <code>IReadOnlyList&lt;Thing&gt;? mapThings</code> + a second <code>ref Vector2</code> scroll position; supplying a non-empty list enables the second list, <code>null</code>/empty leaves List&nbsp;1-only behavior.</li>
+            <li><strong>AC-2</strong> &mdash; List&nbsp;2 renders via <code>ThingIconBox.DoThingBox(...)</code>; a new private per-instance tooltip helper reads the live instance's stats via <code>StatHelper.GetStatValue(Thing, StatDef)</code> (no <code>ThingMaker</code> synthesis).</li>
+            <li><strong>AC-4</strong> &mdash; with <code>mapThings</code> <code>null</code>/empty, List&nbsp;1 renders full width at the same band height as today &mdash; same items, tooltips, scroll; <code>GetBottomPartHeight</code> is unchanged.</li>
+            <li><strong>AC-5</strong> &mdash; the two lists are drawn side by side (disjoint horizontal halves of the band, each with its own header on a single header row); &ldquo;no overlap&rdquo; means the boxes occupy disjoint horizontal regions. <code>GetBottomPartHeight</code> does not change &mdash; band height is identical for one-list and two-list cases; <code>DoBottomPart</code> splits the band width; both lists share <code>thingIconBoxRowCount</code> (identical box height).</li>
+            <li><strong>AC-6</strong> &mdash; the old and new <code>DoWidgetTab</code> signatures are recorded verbatim above; the break is permitted under <code>backward_compat: none</code>.</li>
+            <li><strong>AC-7</strong> &mdash; covered by impl/test/build scope: zero-warning rebuild and republish to <code>1.6/Assemblies/</code>, existing tests pass, the new tooltip helper covered where feasible. This ADR fixes the contracts those criteria verify.</li>
+          </ul>
+          <p class="lede" style="font-size:0.9rem;color:var(--muted)">
+            AC references resolve against the sprint PRD:
+            <a href="../../../.asd/sprints/004-worktype-widget-map-items/design/prd.html"><code>.asd/sprints/004-worktype-widget-map-items/design/prd.html</code></a>.
+            Audit support: <a href="../../../.asd/sprints/004-worktype-widget-map-items/audit.md"><code>.asd/sprints/004-worktype-widget-map-items/audit.md</code></a>.
+          </p>
+
+          <h2 id="related">Related ADRs</h2>
+          <ul>
+            <li><a href="adr-0010-worktype-map-list-consumer-presort.html">ADR-0010</a> &mdash; fixes the score-sort ownership for the second list this ADR enables: the consumer pre-sorts the on-map <code>Thing</code> list it supplies through the new <code>mapThings</code> parameter, and the widget renders in the given order.</li>
+            <li><a href="adr-0008-statranges-first-observation-fix-public-exposure.html">ADR-0008</a> &mdash; corrects <code>StatRanges</code> first-observation behavior and exposes the public scoring surface (<code>GetThingScore</code>) that the consumer's pre-sort (ADR-0010) and the per-instance tooltip path here rely on being public and correct.</li>
+          </ul>
+        </article>
+
+      </main>
+      <footer>by ASD workflow | 2026-06-07 | sprint 004-worktype-widget-map-items</footer>
+    </div>
+  </div>
+</body>
+</html>

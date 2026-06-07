@@ -32,7 +32,9 @@ public abstract class DefCache<T> : IExposable where T : Def
     /// <summary>
     ///     Default constructor for serialization.
     /// </summary>
-    protected DefCache() { }
+    protected DefCache()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of <see cref="DefCache{T}" /> with the specified def name.
