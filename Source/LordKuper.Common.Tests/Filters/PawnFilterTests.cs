@@ -50,7 +50,7 @@ public class PawnFilterTests
     {
         var main = new PawnFilter { FilterPawnTypes = null, AllowedPawnTypes = [] };
         var fallback = new PawnFilter
-            { FilterPawnTypes = true, AllowedPawnTypes = [PawnType.Guest] };
+        { FilterPawnTypes = true, AllowedPawnTypes = [PawnType.Guest] };
         var result = PawnFilter.Combine(main, fallback);
         result.FilterPawnTypes.Should().BeTrue();
         result.AllowedPawnTypes.Should().Contain(PawnType.Guest);
@@ -61,7 +61,7 @@ public class PawnFilterTests
     {
         var main = new PawnFilter { FilterWorkPassions = null, AllowedWorkPassions = [] };
         var fallback = new PawnFilter
-            { FilterWorkPassions = true, AllowedWorkPassions = [Passion.Minor] };
+        { FilterWorkPassions = true, AllowedWorkPassions = [Passion.Minor] };
         var result = PawnFilter.Combine(main, fallback);
         result.FilterWorkPassions.Should().BeTrue();
         result.AllowedWorkPassions.Should().Contain(Passion.Minor);
@@ -72,9 +72,9 @@ public class PawnFilterTests
     {
         // Combine uses main's values when set
         var main = new PawnFilter
-            { FilterPawnTypes = true, AllowedPawnTypes = [PawnType.Colonist] };
+        { FilterPawnTypes = true, AllowedPawnTypes = [PawnType.Colonist] };
         var fallback = new PawnFilter
-            { FilterPawnTypes = false, AllowedPawnTypes = [PawnType.Guest] };
+        { FilterPawnTypes = false, AllowedPawnTypes = [PawnType.Guest] };
         var result = PawnFilter.Combine(main, fallback);
         result.FilterPawnTypes.Should().BeTrue();
         result.AllowedPawnTypes.Should().Contain(PawnType.Colonist);
@@ -85,9 +85,9 @@ public class PawnFilterTests
     public void Combine_MainHasWorkPassions_UsesMain()
     {
         var main = new PawnFilter
-            { FilterWorkPassions = true, AllowedWorkPassions = [Passion.Major] };
+        { FilterWorkPassions = true, AllowedWorkPassions = [Passion.Major] };
         var fallback = new PawnFilter
-            { FilterWorkPassions = false, AllowedWorkPassions = [Passion.Minor] };
+        { FilterWorkPassions = false, AllowedWorkPassions = [Passion.Minor] };
         var result = PawnFilter.Combine(main, fallback);
         result.FilterWorkPassions.Should().BeTrue();
         result.AllowedWorkPassions.Should().Contain(Passion.Major);
