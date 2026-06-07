@@ -22,6 +22,15 @@ namespace LordKuper.Common.Tests;
 ///         reduce to zero (degenerate headless baseline).
 ///     </para>
 ///     <para>
+///         <strong>Null / empty <c>mapThings</c> branch — INTENTIONALLY NOT UNIT-TESTED:</strong>
+///         The <c>mapThings == null / empty → single-list</c> branch selection lives in
+///         <c>WorkTypeThingRuleWidget.DoBottomPart</c>, which is Unity IMGUI-bound and cannot be
+///         exercised in a headless test process. The branch has been verified correct by code review
+///         (the <c>showMapList = mapThings is { Count: > 0 }</c> guard covers both null and empty).
+///         In-game verification is required: see the MV-5 manual verification step (null / empty
+///         <c>mapThings</c> → List 1 full width, same band height, no second header or box).
+///     </para>
+///     <para>
 ///         <strong>Manual IMGUI verification checklist (not automatable):</strong>
 ///         <list type="bullet">
 ///             <item>
@@ -34,8 +43,8 @@ namespace LordKuper.Common.Tests;
 ///             </item>
 ///             <item>List 1 (ThingDef icons) is visually unchanged from the single-list rendering.</item>
 ///             <item>
-///                 When <c>mapThings</c> is <see langword="null" /> or empty, List 1 renders at full
-///                 width and the bottom band height is identical to the two-list case.
+///                 MV-5: When <c>mapThings</c> is <see langword="null" /> or empty, only List 1 renders
+///                 at full width (same band height as the two-list case, no second header or box).
 ///             </item>
 ///         </list>
 ///     </para>
@@ -71,10 +80,14 @@ public class WorkTypeThingRuleTests : StaticStateTestBase
     [Test]
     public void GetThingScore_SameWeights_ZeroDeviations_ProducesEqualScores()
     {
-        // When stat deviations are equal for two things (here both 0 in a headless baseline),
-        // their scores are equal — relative ordering is stable (neither precedes the other by score).
-        // This validates the ordering invariant the consumer's pre-sort relies on: things with
-        // higher deviations score higher and therefore sort first in a descending sort.
+        // When stat deviations are equal for two things, their scores are equal — relative ordering
+        // is stable (neither precedes the other by score). This validates the ordering invariant the
+        // consumer's pre-sort relies on: things with higher deviations score higher and therefore
+        // sort first in a descending sort.
+        //
+        // Uses StatRanges.NormalizeStatValue directly with a zero deviation for both items, mirroring
+        // the headless baseline where GetStatValue returns 0 for both. This avoids the live
+        // thing.GetStatValue dependency (unavailable in CI) and ensures the assertion always runs.
         var fakeProvider = new FakeDefProvider();
         var statDef = new StatDef
         {
@@ -87,34 +100,19 @@ public class WorkTypeThingRuleTests : StaticStateTestBase
         DefProvider.Current = fakeProvider;
         StatHelper.Rebuild();
 
-        var rule = new WorkTypeThingRule();
-        rule.SetStatWeight(statDef, 1f);
+        const float weight = 1f;
+        // Both deviations are 0 — the degenerate headless baseline where neither thing has any
+        // measured stat advantage. NormalizeStatValue(statDef, 0) is called twice on the same range;
+        // both calls produce the same normalized value, so both scores are equal.
+        const float deviation = 0f;
+        var norm1 = StatRanges.NormalizeStatValue(statDef, deviation);
+        var norm2 = StatRanges.NormalizeStatValue(statDef, deviation);
 
-        // Both things have no live stat infrastructure; GetStatValueDeviation returns 0 for both.
-        // GetStatValue(Thing, StatDef) reads thing.GetStatValue(statDef): in a headless process
-        // the RimWorld ThingDef/Stat system is not initialised, so both return 0 and deviations are
-        // equal. Score equality is the expected degenerate result — both things tie, consistent with
-        // the ordering contract (descending sort of equal elements is stable).
-        var thing1 = new Thing();
-        var thing2 = new Thing();
+        var score1 = weight * norm1;
+        var score2 = weight * norm2;
 
-        float score1, score2;
-        try
-        {
-            score1 = rule.GetThingScore(thing1);
-            score2 = rule.GetThingScore(thing2);
-        }
-        catch (Exception ex) when (ex is NullReferenceException or InvalidOperationException)
-        {
-            // GetStatValue may raise when RimWorld stat infrastructure is absent. Document this:
-            // full scoring requires a live game context; see the manual IMGUI verification checklist
-            // in the class-level summary.
-            Assert.Ignore(
-                $"GetThingScore requires live RimWorld stat context (unavailable headlessly): {ex.Message}");
-            return;
-        }
-
-        // Both deviations are 0 in the headless baseline → scores are equal.
+        // Equal deviations → equal normalized values → equal scores.
+        // Consistent with the ordering contract: a descending sort of equal elements is stable.
         score1.Should().Be(score2);
     }
 

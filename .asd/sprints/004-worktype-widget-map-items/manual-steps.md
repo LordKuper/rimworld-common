@@ -43,3 +43,7 @@ the new 12-parameter `DoWidgetTab` signature.
 - **Expected:** only List 1 renders, at full width, exactly as before this sprint. The bottom band
   height is identical to the two-list case (verified by `GetBottomPartHeight` being unchanged).
   No second header, no second box, no layout shift.
+- **Code-path note (not unit-testable):** the branch selection (`showMapList = mapThings is
+  { Count: > 0 }`) lives in `WorkTypeThingRuleWidget.DoBottomPart`, which is Unity IMGUI-bound.
+  This headless gap is documented in `WorkTypeThingRuleTests.cs` class-level summary. This
+  in-game step is the only verification that the null/empty branch renders correctly at runtime.
