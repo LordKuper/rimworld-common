@@ -55,6 +55,7 @@ public class RimWorldResolverSetup
                 {
                     return null;
                 }
+
             return null;
         };
     }

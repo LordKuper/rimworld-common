@@ -64,6 +64,7 @@ public static class Buttons
             remRect = rect;
             return 0f;
         }
+
         var buttonRects = Layout.GetGridRects(rect, ActionButtonWidthMin, Layout.ElementGapSmall,
             ActionButtonHeight, Layout.ElementGapSmall, actionButtons.Length, out var height,
             out remRect);
@@ -74,6 +75,7 @@ public static class Buttons
             DoActionButton(buttonRect, button.Label, button.Action, button.Tooltip,
                 button.IsEnabled);
         }
+
         return height;
     }
 
@@ -92,6 +94,7 @@ public static class Buttons
         {
             Verse.Widgets.DrawTextureFitted(rect, iconButton.Icon, 1f, 0.25f);
         }
+
         if (!string.IsNullOrEmpty(iconButton.Tooltip))
             TooltipHandler.TipRegion(rect, iconButton.Tooltip);
     }

@@ -30,14 +30,18 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class.
     /// </summary>
-    public PawnCapacityLimit() { }
+    public PawnCapacityLimit()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class for the capacity with the specified
     ///     def name.
     /// </summary>
     /// <param name="pawnCapacityDefName">The def name of the <see cref="PawnCapacityDef" /> to limit.</param>
-    public PawnCapacityLimit(string pawnCapacityDefName) : base(pawnCapacityDefName) { }
+    public PawnCapacityLimit(string pawnCapacityDefName) : base(pawnCapacityDefName)
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnCapacityLimit" /> class for the capacity with the specified
@@ -59,7 +63,9 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
     /// </summary>
     /// <param name="def">The capacity definition to limit.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public PawnCapacityLimit(PawnCapacityDef def) : base(GetDefName(def)) { }
+    public PawnCapacityLimit(PawnCapacityDef def) : base(GetDefName(def))
+    {
+    }
 
     /// <summary>
     ///     Gets or sets the upper bound of the allowed range, or <c>null</c> when no upper bound is set
@@ -79,6 +85,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 _maxValueBuffer = string.Empty;
                 return;
             }
+
             Limit.max = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
             _maxValueBuffer = Limit.max.ToString("F2", CultureInfo.InvariantCulture);
         }
@@ -101,6 +108,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 MaxValue = null;
                 return;
             }
+
             if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                     out var parsed))
                 MaxValue = parsed;
@@ -127,6 +135,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 _minValueBuffer = string.Empty;
                 return;
             }
+
             Limit.min = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
             _minValueBuffer = Limit.min.ToString("F2", CultureInfo.InvariantCulture);
         }
@@ -149,6 +158,7 @@ public class PawnCapacityLimit : DefCache<PawnCapacityDef>, IExposable
                 MinValue = null;
                 return;
             }
+
             if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                     out var parsed))
                 MinValue = parsed;

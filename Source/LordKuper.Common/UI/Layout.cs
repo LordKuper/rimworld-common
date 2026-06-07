@@ -158,6 +158,7 @@ public static class Layout
             topRect = bottomRect = Rect.zero;
             return rect;
         }
+
         var offset = (rect.height - rowHeight) / 2f;
         topRect = GetTopRowRect(rect, offset, out var remRect);
         var rowRect = GetTopRowRect(remRect, rowHeight, out bottomRect);
@@ -209,6 +210,7 @@ public static class Layout
             rects[i] = new Rect(rect.x + column * (columnWidth + columnGap),
                 rect.y + row * (rowHeight + rowGap), columnWidth, rowHeight);
         }
+
         return rects;
     }
 

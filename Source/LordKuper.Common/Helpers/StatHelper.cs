@@ -143,6 +143,7 @@ public static class StatHelper
                     offset = modifier.value;
                     break;
                 }
+
             return thing.GetStatValue(statDef) + offset;
         }
         catch (Exception exception)
@@ -175,6 +176,7 @@ public static class StatHelper
                     baseValue = modifier.value;
                     break;
                 }
+
             var offset = 0f;
             var offsets = def.equippedStatOffsets;
             if (offsets != null)
@@ -184,6 +186,7 @@ public static class StatHelper
                     offset = modifier.value;
                     break;
                 }
+
             return baseValue + offset;
         }
         catch (Exception exception)
@@ -288,6 +291,7 @@ public static class StatHelper
                 "failed to read StatDef list from DefProvider.", ex);
             defs = [];
         }
+
         _defaultPawnStatDefs = new SortedSet<StatDef>(Comparer);
         _defaultApparelStatDefs = new SortedSet<StatDef>(Comparer);
         _defaultWeaponStatDefs = new SortedSet<StatDef>(Comparer);
@@ -348,6 +352,7 @@ public static class StatHelper
                 "failed to read StatDef list from DefProvider.", ex);
             allDefs = [];
         }
+
         var allStatDefsSet = new HashSet<StatDef>(allDefs);
         allStatDefsSet.UnionWith(_customStatsDefs);
         _allStatDefs = new SortedSet<StatDef>(allStatDefsSet, Comparer);

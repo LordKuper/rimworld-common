@@ -73,6 +73,7 @@ public static class PawnBox
             TooltipHandler.TipRegion(entryRect, pawn.NameFullColored);
             if (isMouseDown && mouseOver) Find.WindowStack.Add(new Dialog_InfoCard(pawn));
         }
+
         Verse.Widgets.EndScrollView();
         Text.Font = font;
         Text.Anchor = anchor;

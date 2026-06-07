@@ -18,7 +18,9 @@ public readonly struct RimWorldTime : IEquatable<RimWorldTime>, IComparable<RimW
     /// <param name="year">The year.</param>
     /// <param name="day">The day of the year.</param>
     /// <param name="hour">The hour of the day.</param>
-    public RimWorldTime(int year, int day, float hour) : this(GetTotalHours(year, day, hour)) { }
+    public RimWorldTime(int year, int day, float hour) : this(GetTotalHours(year, day, hour))
+    {
+    }
 
     /// <summary>
     ///     Calculates the total hours from year, day, and hour.

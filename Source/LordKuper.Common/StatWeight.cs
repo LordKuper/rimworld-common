@@ -54,7 +54,9 @@ public class StatWeight : IExposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatWeight" /> class.
     /// </summary>
-    public StatWeight() { }
+    public StatWeight()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatWeight" /> class using a stat definition name and protection flag.

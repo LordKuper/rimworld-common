@@ -52,6 +52,7 @@ public abstract class TimedCache
             _lastUpdate = time;
             return _updateOnFirstAccess;
         }
+
         var hoursPassed = time - _lastUpdate;
         if (hoursPassed < _updateInterval) return false;
         _lastUpdate = time;

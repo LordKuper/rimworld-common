@@ -168,6 +168,7 @@ public class TimedCacheTests
     {
         public TestTimedCache(float updateInterval, bool updateOnFirstAccess = false) : base(
             updateInterval, updateOnFirstAccess)
-        { }
+        {
+        }
     }
 }

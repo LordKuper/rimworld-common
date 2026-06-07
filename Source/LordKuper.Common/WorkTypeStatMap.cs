@@ -107,6 +107,7 @@ public class WorkTypeStatMap
                 "failed to read WorkTypeDefs from DefProvider.", ex);
             workTypes = [];
         }
+
         try
         {
             allRecipes = DefProvider.Current.AllDefsListForReading<RecipeDef>();
@@ -118,6 +119,7 @@ public class WorkTypeStatMap
                 "failed to read RecipeDefs from DefProvider.", ex);
             allRecipes = [];
         }
+
         var workTypeStatDefs = StatHelper.GetStatsByCategory(StatCategory.Work);
         _defaultStatsMap =
             new Dictionary<WorkTypeDef, Dictionary<StatDef, StatWeight>>(workTypes.Count);
@@ -138,6 +140,7 @@ public class WorkTypeStatMap
                         Logger.LogWarning($"{nameof(WorkTypeStatMap)}.{nameof(Rebuild)}: " +
                                           $"StatDef '{kvp.Key}' referenced by work type '{workType.defName}' could not be resolved.");
                 }
+
             var skillStatMap = SkillStatMap.Map;
             var relevantSkills = workType.relevantSkills;
             if (relevantSkills != null && skillStatMap != null)
@@ -151,6 +154,7 @@ public class WorkTypeStatMap
                             statWeights.Add(statDef, new StatWeight(statDef, 1f, true));
                     }
                 }
+
             foreach (var recipe in allRecipes)
             {
                 if (recipe.requiredGiverWorkType != workType) continue;
@@ -166,21 +170,18 @@ public class WorkTypeStatMap
                     if (!statWeights.ContainsKey(speedStat))
                         statWeights.Add(speedStat, new StatWeight(speedStat, 0.5f, true));
                 }
+
                 if (tableEffStat != null && !statWeights.ContainsKey(tableEffStat))
                     statWeights.Add(tableEffStat, new StatWeight(tableEffStat, 0.8f, true));
                 if (tableSpeedStat != null && !statWeights.ContainsKey(tableSpeedStat))
                     statWeights.Add(tableSpeedStat, new StatWeight(tableSpeedStat, 0.5f, true));
             }
+
             var toRemove = new List<StatDef>();
             foreach (var def in statWeights.Keys)
-            {
                 if (!workTypeStatDefs.Contains(def))
                     toRemove.Add(def);
-            }
-            foreach (var def in toRemove)
-            {
-                statWeights.Remove(def);
-            }
+            foreach (var def in toRemove) statWeights.Remove(def);
         }
     }
 }

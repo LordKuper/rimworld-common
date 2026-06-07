@@ -42,7 +42,9 @@ public class WorkTypeThingRule : IExposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="WorkTypeThingRule" /> class.
     /// </summary>
-    public WorkTypeThingRule() { }
+    public WorkTypeThingRule()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="WorkTypeThingRule" /> class with the specified work type definition
@@ -86,6 +88,7 @@ public class WorkTypeThingRule : IExposable
                     "Tried to get default WorkTypeThingRules with uninitialized WorkTypeStatMap.");
                 return rules;
             }
+
             foreach (var map in WorkTypeStatMap.DefaultStatsMap)
             {
                 var rule = new WorkTypeThingRule(map.Key.defName);
@@ -95,8 +98,10 @@ public class WorkTypeThingRule : IExposable
                     if (statDef != null)
                         rule.SetStatWeight(statDef, statWeight.Weight, statWeight.Protected);
                 }
+
                 rules.Add(rule);
             }
+
             return rules;
         }
     }
@@ -256,10 +261,8 @@ public class WorkTypeThingRule : IExposable
             return;
         foreach (var kvp in defaultStatWeights.Where(kvp =>
                      !_statWeights.ContainsKey(kvp.Key.defName)))
-        {
             _statWeights.Add(kvp.Key.defName,
                 new StatWeight(kvp.Key, kvp.Value.Weight, kvp.Value.Protected));
-        }
     }
 
     /// <summary>
@@ -280,6 +283,7 @@ public class WorkTypeThingRule : IExposable
             statWeight = new StatWeight(statDef, false);
             _statWeights.Add(statDef.defName, statWeight);
         }
+
         statWeight.Weight = weight;
         if (isProtected != null) statWeight.Protected = isProtected.Value;
     }

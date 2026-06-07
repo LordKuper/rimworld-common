@@ -99,6 +99,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnCapacities = enabled;
             if (oldValue != pawnFilter.FilterPawnCapacities) filterChanged = true;
         }
+
         if (pawnFilter.FilterPawnCapacities != true) return y;
         var limits = pawnFilter.PawnCapacityLimits;
         for (var i = 0; i < limits.Count;)
@@ -109,6 +110,7 @@ public static class PawnFilterWidget
                 i++;
                 continue;
             }
+
             var index = i;
             var deleted = false;
             var oldValue = limit.Limit;
@@ -125,11 +127,11 @@ public static class PawnFilterWidget
             if (i < limits.Count && limits[i] == limit)
                 i++;
         }
+
         var existingDefNames = new HashSet<string>(limits.Count, StringComparer.OrdinalIgnoreCase);
         foreach (var l in limits)
-        {
-            if (l.DefName != null) existingDefNames.Add(l.DefName);
-        }
+            if (l.DefName != null)
+                existingDefNames.Add(l.DefName);
         var canAdd = false;
         foreach (var def in DefDatabase<PawnCapacityDef>.AllDefsListForReading)
         {
@@ -137,6 +139,7 @@ public static class PawnFilterWidget
             canAdd = true;
             break;
         }
+
         if (!canAdd) return y;
         var buttonRect = Layout.GetTopRowRect(remRect, Buttons.ActionButtonHeight, out remRect);
         y += buttonRect.height;
@@ -156,6 +159,7 @@ public static class PawnFilterWidget
                     added = true;
                 }));
             }
+
             options.Sort((a, b) =>
                 string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
             Find.WindowStack.Add(new FloatMenu(options));
@@ -228,6 +232,7 @@ public static class PawnFilterWidget
             y += DoPawnTypesSection(rect, pawnFilter, ref filterChanged, out remRect);
             doGapLine = true;
         }
+
         if (doHealthStates)
         {
             if (doGapLine)
@@ -235,6 +240,7 @@ public static class PawnFilterWidget
             y += DoPawnHealthStatesSection(remRect, pawnFilter, ref filterChanged, out remRect);
             doGapLine = true;
         }
+
         if (doWeaponTypes)
         {
             if (doGapLine)
@@ -242,6 +248,7 @@ public static class PawnFilterWidget
             y += DoPawnPrimaryWeaponTypesSection(remRect, pawnFilter, ref filterChanged,
                 out remRect);
         }
+
         if (doSkills)
         {
             if (doGapLine)
@@ -251,6 +258,7 @@ public static class PawnFilterWidget
                 ref filterChanged, out remRect);
             doGapLine = true;
         }
+
         if (doWorkPassions)
         {
             if (doGapLine)
@@ -258,6 +266,7 @@ public static class PawnFilterWidget
             y += DoWorkPassionsSection(remRect, pawnFilter, ref filterChanged, out remRect);
             doGapLine = true;
         }
+
         if (doWorkCapacities)
         {
             if (doGapLine)
@@ -265,6 +274,7 @@ public static class PawnFilterWidget
             y += DoWorkCapacitiesSection(remRect, pawnFilter, ref filterChanged, out remRect);
             doGapLine = true;
         }
+
         if (doTraits)
         {
             if (doGapLine)
@@ -272,6 +282,7 @@ public static class PawnFilterWidget
             y += DoPawnTraitsSection(remRect, pawnFilter, ref filterChanged, out remRect);
             doGapLine = true;
         }
+
         if (doStats)
         {
             if (doGapLine)
@@ -281,6 +292,7 @@ public static class PawnFilterWidget
                 out remRect);
             doGapLine = true;
         }
+
         if (doCapacities)
         {
             if (doGapLine)
@@ -289,6 +301,7 @@ public static class PawnFilterWidget
             y += DoPawnCapacitiesSection(remRect, pawnFilter, pawnCapacityInputId!.Value,
                 ref filterChanged, out remRect);
         }
+
         if (filterChanged && filterChangedAction != null) filterChangedAction.Invoke();
         return y;
     }
@@ -341,6 +354,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnHealthStates = enabled;
             if (oldValue != pawnFilter.FilterPawnHealthStates) filterChanged = true;
         }
+
         if (!enabled) return y;
         var count = 0;
         var relevantHealthStates = new HashSet<PawnHealthState>();
@@ -350,6 +364,7 @@ public static class PawnFilterWidget
             relevantHealthStates.Add(hs);
             count++;
         }
+
         if (count != 0)
         {
             var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
@@ -374,6 +389,7 @@ public static class PawnFilterWidget
                     pawnFilter.AllowedPawnHealthStates &= ~healthState;
             }
         }
+
         return y;
     }
 
@@ -428,6 +444,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnPrimaryWeaponTypes = enabled;
             if (oldValue != pawnFilter.FilterPawnPrimaryWeaponTypes) filterChanged = true;
         }
+
         if (!enabled) return y;
         var count = AllPawnPrimaryWeaponTypes.Count;
         if (count != 0)
@@ -453,6 +470,7 @@ public static class PawnFilterWidget
                 if (oldValue != value) filterChanged = true;
             }
         }
+
         return y;
     }
 
@@ -501,6 +519,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnSkills = enabled;
             if (oldValue != pawnFilter.FilterPawnSkills) filterChanged = true;
         }
+
         if (pawnFilter.FilterPawnSkills == true)
         {
             var limits = pawnFilter.PawnSkillLimits;
@@ -512,6 +531,7 @@ public static class PawnFilterWidget
                     i++;
                     continue;
                 }
+
                 var index = i;
                 var oldValue = limit.Limit;
                 var deleted = false;
@@ -530,12 +550,12 @@ public static class PawnFilterWidget
                 if (i < limits.Count && ReferenceEquals(limits[i], limit))
                     i++;
             }
+
             var existingDefNames =
                 new HashSet<string>(limits.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var limit in limits)
-            {
-                if (limit.DefName != null) existingDefNames.Add(limit.DefName);
-            }
+                if (limit.DefName != null)
+                    existingDefNames.Add(limit.DefName);
             var canAdd = false;
             foreach (var def in DefDatabase<SkillDef>.AllDefsListForReading)
             {
@@ -543,6 +563,7 @@ public static class PawnFilterWidget
                 canAdd = true;
                 break;
             }
+
             if (!canAdd) return y;
             var buttonRect = Layout.GetTopRowRect(remRect, Buttons.ActionButtonHeight, out remRect);
             y += buttonRect.height;
@@ -560,12 +581,14 @@ public static class PawnFilterWidget
                         added = true;
                     }));
                 }
+
                 options.Sort((a, b) =>
                     string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
                 Find.WindowStack.Add(new FloatMenu(options));
             });
             if (added) filterChanged = true;
         }
+
         return y;
     }
 
@@ -614,6 +637,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnStats = enabled;
             if (oldValue != pawnFilter.FilterPawnStats) filterChanged = true;
         }
+
         if (pawnFilter.FilterPawnStats != true) return y;
         var statLimits = pawnFilter.PawnStatLimits;
         for (var i = 0; i < statLimits.Count;)
@@ -624,6 +648,7 @@ public static class PawnFilterWidget
                 i++;
                 continue;
             }
+
             var label = limit.Label ?? string.Empty;
             var description = limit.Def?.description;
             if (limit.ValueStyle is ToStringStyle.PercentZero or ToStringStyle.PercentOne
@@ -662,15 +687,16 @@ public static class PawnFilterWidget
                 limit.MaxValueBuffer = maxBuffer;
                 if (oldValue != limit.Limit || deleted) filterChanged = true;
             }
+
             if (i < statLimits.Count && statLimits[i] == limit)
                 i++;
         }
+
         var statDefNamesSet =
             new HashSet<string>(statLimits.Count, StringComparer.OrdinalIgnoreCase);
         foreach (var l in statLimits)
-        {
-            if (l.DefName != null) statDefNamesSet.Add(l.DefName);
-        }
+            if (l.DefName != null)
+                statDefNamesSet.Add(l.DefName);
         var canAdd = false;
         var statsByCategory = StatHelper.GetStatsByCategory(StatCategory.Pawn);
         foreach (var def in statsByCategory)
@@ -679,6 +705,7 @@ public static class PawnFilterWidget
             canAdd = true;
             break;
         }
+
         if (!canAdd) return y;
         var buttonRect = Layout.GetTopRowRect(remRect, Buttons.ActionButtonHeight, out remRect);
         y += buttonRect.height;
@@ -696,6 +723,7 @@ public static class PawnFilterWidget
                     added = true;
                 }));
             }
+
             options.Sort((a, b) =>
                 string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
             Find.WindowStack.Add(new FloatMenu(options));
@@ -749,6 +777,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnTraits = enabled;
             if (oldValue != pawnFilter.FilterPawnTraits) filterChanged = true;
         }
+
         if (pawnFilter.FilterPawnTraits == true)
         {
             var traitLimits = pawnFilter.PawnTraitLimits;
@@ -766,6 +795,7 @@ public static class PawnFilterWidget
                     i++;
                     continue;
                 }
+
                 var description = def.description;
                 var index = i;
                 var oldValue = limit.Limit;
@@ -781,12 +811,12 @@ public static class PawnFilterWidget
                     filterChanged = true;
                 if (i < traitLimits.Count && traitLimits[i] == limit) i++;
             }
+
             var traitDefNames =
                 new HashSet<string>(traitLimits.Count, StringComparer.OrdinalIgnoreCase);
             foreach (var limit in traitLimits)
-            {
-                if (limit.DefName != null) traitDefNames.Add(limit.DefName);
-            }
+                if (limit.DefName != null)
+                    traitDefNames.Add(limit.DefName);
             var canAdd = false;
             foreach (var def in DefDatabase<TraitDef>.AllDefsListForReading)
             {
@@ -794,6 +824,7 @@ public static class PawnFilterWidget
                 canAdd = true;
                 break;
             }
+
             var added = false;
             Buttons.DoActionButton(rects[rects.Length - 1], Resources.Strings.Actions.Add, () =>
             {
@@ -808,12 +839,14 @@ public static class PawnFilterWidget
                         added = true;
                     }));
                 }
+
                 options.Sort((a, b) =>
                     string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
                 Find.WindowStack.Add(new FloatMenu(options));
             }, null, canAdd);
             if (added) filterChanged = true;
         }
+
         return y;
     }
 
@@ -863,13 +896,13 @@ public static class PawnFilterWidget
             pawnFilter.FilterPawnTypes = enabled;
             if (pawnFilter.FilterPawnTypes != oldValue) filterChanged = true;
         }
+
         if (!enabled) return y;
         {
             var count = 0;
             foreach (var pt in AllPawnTypes)
-            {
-                if (!pawnFilter.ForbiddenPawnTypes.Contains(pt)) count++;
-            }
+                if (!pawnFilter.ForbiddenPawnTypes.Contains(pt))
+                    count++;
             if (count != 0)
             {
                 var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
@@ -894,6 +927,7 @@ public static class PawnFilterWidget
                     if (value != oldValue) filterChanged = true;
                 }
             }
+
             return y;
         }
     }
@@ -938,18 +972,18 @@ public static class PawnFilterWidget
             pawnFilter.FilterWorkCapacities = enabled;
             if (oldValue != pawnFilter.FilterWorkCapacities) filterChanged = true;
         }
+
         if (pawnFilter.FilterWorkCapacities == true)
         {
             var count = pawnFilter.WorkCapacityLimits.Count;
             var canAdd = false;
             foreach (var wt in AllWorkCapacities)
-            {
                 if (!pawnFilter.WorkCapacityLimits.ContainsKey(wt))
                 {
                     canAdd = true;
                     break;
                 }
-            }
+
             var rects = Layout.GetGridRects(remRect, DefaultSelectorWidthMin,
                 Layout.ElementGapSmall, Layout.RowHeight, Layout.ElementGapSmall,
                 canAdd ? count + 1 : count, out var gridHeight, out remRect);
@@ -974,9 +1008,11 @@ public static class PawnFilterWidget
                         filterChanged = true;
                     pawnFilter.WorkCapacityLimits[key] = value;
                 }
+
                 if (deleted)
                     filterChanged = true;
             }
+
             if (canAdd)
             {
                 var added = false;
@@ -984,7 +1020,6 @@ public static class PawnFilterWidget
                 {
                     var options = new List<FloatMenuOption>();
                     foreach (var wt in AllWorkCapacities)
-                    {
                         if (!pawnFilter.WorkCapacityLimits.ContainsKey(wt))
                         {
                             var label = wt.LabelTranslated();
@@ -994,7 +1029,7 @@ public static class PawnFilterWidget
                                 added = true;
                             }));
                         }
-                    }
+
                     options.Sort((a, b) =>
                         string.Compare(a.Label, b.Label, StringComparison.CurrentCulture));
                     Find.WindowStack.Add(new FloatMenu(options));
@@ -1002,6 +1037,7 @@ public static class PawnFilterWidget
                 if (added) filterChanged = true;
             }
         }
+
         return y;
     }
 
@@ -1047,6 +1083,7 @@ public static class PawnFilterWidget
             pawnFilter.FilterWorkPassions = enabled;
             if (oldValue != pawnFilter.FilterWorkPassions) filterChanged = true;
         }
+
         if (pawnFilter.FilterWorkPassions == true)
         {
             var passionCaches = PassionHelper.Passions;
@@ -1069,6 +1106,7 @@ public static class PawnFilterWidget
                 if (oldValue != value) filterChanged = true;
             }
         }
+
         return y;
     }
 }

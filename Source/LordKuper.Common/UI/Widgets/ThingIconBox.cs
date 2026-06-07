@@ -75,6 +75,7 @@ public static class ThingIconBox
                         break;
                 }
         }
+
         Verse.Widgets.EndScrollView();
     }
 
@@ -132,6 +133,7 @@ public static class ThingIconBox
                         break;
                 }
         }
+
         Verse.Widgets.EndScrollView();
     }
 

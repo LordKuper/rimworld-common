@@ -35,7 +35,10 @@ public static class StatRanges
     ///     Use this method to reset the process-global range cache when a clean observation
     ///     baseline is required (for example, between isolated unit tests).
     /// </remarks>
-    public static void Clear() => Ranges.Clear();
+    public static void Clear()
+    {
+        Ranges.Clear();
+    }
 
     /// <summary>
     ///     Normalizes a stat value based on the observed range for the specified stat.
@@ -78,9 +81,9 @@ public static class StatRanges
     /// <param name="value">The value to consider for range expansion.</param>
     private static void UpdateStatRange(StatDef stat, float value)
     {
-        if (!Ranges.TryGetValue(stat, out var range)) { range = new FloatRange(value, value); }
-        if (range.min > value) { range.min = value; }
-        if (range.max < value) { range.max = value; }
+        if (!Ranges.TryGetValue(stat, out var range)) range = new FloatRange(value, value);
+        if (range.min > value) range.min = value;
+        if (range.max < value) range.max = value;
         Ranges[stat] = range;
     }
 }

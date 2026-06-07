@@ -37,21 +37,26 @@ public class StatLimit : DefCache<StatDef>, IExposable
     /// </summary>
     public ToStringStyle ValueStyle;
 
-    private bool _isConfigured;
     private bool _configuring;
+
+    private bool _isConfigured;
     private string? _maxValueBuffer;
     private string? _minValueBuffer;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatLimit" /> class.
     /// </summary>
-    public StatLimit() { }
+    public StatLimit()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatLimit" /> class for the stat with the specified def name.
     /// </summary>
     /// <param name="statDefName">The def name of the <see cref="StatDef" /> to limit.</param>
-    public StatLimit(string statDefName) : base(statDefName) { }
+    public StatLimit(string statDefName) : base(statDefName)
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="StatLimit" /> class for the stat with the specified def name and
@@ -101,6 +106,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 _maxValueBuffer = string.Empty;
                 return;
             }
+
             var clamped = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
             Limit.max = clamped;
             _maxValueBuffer = clamped.ToString("F2", CultureInfo.InvariantCulture);
@@ -129,6 +135,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 MaxValue = null;
                 return;
             }
+
             if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                     out var maxValue))
                 MaxValue = maxValue;
@@ -161,6 +168,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 _minValueBuffer = string.Empty;
                 return;
             }
+
             var clamped = Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap);
             Limit.min = clamped;
             _minValueBuffer = clamped.ToString("F2", CultureInfo.InvariantCulture);
@@ -189,6 +197,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 MinValue = null;
                 return;
             }
+
             if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                     out var minValue))
                 MinValue = minValue;
@@ -229,6 +238,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
             minValue = MinValue;
             maxValue = MaxValue;
         }
+
         Scribe_Values.Look(ref minValue, nameof(MinValue));
         Scribe_Values.Look(ref maxValue, nameof(MaxValue));
         Scribe_Values.Look(ref Limit, nameof(Limit));
@@ -269,6 +279,7 @@ public class StatLimit : DefCache<StatDef>, IExposable
                 ValueStyle = ToStringStyle.FloatTwo;
             }
         }
+
         if (Mathf.Approximately(Limit.min, 0f) && Mathf.Approximately(Limit.max, 0f))
             Limit = new FloatRange(LimitMinCap, LimitMaxCap);
         _isConfigured = true;

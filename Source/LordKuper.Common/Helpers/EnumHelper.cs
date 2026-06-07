@@ -33,6 +33,7 @@ public static class EnumHelper
             var flagLong = Convert.ToInt64(flag);
             if ((valueLong & flagLong) != flagLong && flagLong != 0) absentFlags |= flagLong;
         }
+
         return (T)Enum.ToObject(typeof(T), absentFlags);
     }
 

@@ -29,13 +29,17 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class.
     /// </summary>
-    public PawnSkillLimit() { }
+    public PawnSkillLimit()
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class for the skill with the specified def name.
     /// </summary>
     /// <param name="skillDefName">The def name of the <see cref="SkillDef" /> to limit.</param>
-    public PawnSkillLimit(string skillDefName) : base(skillDefName) { }
+    public PawnSkillLimit(string skillDefName) : base(skillDefName)
+    {
+    }
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="PawnSkillLimit" /> class for the skill with the specified def name
@@ -57,7 +61,9 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
     /// </summary>
     /// <param name="def">The skill definition to limit.</param>
     /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="def" /> is null.</exception>
-    public PawnSkillLimit(SkillDef def) : base(GetDefName(def)) { }
+    public PawnSkillLimit(SkillDef def) : base(GetDefName(def))
+    {
+    }
 
     /// <summary>
     ///     Gets or sets the upper bound of the allowed skill level, or <c>null</c> when no upper bound is set
@@ -75,6 +81,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 _maxValueBuffer = string.Empty;
                 return;
             }
+
             Limit.max = Mathf.RoundToInt(Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap));
             _maxValueBuffer = Limit.max.ToString(CultureInfo.InvariantCulture);
         }
@@ -97,6 +104,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MaxValue = null;
                 return;
             }
+
             if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                     out var parsed))
                 MaxValue = parsed;
@@ -121,6 +129,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 _minValueBuffer = string.Empty;
                 return;
             }
+
             Limit.min = Mathf.RoundToInt(Mathf.Clamp(value.Value, LimitMinCap, LimitMaxCap));
             _minValueBuffer = Limit.min.ToString(CultureInfo.InvariantCulture);
         }
@@ -143,6 +152,7 @@ public class PawnSkillLimit : DefCache<SkillDef>, IExposable
                 MinValue = null;
                 return;
             }
+
             if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture,
                     out var parsed))
                 MinValue = parsed;

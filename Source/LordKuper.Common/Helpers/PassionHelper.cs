@@ -113,21 +113,17 @@ public static class PassionHelper
         if (Vse.VanillaSkillsExpandedActive)
         {
             foreach (var passion in Vse.GetPassions?.Invoke() ?? Enumerable.Empty<Passion>())
-            {
                 if (!PassionCache.ContainsKey(passion))
                     PassionCache[passion] = new PassionCache(passion, Vse.GetDefName(passion),
                         Vse.GetLabel(passion), Vse.GetLearnRateFactor(passion),
                         Vse.GetForgetRateFactor(passion));
-            }
         }
         else
         {
             foreach (Passion passion in Enum.GetValues(typeof(Passion)))
-            {
                 if (!PassionCache.ContainsKey(passion))
                     PassionCache[passion] = new PassionCache(passion, passion.ToString(),
                         passion.GetLabel(), passion.GetLearningFactor(), 1f);
-            }
         }
     }
 }

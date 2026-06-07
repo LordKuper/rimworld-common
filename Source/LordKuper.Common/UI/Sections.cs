@@ -88,6 +88,7 @@ public static class Sections
             var buttonRect = Layout.GetLeftColumnRect(tooltipRect, Icons.InfoIconSize, out _);
             Icons.DoIcon(buttonRect, Resources.Textures.InfoIcon, tooltip);
         }
+
         Text.Font = font;
         Text.Anchor = anchor;
     }
