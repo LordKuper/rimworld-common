@@ -156,7 +156,7 @@ source: ""
           <p>
             AC-3 requires List&nbsp;2 to be displayed in descending score order per the selected rule's stat weights,
             consistent with <code>WorkTypeThingRule.GetThingScore(Thing)</code>
-            (<code>WorkTypeThingRule.cs:234&ndash;242</code>). The open question (sprint PRD,
+            (<code>WorkTypeThingRule.cs:239&ndash;247</code>). The open question (sprint PRD,
             &ldquo;open decisions&rdquo;) is <strong>who sorts</strong>: the widget (calling
             <code>GetThingScore</code> at render time) or the consumer (supplying an already-sorted list).
           </p>
@@ -165,13 +165,13 @@ source: ""
             <code>GetThingScore</code> and <code>GetThingDefScore</code> normalize through
             <code>StatRanges</code>, whose <code>NormalizeStatValue</code> maintains a running, expanding per-stat
             min/max over <em>all</em> items ever scored in the process
-            (<code>WorkTypeThingRule.cs:181&ndash;194</code>; audit Risk &ldquo;Score correctness /
+            (<code>WorkTypeThingRule.cs:186&ndash;195</code>; audit Risk &ldquo;Score correctness /
             order-dependence&rdquo;). If the widget calls <code>GetThingScore</code> during render, it would feed the
             on-map instances into that shared range history, perturbing the normalization of <em>both</em> lists every
             frame &mdash; a hidden, render-driven mutation of shared state. List&nbsp;1 already sidesteps this: the
             consumer supplies its <code>ThingDef</code> list pre-sorted (the rule's
             <code>GetGloballyAvailableItems()</code> does <code>items.SortByDescending(GetThingDefScore)</code> at
-            <code>:168&ndash;176</code>), and <code>DoThingDefBox</code> renders it purely presentationally.
+            <code>:173&ndash;181</code>), and <code>DoThingDefBox</code> renders it purely presentationally.
           </p>
 
           <h2 id="decision">Decision</h2>
@@ -204,7 +204,7 @@ source: ""
             <div class="pros">
               <h3>Positive</h3>
               <ul>
-                <li>The widget stays free of side effects during render: it does not perturb the shared <code>StatRanges</code> min/max history, so it cannot shift either list's normalization frame-to-frame (audit caveat, <code>WorkTypeThingRule.cs:181&ndash;194</code>).</li>
+                <li>The widget stays free of side effects during render: it does not perturb the shared <code>StatRanges</code> min/max history, so it cannot shift either list's normalization frame-to-frame (audit caveat, <code>WorkTypeThingRule.cs:186&ndash;195</code>).</li>
                 <li>Symmetric with List&nbsp;1: both lists arrive pre-sorted by the consumer and are rendered presentationally, keeping <code>DoBottomPart</code> uniform and the widget's responsibility narrow (render, not compute).</li>
                 <li>AC-3 (descending score order) is satisfied by the consumer's pre-sort using the public <code>GetThingScore</code>; relative best-first order within the list holds regardless of the order-dependent absolute normalization.</li>
                 <li>The consumer already owns the on-map collection logic (sprint Non-goals), so it is the natural place to also own the sort &mdash; no new responsibility is pushed into the widget.</li>

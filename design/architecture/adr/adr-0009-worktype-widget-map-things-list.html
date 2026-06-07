@@ -157,7 +157,7 @@ source: ""
           <h2 id="context">Context</h2>
           <p>
             <code>WorkTypeThingRuleWidget.DoWidgetTab(...)</code>
-            (<code>Source/LordKuper.Common/UI/Widgets/WorkTypeThingRuleWidget.cs:179&ndash;199</code>) is the public
+            (<code>Source/LordKuper.Common/UI/Widgets/WorkTypeThingRuleWidget.cs:243&ndash;264</code>) is the public
             integration point for the work-type rule tab and the call site the downstream EquipmentManager mod
             consumes. Today it carries exactly <strong>one</strong> items collection
             (<code>IReadOnlyList&lt;ThingDef&gt; things</code>, List&nbsp;1) and <strong>one</strong> thing-box scroll
@@ -206,7 +206,7 @@ source: ""
           <ul>
             <li>
               <strong>Per-instance tooltip helper (AC-2).</strong> Add a new <em>private</em> helper analogous to
-              <code>GetWorkTypeDefTooltip(ThingDef, WorkTypeThingRule)</code> (<code>:227&ndash;246</code>) &mdash; for
+              <code>GetWorkTypeDefTooltip(ThingDef, WorkTypeThingRule)</code> (<code>:317&ndash;334</code>) &mdash; for
               example <code>GetWorkTypeThingTooltip(Thing, WorkTypeThingRule)</code> &mdash; that reads the
               <strong>real instance's</strong> stat values via <code>StatHelper.GetStatValue(Thing, StatDef)</code>
               (<code>StatHelper.cs:131&ndash;155</code>). Unlike the def helper, it must <strong>not</strong> synthesize
@@ -218,7 +218,7 @@ source: ""
               <strong>Side-by-side layout, constant height (AC-5).</strong> The two lists are drawn
               <strong>side by side</strong> (horizontally adjacent) within the bottom band &mdash; the same arrangement
               EquipmentManager uses &mdash; <strong>not</strong> stacked vertically. The bottom region is a fixed,
-              non-scrolling band sized by <code>GetBottomPartHeight(int)</code> (<code>:206&ndash;210</code>;
+              non-scrolling band sized by <code>GetBottomPartHeight(int)</code> (<code>:271&ndash;275</code>;
               <code>Tabs.DoTab</code>, <code>Tabs.cs:45&ndash;58</code>). Because the second list occupies horizontal
               space, <strong><code>GetBottomPartHeight</code> is unchanged</strong>: it still returns exactly one box
               height (<code>ThingIconBox.GetThingIconBoxHeight(...)</code>) + one section header + one gap, regardless
@@ -227,10 +227,10 @@ source: ""
             </li>
             <li>
               <strong><code>DoBottomPart</code> splits the band width.</strong> <code>DoBottomPart(...)</code>
-              (<code>:28&ndash;44</code>) splits the bottom region's <em>width</em> between the two boxes when
+              (<code>:38&ndash;94</code>) splits the bottom region's <em>width</em> between the two boxes when
               <code>mapThings</code> is present: List&nbsp;1 on one side, List&nbsp;2 on the other, each box on the same
               row with its own section header directly above it (two headers on a single header row). Each box renders
-              via <code>ThingIconBox.DoThingBox(...)</code> (<code>:39&ndash;79</code>, the existing,
+              via <code>ThingIconBox.DoThingBox(...)</code> (<code>:54&ndash;106</code>, the existing,
               currently-dormant instance-render primitive for List&nbsp;2; <code>DoThingDefBox</code> for List&nbsp;1)
               with its own scroll position and, for List&nbsp;2, the new tooltip helper. When <code>mapThings</code> is
               <code>null</code>/empty, List&nbsp;1 renders <strong>full width</strong> exactly as today, at the same
