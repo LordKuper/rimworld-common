@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+	<!-- EN: Average armor penetration -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_ArmorPenetration.Label>平均护甲穿透</LordKuper.Common.Stats.LK_MeleeWeapons_ArmorPenetration.Label>
+	<!-- EN: The average amount of armor weapon will ignore each time it hits the target -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_ArmorPenetration.Description>武器每次击中目标时平均会忽略的护甲值</LordKuper.Common.Stats.LK_MeleeWeapons_ArmorPenetration.Description>
+	<!-- EN: DPS (Sharp) -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_DpsSharp.Label>每秒伤害 (锋利)</LordKuper.Common.Stats.LK_MeleeWeapons_DpsSharp.Label>
+	<!-- EN: Average sharp damage per second -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_DpsSharp.Description>平均每秒锋利伤害</LordKuper.Common.Stats.LK_MeleeWeapons_DpsSharp.Description>
+	<!-- EN: DPS (Blunt) -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_DpsBlunt.Label>每秒伤害 (钝器)</LordKuper.Common.Stats.LK_MeleeWeapons_DpsBlunt.Label>
+	<!-- EN: Average blunt damage per second -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_DpsBlunt.Description>平均每秒钝器伤害</LordKuper.Common.Stats.LK_MeleeWeapons_DpsBlunt.Description>
+	<!-- EN: Tech level -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_TechLevel.Label>科技等级</LordKuper.Common.Stats.LK_MeleeWeapons_TechLevel.Label>
+	<!-- EN: Weapon's tech level -->
+  <LordKuper.Common.Stats.LK_MeleeWeapons_TechLevel.Description>武器的科技等级</LordKuper.Common.Stats.LK_MeleeWeapons_TechLevel.Description>
+	<!-- EN: Average DPSA -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Dpsa.Label>平均DPSA</LordKuper.Common.Stats.LK_RangedWeapons_Dpsa.Label>
+	<!-- EN: Average damage per second adjusted for weapon accuracy -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Dpsa.Description>根据武器精度调整后的平均每秒伤害</LordKuper.Common.Stats.LK_RangedWeapons_Dpsa.Description>
+	<!-- EN: DPSA (close) -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaClose.Label>DPSA (近程)</LordKuper.Common.Stats.LK_RangedWeapons_DpsaClose.Label>
+	<!-- EN: Close range damage per second adjusted for weapon accuracy -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaClose.Description>近程距离下根据武器精度调整后的每秒伤害</LordKuper.Common.Stats.LK_RangedWeapons_DpsaClose.Description>
+	<!-- EN: DPSA (short) -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaShort.Label>DPSA (短程)</LordKuper.Common.Stats.LK_RangedWeapons_DpsaShort.Label>
+	<!-- EN: Short range damage per second adjusted for weapon accuracy -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaShort.Description>短程距离下根据武器精度调整后的每秒伤害</LordKuper.Common.Stats.LK_RangedWeapons_DpsaShort.Description>
+	<!-- EN: DPSA (medium) -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaMedium.Label>DPSA (中程)</LordKuper.Common.Stats.LK_RangedWeapons_DpsaMedium.Label>
+	<!-- EN: Medium range damage per second adjusted for weapon accuracy -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaMedium.Description>中程距离下根据武器精度调整后的每秒伤害</LordKuper.Common.Stats.LK_RangedWeapons_DpsaMedium.Description>
+	<!-- EN: DPSA (long) -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaLong.Label>DPSA (远程)</LordKuper.Common.Stats.LK_RangedWeapons_DpsaLong.Label>
+	<!-- EN: Long range damage per second adjusted for weapon accuracy -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_DpsaLong.Description>远程距离下根据武器精度调整后的每秒伤害</LordKuper.Common.Stats.LK_RangedWeapons_DpsaLong.Description>
+	<!-- EN: Damage -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Damage.Label>伤害</LordKuper.Common.Stats.LK_RangedWeapons_Damage.Label>
+	<!-- EN: The amount of damage weapon deals in a single hit -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Damage.Description>武器单次命中造成的伤害量</LordKuper.Common.Stats.LK_RangedWeapons_Damage.Description>
+	<!-- EN: Range -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Range.Label>射程</LordKuper.Common.Stats.LK_RangedWeapons_Range.Label>
+	<!-- EN: The maximum range of a weapon -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Range.Description>武器的最大射程</LordKuper.Common.Stats.LK_RangedWeapons_Range.Description>
+	<!-- EN: Warmup -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Warmup.Label>预热时间</LordKuper.Common.Stats.LK_RangedWeapons_Warmup.Label>
+	<!-- EN: How much time passes between when a ranged attack begins aiming and when it fires -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_Warmup.Description>远程攻击开始瞄准到实际发射之间经过的时间</LordKuper.Common.Stats.LK_RangedWeapons_Warmup.Description>
+	<!-- EN: Burst shot count -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_BurstShotCount.Label>连发射击次数</LordKuper.Common.Stats.LK_RangedWeapons_BurstShotCount.Label>
+	<!-- EN: The amount of shots weapon fires in each burst -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_BurstShotCount.Description>武器每次连发发射的弹丸数量</LordKuper.Common.Stats.LK_RangedWeapons_BurstShotCount.Description>
+	<!-- EN: Ticks between burst shots -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_TicksBetweenBurstShots.Label>连发间隔刻数</LordKuper.Common.Stats.LK_RangedWeapons_TicksBetweenBurstShots.Label>
+	<!-- EN: How much game ticks passes between burst shots -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_TicksBetweenBurstShots.Description>连发射击之间经过的游戏刻数</LordKuper.Common.Stats.LK_RangedWeapons_TicksBetweenBurstShots.Description>
+	<!-- EN: Average armor penetration -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_AarmorPenetration.Label>平均护甲穿透</LordKuper.Common.Stats.LK_RangedWeapons_ArmorPenetration.Label>
+	<!-- EN: The average amount of armor weapon will ignore each time it hits the target -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_ArmorPenetration.Description>武器每次击中目标时平均会忽略的护甲值</LordKuper.Common.Stats.LK_RangedWeapons_ArmorPenetration.Description>
+	<!-- EN: Stopping power -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_StoppingPower.Label>停止作用</LordKuper.Common.Stats.LK_RangedWeapons_StoppingPower.Label>
+	<!-- EN: Hits from a weapon will stagger targets, slowing their movement for several seconds -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_StoppingPower.Description>武器的命中会使目标踉跄，在几秒钟内减慢其移动速度</LordKuper.Common.Stats.LK_RangedWeapons_StoppingPower.Description>
+	<!-- EN: Tech level -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_TechLevel.Label>科技等级</LordKuper.Common.Stats.LK_RangedWeapons_TechLevel.Label>
+	<!-- EN: Weapon's tech level -->
+  <LordKuper.Common.Stats.LK_RangedWeapons_TechLevel.Description>武器的科技等级</LordKuper.Common.Stats.LK_RangedWeapons_TechLevel.Description>
+	<!-- EN: Work type related stats -->
+  <LordKuper.Common.Stats.LK_Tools_WorkType.Label>工作类型相关属性</LordKuper.Common.Stats.LK_Tools_WorkType.Label>
+	<!-- EN: Item stats that affect performance according to work type rules -->
+  <LordKuper.Common.Stats.LK_Tools_WorkType.Description>根据工作类型规则影响性能的物品属性</LordKuper.Common.Stats.LK_Tools_WorkType.Description>
+	<!-- EN: Tech level -->
+  <LordKuper.Common.Stats.LK_Tools_TechLevel.Label>科技等级</LordKuper.Common.Stats.LK_Tools_TechLevel.Label>
+	<!-- EN: Tool's tech level -->
+  <LordKuper.Common.Stats.LK_Tools_TechLevel.Description>工具的科技等级</LordKuper.Common.Stats.LK_Tools_TechLevel.Description>
+	<!-- EN: Undefined -->
+  <LordKuper.Common.PawnType.Undefined.Label>未定义</LordKuper.Common.PawnType.Undefined.Label>
+	<!-- EN: Colonist -->
+  <LordKuper.Common.PawnType.Colonist.Label>殖民者</LordKuper.Common.PawnType.Colonist.Label>
+	<!-- EN: Guest -->
+  <LordKuper.Common.PawnType.Guest.Label>客人</LordKuper.Common.PawnType.Guest.Label>
+	<!-- EN: Prisoner -->
+  <LordKuper.Common.PawnType.Prisoner.Label>囚犯</LordKuper.Common.PawnType.Prisoner.Label>
+	<!-- EN: Slave -->
+  <LordKuper.Common.PawnType.Slave.Label>奴隶</LordKuper.Common.PawnType.Slave.Label>
+	<!-- EN: Animal -->
+  <LordKuper.Common.PawnType.Animal.Label>动物</LordKuper.Common.PawnType.Animal.Label>
+	<!-- EN: Healthy -->
+  <LordKuper.Common.PawnHealthState.Healthy.Label>健康</LordKuper.Common.PawnHealthState.Healthy.Label>
+	<!-- EN: Pawns with no current health issues. -->
+  <LordKuper.Common.PawnHealthState.Healthy.Tooltip>当前没有健康问题的小人。</LordKuper.Common.PawnHealthState.Healthy.Tooltip>
+	<!-- EN: Resting -->
+  <LordKuper.Common.PawnHealthState.Resting.Label>休息中</LordKuper.Common.PawnHealthState.Resting.Label>
+	<!-- EN: Pawns that need bed rest to recover. -->
+  <LordKuper.Common.PawnHealthState.Resting.Tooltip>需要卧床休息以恢复的小人。</LordKuper.Common.PawnHealthState.Resting.Tooltip>
+	<!-- EN: Needs tending -->
+  <LordKuper.Common.PawnHealthState.NeedsTending.Label>需要救治</LordKuper.Common.PawnHealthState.NeedsTending.Label>
+	<!-- EN: Pawns with injuries or illnesses requiring medical attention. -->
+  <LordKuper.Common.PawnHealthState.NeedsTending.Tooltip>有需要医疗照顾的伤害或疾病的小人。</LordKuper.Common.PawnHealthState.NeedsTending.Tooltip>
+	<!-- EN: Downed -->
+  <LordKuper.Common.PawnHealthState.Downed.Label>倒地</LordKuper.Common.PawnHealthState.Downed.Label>
+	<!-- EN: Pawns that are unconscious and unable to move. -->
+  <LordKuper.Common.PawnHealthState.Downed.Tooltip>失去意识且无法移动的小人。</LordKuper.Common.PawnHealthState.Downed.Tooltip>
+	<!-- EN: Mental -->
+  <LordKuper.Common.PawnHealthState.Mental.Label>精神崩溃</LordKuper.Common.PawnHealthState.Mental.Label>
+	<!-- EN: Pawns in a state of mental breakdown. -->
+  <LordKuper.Common.PawnHealthState.Mental.Tooltip>处于精神崩溃状态的小人。</LordKuper.Common.PawnHealthState.Mental.Tooltip>
+	<!-- EN: Dead -->
+  <LordKuper.Common.PawnHealthState.Dead.Label>死亡</LordKuper.Common.PawnHealthState.Dead.Label>
+	<!-- EN: Dead pawns. -->
+  <LordKuper.Common.PawnHealthState.Dead.Tooltip>已死亡的小人。</LordKuper.Common.PawnHealthState.Dead.Tooltip>
+	<!-- EN: None -->
+  <LordKuper.Common.PawnPrimaryWeaponType.None.Label>无</LordKuper.Common.PawnPrimaryWeaponType.None.Label>
+	<!-- EN: Pawns with no primary weapon equipped. -->
+  <LordKuper.Common.PawnPrimaryWeaponType.None.Tooltip>未装备主要武器的小人。</LordKuper.Common.PawnPrimaryWeaponType.None.Tooltip>
+	<!-- EN: Melee -->
+  <LordKuper.Common.PawnPrimaryWeaponType.Melee.Label>近战</LordKuper.Common.PawnPrimaryWeaponType.Melee.Label>
+	<!-- EN: Pawns with melee primary weapon equipped. -->
+  <LordKuper.Common.PawnPrimaryWeaponType.Melee.Tooltip>装备了近战主要武器的小人。</LordKuper.Common.PawnPrimaryWeaponType.Melee.Tooltip>
+	<!-- EN: Ranged -->
+  <LordKuper.Common.PawnPrimaryWeaponType.Ranged.Label>远程</LordKuper.Common.PawnPrimaryWeaponType.Ranged.Label>
+	<!-- EN: Pawns with ranged primary weapon equipped. -->
+  <LordKuper.Common.PawnPrimaryWeaponType.Ranged.Tooltip>装备了远程主要武器的小人。</LordKuper.Common.PawnPrimaryWeaponType.Ranged.Tooltip>
+	<!-- EN: Other -->
+  <LordKuper.Common.PawnPrimaryWeaponType.Undefined.Label>其他</LordKuper.Common.PawnPrimaryWeaponType.Undefined.Label>
+	<!-- EN: Pawns with other primary weapon type equipped. -->
+  <LordKuper.Common.PawnPrimaryWeaponType.Undefined.Tooltip>装备了其他类型主要武器的小人。</LordKuper.Common.PawnPrimaryWeaponType.Undefined.Tooltip>
+	<!-- EN: Learning rate factor: {0:N2} -->
+  <LordKuper.Common.Passions.LearnRateFactorDescription>学习速率系数: {0:N2}</LordKuper.Common.Passions.LearnRateFactorDescription>
+	<!-- EN: Forgetting rate factor: {0:N2} -->
+  <LordKuper.Common.Passions.ForgetRateFactorDescription>遗忘速率系数: {0:N2}</LordKuper.Common.Passions.ForgetRateFactorDescription>
+	<!-- EN: Add -->
+  <LordKuper.Common.Actions.Add>添加</LordKuper.Common.Actions.Add>
+	<!-- EN: Edit -->
+  <LordKuper.Common.Actions.Edit>编辑</LordKuper.Common.Actions.Edit>
+	<!-- EN: Delete -->
+  <LordKuper.Common.Actions.Delete>删除</LordKuper.Common.Actions.Delete>
+	<!-- EN: Reset -->
+  <LordKuper.Common.Actions.Reset>重置</LordKuper.Common.Actions.Reset>
+	<!-- EN: Refresh -->
+  <LordKuper.Common.Actions.Refresh>刷新</LordKuper.Common.Actions.Refresh>
+	<!-- EN: Select… -->
+  <LordKuper.Common.Actions.Select>选择…</LordKuper.Common.Actions.Select>
+	<!-- EN: Select work type using the button above. -->
+  <LordKuper.Common.WorkTypeThingRuleWidget.NoRuleSelected>请使用上方的按钮选择工作类型。</LordKuper.Common.WorkTypeThingRuleWidget.NoRuleSelected>
+	<!-- EN: Stat weights -->
+  <LordKuper.Common.WorkTypeThingRuleWidget.StatWeightsLabel>属性权重</LordKuper.Common.WorkTypeThingRuleWidget.StatWeightsLabel>
+	<!-- EN: The weights of stats used to calculate the score of a particular thing.\nA higher stat weight means that a thing with a higher value for that stat will have more score points. -->
+  <LordKuper.Common.WorkTypeThingRuleWidget.StatWeightsTooltip>用于计算特定物品得分的属性权重。\n较高的属性权重意味着该属性值较高的物品将获得更多分数。</LordKuper.Common.WorkTypeThingRuleWidget.StatWeightsTooltip>
+	<!-- EN: Available items -->
+  <LordKuper.Common.WorkTypeThingRuleWidget.AvailableItemsLabel>可用物品</LordKuper.Common.WorkTypeThingRuleWidget.AvailableItemsLabel>
+	<!-- EN: An enumeration of items that have at least one of the stats listed above, sorted in score descending order. -->
+  <LordKuper.Common.WorkTypeThingRuleWidget.AvailableItemsTooltip>拥有上述至少一种属性的物品枚举，按分数降序排序。</LordKuper.Common.WorkTypeThingRuleWidget.AvailableItemsTooltip>
+	<!-- EN: Ignored -->
+  <LordKuper.Common.PawnFilter.IgnoreFilter>已忽略</LordKuper.Common.PawnFilter.IgnoreFilter>
+	<!-- EN: The settings from the default rule will be used. -->
+  <LordKuper.Common.PawnFilter.UndefinedFilterTooltip>将使用默认规则的设置。</LordKuper.Common.PawnFilter.UndefinedFilterTooltip>
+	<!-- EN: Pawns will be filtered by their types. -->
+  <LordKuper.Common.PawnFilter.FilterPawnTypesOnTooltip>将根据小人类型进行筛选。</LordKuper.Common.PawnFilter.FilterPawnTypesOnTooltip>
+	<!-- EN: Pawns' types will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnTypesOffTooltip>将忽略小人类型。</LordKuper.Common.PawnFilter.FilterPawnTypesOffTooltip>
+	<!-- EN: Pawn types -->
+  <LordKuper.Common.PawnFilter.AllowedPawnTypesLabel>小人类型</LordKuper.Common.PawnFilter.AllowedPawnTypesLabel>
+	<!-- EN: Only pawns of those types that are enabled in this section will be selected. -->
+  <LordKuper.Common.PawnFilter.AllowedPawnTypesTooltip>仅会选中在此部分启用的类型的小人。</LordKuper.Common.PawnFilter.AllowedPawnTypesTooltip>
+	<!-- EN: Pawns will be filtered by their health states. -->
+  <LordKuper.Common.PawnFilter.FilterPawnHealthStatesOnTooltip>将根据小人健康状态进行筛选。</LordKuper.Common.PawnFilter.FilterPawnHealthStatesOnTooltip>
+	<!-- EN: Pawns' health states will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnHealthStatesOffTooltip>将忽略小人健康状态。</LordKuper.Common.PawnFilter.FilterPawnHealthStatesOffTooltip>
+	<!-- EN: Pawn health states -->
+  <LordKuper.Common.PawnFilter.AllowedPawnHealthStatesLabel>小人健康状态</LordKuper.Common.PawnFilter.AllowedPawnHealthStatesLabel>
+	<!-- EN: Only pawns in health states that are enabled in this section will be selected. -->
+  <LordKuper.Common.PawnFilter.AllowedPawnHealthStatesTooltip>仅会选中在此部分启用的健康状态的小人。</LordKuper.Common.PawnFilter.AllowedPawnHealthStatesTooltip>
+	<!-- EN: Pawns will be filtered by their passion for work types. -->
+  <LordKuper.Common.PawnFilter.FilterWorkPassionsOnTooltip>将根据小人对工作类型的热情进行筛选。</LordKuper.Common.PawnFilter.FilterWorkPassionsOnTooltip>
+	<!-- EN: Pawns' passions will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterWorkPassionsOffTooltip>将忽略小人的热情。</LordKuper.Common.PawnFilter.FilterWorkPassionsOffTooltip>
+	<!-- EN: Work passions -->
+  <LordKuper.Common.PawnFilter.AllowedWorkPassionsLabel>工作热情</LordKuper.Common.PawnFilter.AllowedWorkPassionsLabel>
+	<!-- EN: Only pawns with passion values that are enabled in this section will be selected. -->
+  <LordKuper.Common.PawnFilter.AllowedWorkPassionsTooltip>仅会选中在此部分启用的热情值的小人。</LordKuper.Common.PawnFilter.AllowedWorkPassionsTooltip>
+	<!-- EN: Pawns will be filtered by their traits. -->
+  <LordKuper.Common.PawnFilter.FilterPawnTraitsOnTooltip>将根据小人特性进行筛选。</LordKuper.Common.PawnFilter.FilterPawnTraitsOnTooltip>
+	<!-- EN: Pawns' traits will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnTraitsOffTooltip>将忽略小人特性。</LordKuper.Common.PawnFilter.FilterPawnTraitsOffTooltip>
+	<!-- EN: Pawn traits -->
+  <LordKuper.Common.PawnFilter.PawnTraitLimitsLabel>小人特性限制</LordKuper.Common.PawnFilter.PawnTraitLimitsLabel>
+	<!-- EN: Only pawns that have any of the enabled traits and none of the disabled traits will be selected. Traits not added in this section will be ignored. -->
+  <LordKuper.Common.PawnFilter.PawnTraitLimitsTooltip>仅会选中拥有任何已启用特性且没有已禁用特性（仅限此部分列出的特性）的小人。未在此部分添加的特性将被忽略。</LordKuper.Common.PawnFilter.PawnTraitLimitsTooltip>
+	<!-- EN: Pawns will be filtered by their capacities. -->
+  <LordKuper.Common.PawnFilter.FilterPawnCapacitiesOnTooltip>将根据小人能力进行筛选。</LordKuper.Common.PawnFilter.FilterPawnCapacitiesOnTooltip>
+	<!-- EN: Pawns' capacities will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnCapacitiesOffTooltip>将忽略小人能力。</LordKuper.Common.PawnFilter.FilterPawnCapacitiesOffTooltip>
+	<!-- EN: Pawn capacities -->
+  <LordKuper.Common.PawnFilter.PawnCapacityLimitsLabel>小人能力限制</LordKuper.Common.PawnFilter.PawnCapacityLimitsLabel>
+	<!-- EN: Only pawns whose capacity levels are in the ranges listed below will be selected. Capacities not listed in this section will be ignored. -->
+  <LordKuper.Common.PawnFilter.PawnCapacityLimitsTooltip>仅会选中能力水平在下述范围内的小人。未在此部分列出的能力将被忽略。</LordKuper.Common.PawnFilter.PawnCapacityLimitsTooltip>
+	<!-- EN: Pawns will be filtered by their work capacities. -->
+  <LordKuper.Common.PawnFilter.FilterWorkCapacitiesOnTooltip>将根据小人工作能力进行筛选。</LordKuper.Common.PawnFilter.FilterWorkCapacitiesOnTooltip>
+	<!-- EN: Pawn work capacities will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterWorkCapacitiesOffTooltip>将忽略小人工作能力。</LordKuper.Common.PawnFilter.FilterWorkCapacitiesOffTooltip>
+	<!-- EN: Pawn work capacities -->
+  <LordKuper.Common.PawnFilter.WorkCapacityLimitsLabel>小人工作能力限制</LordKuper.Common.PawnFilter.WorkCapacityLimitsLabel>
+	<!-- EN: Only pawns that are capable of performing the work types enabled below and are not capable of performing the work types disabled below will be selected. The ability to perform work types not listed in this section will be ignored. -->
+  <LordKuper.Common.PawnFilter.WorkCapacityLimitsTooltip>仅会选中能够从事下方启用的工作类型且不能从事下方禁用的工作类型（仅限此部分列出的工作类型）的小人。从事未在此部分列出的工作类型的能力将被忽略。</LordKuper.Common.PawnFilter.WorkCapacityLimitsTooltip>
+	<!-- EN: Pawns will be filtered by their skill levels. -->
+  <LordKuper.Common.PawnFilter.FilterPawnSkillsOnTooltip>将根据小人技能等级进行筛选。</LordKuper.Common.PawnFilter.FilterPawnSkillsOnTooltip>
+	<!-- EN: Pawns' skill levels will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnSkillsOffTooltip>将忽略小人技能等级。</LordKuper.Common.PawnFilter.FilterPawnSkillsOffTooltip>
+	<!-- EN: Pawn skills -->
+  <LordKuper.Common.PawnFilter.PawnSkillLimitsLabel>小人技能限制</LordKuper.Common.PawnFilter.PawnSkillLimitsLabel>
+	<!-- EN: Only pawns whose skill levels are in the ranges listed below will be selected. Skills not listed in this section will be ignored. -->
+  <LordKuper.Common.PawnFilter.PawnSkillLimitsTooltip>仅会选中技能等级在下述范围内的小人。未在此部分列出的技能将被忽略。</LordKuper.Common.PawnFilter.PawnSkillLimitsTooltip>
+	<!-- EN: Pawns will be filtered by their stat levels. -->
+  <LordKuper.Common.PawnFilter.FilterPawnStatsOnTooltip>将根据小人属性等级进行筛选。</LordKuper.Common.PawnFilter.FilterPawnStatsOnTooltip>
+	<!-- EN: Pawns' stat levels will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnStatsOffTooltip>将忽略小人属性等级。</LordKuper.Common.PawnFilter.FilterPawnStatsOffTooltip>
+	<!-- EN: Pawn stats -->
+  <LordKuper.Common.PawnFilter.PawnStatLimitsLabel>小人属性限制</LordKuper.Common.PawnFilter.PawnStatLimitsLabel>
+	<!-- EN: Only pawns whose stat levels are in the ranges listed below will be selected. Stats not listed in this section will be ignored. -->
+  <LordKuper.Common.PawnFilter.PawnStatLimitsTooltip>仅会选中属性等级在下述范围内的小人。未在此部分列出的属性将被忽略。</LordKuper.Common.PawnFilter.PawnStatLimitsTooltip>
+	<!-- EN: Pawns will be filtered by their primary weapons. -->
+  <LordKuper.Common.PawnFilter.FilterPawnPrimaryWeaponTypesOnTooltip>将根据小人主要武器进行筛选。</LordKuper.Common.PawnFilter.FilterPawnPrimaryWeaponTypesOnTooltip>
+	<!-- EN: Pawns' weapons will be ignored. -->
+  <LordKuper.Common.PawnFilter.FilterPawnPrimaryWeaponTypesOffTooltip>将忽略小人武器。</LordKuper.Common.PawnFilter.FilterPawnPrimaryWeaponTypesOffTooltip>
+	<!-- EN: Pawn weapons -->
+  <LordKuper.Common.PawnFilter.AllowedPawnPrimaryWeaponTypesLabel>允许的小人主要武器类型</LordKuper.Common.PawnFilter.AllowedPawnPrimaryWeaponTypesLabel>
+	<!-- EN: Only pawns whose primary weapons are of types enabled below will be selected. -->
+  <LordKuper.Common.PawnFilter.AllowedPawnPrimaryWeaponTypesTooltip>仅会选中主要武器类型属于下方启用的类型的小人。</LordKuper.Common.PawnFilter.AllowedPawnPrimaryWeaponTypesTooltip>
+</LanguageData>
